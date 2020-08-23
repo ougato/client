@@ -37,7 +37,7 @@ export class BootScene extends cc.Component {
 
     /**
      * 初始化资源（预加载）
-     */
+     */ 
     private initRes(): void {
         // 初始化常驻节点
         G.ViewMgr.loadPersistView();

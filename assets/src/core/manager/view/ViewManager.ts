@@ -2,9 +2,9 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-22 18:44:27
+ * @LastEditTime : 2020-08-24 01:16:39
  * @FilePath     : \client242\assets\src\core\manager\view\ViewManager.ts
- * @Description  : 视图管理器，用于游戏中所有 UI 模块的打开和关闭
+ * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
 
 import { Manager } from "../Manager";
@@ -17,8 +17,6 @@ import { View } from "./View";
 export class ViewManager extends Manager implements IManager {
 
     private static g_instance: ViewManager = null;
-
-    private m_persistViewList: View[];
 
     public static getInstance(): ViewManager {
         if (this.g_instance === null) {
@@ -42,13 +40,34 @@ export class ViewManager extends Manager implements IManager {
     /**
      * 加载常驻视图
      */
-    public loadPersistView(): void {
+    public loadPersistView(progressCallback?: Function, completeCallback?: Function): void {
         let persistViewList: string[] = [];
         for (let persistView in ViewDefine.SystemViewDefine) {
             persistViewList.push(ViewDefine.SystemViewDefine[persistView]);
         }
 
-        cc.resources.preload()
+        cc.resources.load(persistViewList, cc.Prefab, (finish: number, total: number, item: cc.AssetManager.RequestItem) => {
+            if (item.info && item.info.path) {
+                progressCallback && progressCallback.apply(this, item.info.path);
+            }
+        }, (error: Error, assets: cc.Asset | cc.Asset[]) => {
+            if (error) {
+                Logger.getInstance().error(error);
+            } else {
+                let currScene: cc.Scene = cc.director.getScene();
+                let prefabs: cc.Prefab[] = assets as cc.Prefab[];
+                for (let i: number = 0; i < prefabs.length; ++i) {
+                    let prefab: cc.Prefab = prefabs[i];
+                    let node: cc.Node = cc.instantiate(prefab);
+                    let persist: cc.Node = currScene.getChildByName(node.name);
+                    if (persist === null) {
+                        node.active = false;
+                        currScene.addChild(node);
+                    }
+                }
+                completeCallback && completeCallback.apply(this);
+            }
+        });
     }
 
     /**
@@ -74,8 +93,6 @@ export class ViewManager extends Manager implements IManager {
 
         });
 
-        cc.director.loadScene()
-        cc.resources.load(sceneName, cc.Scene);
     }
 
     /**
