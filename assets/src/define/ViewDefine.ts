@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-22 11:03:13
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-24 16:20:03
+ * @LastEditTime : 2020-08-25 01:28:46
  * @FilePath     : \client242\assets\src\define\ViewDefine.ts
  * @Description  : 视图定义
  */

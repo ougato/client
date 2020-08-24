@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-24 18:35:05
+ * @LastEditTime : 2020-08-24 21:20:45
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
@@ -59,8 +59,8 @@ export class BootScene extends cc.Component {
         await this.asyncLoadPersistView();
         // await this.asyncPreloadScene();
         await this.asyncLoadSDK();
-        let isUpdate: boolean = await this.asyncCheckUpdate();
-        if (isUpdate) {
+        if (await this.asyncCheckUpdate()) {
+            G.ViewMgr.openPopups()
             this.intoUpdate();
         } else {
             this.intoGame();
@@ -134,7 +134,7 @@ export class BootScene extends cc.Component {
      * 进入更新
      */
     private intoUpdate(): void {
-
+        G.ViewMgr.openView()
     }
 
     /**

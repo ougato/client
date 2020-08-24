@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-24 18:40:22
+ * @LastEditTime : 2020-08-25 01:17:40
  * @FilePath     : \client242\assets\src\core\manager\view\ViewManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
@@ -120,29 +120,67 @@ export class ViewManager extends Manager implements IManager {
     }
 
     /**
-     * 
+     * 打开进度视图
      */
     public openProgress(): void {
 
     }
 
+    /**
+     * 关闭进度视图
+     */
     public closeProgress(): void {
 
     }
 
-    public openLoading(): void {
-
+    /**
+     * 打开加载视图
+     */
+    public openLoading(content?: string): void {
+        let loadingViewPath: string = ViewDefine.SystemViewDefine.LoadingView.toString();
+        let loadingView:View = this.m_persistViewMap.get(loadingViewPath);
+        if(loadingView) {
+            loadingView.getScript().open();
+        }
     }
 
+    /**
+     * 关闭加载视图
+     */
     public closeLoading(): void {
 
     }
 
+    /**
+     * 打开锁定屏幕视图（在最顶部覆盖一层防止触摸视图）
+     */
     public openLockScreen(): void {
 
     }
 
+    /**
+     * 关闭锁定屏幕视图
+     */
     public closeLockScreen(): void {
+
+    }
+
+    /**
+     * 打开弹窗
+     * @param content {string} 内容
+     * @param title {string} 标题
+     * @param confirmCallback {Function} 确定回调方法
+     * @param cancelCallback {Function} 取消回调方法
+     * @param retryCallback {Function} 重试回调方法
+     */
+    public openPopups(content: string, title?: string, confirmCallback?: Function, cancelCallback?: Function, retryCallback?: Function): void {
+        if (this.m_persistViewMap.get())
+    }
+
+    /**
+     * 关闭弹窗
+     */
+    public closePopups(): void {
 
     }
 
