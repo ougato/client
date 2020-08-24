@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-22 11:03:13
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-24 01:39:18
+ * @LastEditTime : 2020-08-24 16:20:03
  * @FilePath     : \client242\assets\src\define\ViewDefine.ts
  * @Description  : 视图定义
  */
@@ -24,12 +24,6 @@ export enum CustomViewDefine {
 
 // 视图定义
 export const ViewDefine = { ...SystemViewDefine, ...CustomViewDefine };
-
-// 视图加载完成返回
-export type CompleteCallback = () => void;
-
-// 视图加载进度返回
-export type ProgressCallback = () => void;
 
 // 层级间隔
 const ORDER_INTERVAL: number = 100;
