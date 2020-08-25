@@ -2,28 +2,26 @@
  * @Author       : ougato
  * @Date         : 2020-08-22 18:32:45
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-25 15:48:21
+ * @LastEditTime : 2020-08-26 02:09:28
  * @FilePath     : \client242\assets\src\core\manager\view\View.ts
  * @Description  : 封装视图类
  */
 
-import { ViewDefine } from "../../../define/ViewDefine";
+import ViewDefine from "../../../define/ViewDefine";
 
-export class View {
+export default class View {
 
     // 相对路径
     private m_relpath: string;
     // 脚本组件
-    private m_script: cc.Component;
+    private m_script: any;
     // 节点
     private m_node: cc.Node;
 
-    constructor(node?: cc.Node) {
-        if (node) {
-            this.m_relpath = ViewDefine[node.name].toString();
-            this.m_script = node.getComponent(node.name);
-            this.m_node = node;
-        }
+    constructor(node: cc.Node) {
+        this.m_relpath = ViewDefine[node.name].toString();
+        this.m_script = node.getComponent(node.name);
+        this.m_node = node;
     }
 
     /**

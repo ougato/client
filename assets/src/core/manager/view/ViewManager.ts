@@ -2,26 +2,32 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-25 16:59:24
+ * @LastEditTime : 2020-08-26 02:32:04
  * @FilePath     : \client242\assets\src\core\manager\view\ViewManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
 
-import { Manager } from "../Manager";
+import Manager from "../Manager";
 import { IViewParam } from "../../interface/IView";
-import { Logger } from "../../machine/Logger";
+import Logger from "../../machine/Logger";
 import * as SceneDefine from "../../../define/SceneDefine";
-import * as ViewDefine from "../../../define/ViewDefine";
-import { View } from "./View";
+import ViewDefine from "../../../define/ViewDefine";
+import { SystemViewDefine } from "../../../define/ViewDefine";
+import View from "./View";
 import LoadingView from "../../../ui/view/LoadingView";
 import LockScreenView from "../../../ui/view/LockScreenView";
+import ProgressView from "../../../ui/view/ProgressView";
 
-export class ViewManager extends Manager implements IManager {
+export default class ViewManager extends Manager implements IManager {
 
     private static g_instance: ViewManager = null;
 
-    // 常驻节点 Map
-    private m_persistViewMap: Map<string, View>;
+    // 加载视图
+    private m_loadingView: View = null;
+    // 进度视图
+    private m_progressView: View = null;
+    // 触摸锁定视图
+    private m_lockScreenView: View = null;
 
     public static getInstance(): ViewManager {
         if (this.g_instance === null) {
@@ -40,122 +46,96 @@ export class ViewManager extends Manager implements IManager {
     constructor() {
         super();
 
-        this.m_persistViewMap = new Map();
     }
 
     /**
-     * 获取系统常驻视图路径
-     * @return 所有系统常驻路径
+     * 设置加载视图
+     * @param node {cc.Node} 视图节点
      */
-    private getSystemPersistViewPath(): string[] {
-        let persistList: string | string[] = [];
-        for (let persistView in ViewDefine.SystemViewDefine) {
-            persistList.push(ViewDefine.SystemViewDefine[persistView].toString());
-        }
-        return persistList;
+    public setLoadingView(node: cc.Node): void {
+        cc.game.addPersistRootNode(node);
+        this.m_loadingView = new View(node);
     }
 
     /**
-     * 获取系统常驻视图绑定的脚本
-     * @param path {string} 路径
-     * @return 绑定的脚本
+     * 清理加载视图
      */
-    private getSystemPersistScript(path: ViewDefine.SystemViewDefine): any {
-        let persistPath: string = path.toString();
-        let view: View = this.m_persistViewMap.get(persistPath);
-        return view.getScript();
-    }
-
-    /**
-     * 加载常驻视图
-     */
-    public loadPersistView(progressCallback?: (finish: number, total: number, path: string) => void, completeCallback?: (error: Error) => void): void {
-        let list: string[] = this.getSystemPersistViewPath();
-        let notloadedList: string[] = [];
-        for (let i: number = 0; i < list.length; ++i) {
-            let persistPath: string = list[i];
-            let persistView: View = this.m_persistViewMap.get(persistPath);
-            if (!persistView) {
-                notloadedList.push(persistPath);
+    private clearLoadingView(): void {
+        if (this.m_loadingView) {
+            let node = this.m_loadingView.getNode();
+            if (node) {
+                cc.game.removePersistRootNode(node);
+                node.removeFromParent();
+                this.m_loadingView = null;
             }
         }
-
-        if (notloadedList.length <= 0) {
-            return;
-        }
-
-        let finishCount: number = 0;
-        let totalCount: number = list.length;
-        cc.resources.load(list, cc.Prefab, (finish: number, total: number, item: cc.AssetManager.RequestItem) => {
-            if (item && item.info && item.info.path) {
-                let path: string = "assets/resources/" + item.info.path + ".prefab";
-                progressCallback && progressCallback(++finishCount, totalCount, path);
-            }
-        }, (error: Error, assets: cc.Asset | cc.Asset[]) => {
-            if (error) {
-                Logger.getInstance().error(error);
-            } else {
-                let currScene: cc.Scene = cc.director.getScene();
-                let prefabs: cc.Prefab[] = assets as cc.Prefab[];
-                for (let i: number = 0; i < prefabs.length; ++i) {
-                    let prefab: cc.Prefab = prefabs[i];
-                    let node: cc.Node = cc.instantiate(prefab);
-
-                    let persistView = this.m_persistViewMap.get(node.name);
-                    if (!persistView) {
-                        let view = new View(node);
-                        this.m_persistViewMap.set(ViewDefine.SystemViewDefine[node.name].toString(), view);
-                        currScene.addChild(node);
-                        cc.game.addPersistRootNode(node);
-                    }
-                }
-            }
-            completeCallback && completeCallback(error);
-        });
     }
 
     /**
-     * 释放常驻视图
+     * 设置进度视图
+     * @param node {cc.Node} 视图节点
      */
-    public releasePersistView(completeCallback?: () => void): void {
-        let list: string[] = this.getSystemPersistViewPath();
+    public setProgressView(node: cc.Node): void {
+        cc.game.addPersistRootNode(node);
+        this.m_progressView = new View(node);
+    }
 
-        for (let i: number = 0; i < list.length; ++i) {
-            let persistPath: string = list[i];
-            let persistView: View = this.m_persistViewMap.get(persistPath);
-            if (persistView) {
-                let node: cc.Node = persistView.getNode();
-                if (node.isValid) {
-                    cc.game.removePersistRootNode(node);
-                    node.removeFromParent();
-                    this.m_persistViewMap.delete(persistPath);
-                    persistView = null;
-                }
+    /**
+     * 清理进度视图
+     */
+    private clearProgressView(): void {
+        if (this.m_progressView) {
+            let node = this.m_progressView.getNode();
+            if (node) {
+                cc.game.removePersistRootNode(node);
+                node.removeFromParent();
+                this.m_progressView = null;
             }
         }
-        completeCallback && completeCallback();
     }
 
     /**
-     * 打开进度视图
+     * 设置触摸锁定视图
+     * @param node {cc.Node} 视图节点
      */
-    public openProgress(): void {
-
+    public setLockScreenView(node: cc.Node): void {
+        cc.game.addPersistRootNode(node);
+        this.m_lockScreenView = new View(node);
     }
 
     /**
-     * 关闭进度视图
+     * 清理触摸锁定视图
      */
-    public closeProgress(): void {
+    private clearLockScreenView(): void {
+        if (this.m_lockScreenView) {
+            let node = this.m_lockScreenView.getNode();
+            if (node) {
+                cc.game.removePersistRootNode(node);
+                node.removeFromParent();
+                this.m_lockScreenView = null;
+            }
+        }
+    }
 
+    /**
+     * 清理所有常驻视图
+     */
+    private clearAllPersistView():void {
+        this.clearLoadingView();
+        this.clearProgressView();
+        this.clearLockScreenView();
     }
 
     /**
      * 打开加载视图
      */
     public openLoading(content?: string): void {
-        let loadingScript: LoadingView = this.getSystemPersistScript(ViewDefine.SystemViewDefine.LoadingView);
-        if(loadingScript) {
+        if (this.m_loadingView === null) {
+            Logger.getInstance().warn("未找到 LoadingView，检查 BootScene 是否已经 G.ViewMgr.setLoadingVew() 方法");
+            return;
+        }
+        let loadingScript: LoadingView = this.m_loadingView.getScript();
+        if (loadingScript) {
             loadingScript.open(content);
         }
     }
@@ -164,9 +144,41 @@ export class ViewManager extends Manager implements IManager {
      * 关闭加载视图
      */
     public closeLoading(): void {
-        let loadingScript: LoadingView = this.getSystemPersistScript(ViewDefine.SystemViewDefine.LoadingView);
-        if(loadingScript) {
+        if (this.m_loadingView === null) {
+            Logger.getInstance().warn("未找到 LoadingView，检查 BootScene 是否已经 G.ViewMgr.setLoadingVew() 方法");
+            return;
+        }
+        let loadingScript: LoadingView = this.m_loadingView.getScript();
+        if (loadingScript) {
             loadingScript.close();
+        }
+    }
+
+    /**
+     * 打开进度视图
+     */
+    public openProgress(): void {
+        if (this.m_loadingView === null) {
+            Logger.getInstance().warn("未找到 ProgressView，检查 BootScene 是否已经 G.ViewMgr.setProgressView() 方法");
+            return;
+        }
+        let progressScript: ProgressView = this.m_progressView.getScript();
+        if (progressScript) {
+            progressScript.open();
+        }
+    }
+
+    /**
+     * 关闭进度视图
+     */
+    public closeProgress(): void {
+        if (this.m_loadingView === null) {
+            Logger.getInstance().warn("未找到 ProgressView，检查 BootScene 是否已经 G.ViewMgr.setProgressView() 方法");
+            return;
+        }
+        let progressScript: ProgressView = this.m_progressView.getScript();
+        if (progressScript) {
+            progressScript.close();
         }
     }
 
@@ -174,8 +186,12 @@ export class ViewManager extends Manager implements IManager {
      * 打开锁定屏幕视图（在最顶部覆盖一层防止触摸视图）
      */
     public openLockScreen(): void {
-        let lockScreenScript: LockScreenView = this.getSystemPersistScript(ViewDefine.SystemViewDefine.LockScreenView);
-        if(lockScreenScript) {
+        if (this.m_lockScreenView === null) {
+            Logger.getInstance().warn("未找到 LockScreenView BootScene 是否已经 G.ViewMgr.setLockScreenView() 方法");
+            return;
+        }
+        let lockScreenScript: LockScreenView = this.m_lockScreenView.getScript();
+        if (lockScreenScript) {
             lockScreenScript.open();
         }
     }
@@ -184,8 +200,12 @@ export class ViewManager extends Manager implements IManager {
      * 关闭锁定屏幕视图
      */
     public closeLockScreen(): void {
-        let lockScreenScript: LockScreenView = this.getSystemPersistScript(ViewDefine.SystemViewDefine.LockScreenView);
-        if(lockScreenScript) {
+        if (this.m_lockScreenView === null) {
+            Logger.getInstance().warn("未找到 LockScreenView BootScene 是否已经 G.ViewMgr.setLockScreenView() 方法");
+            return;
+        }
+        let lockScreenScript: LockScreenView = this.m_lockScreenView.getScript();
+        if (lockScreenScript) {
             lockScreenScript.close();
         }
     }
@@ -267,7 +287,7 @@ export class ViewManager extends Manager implements IManager {
      * 销毁
      */
     public destroy(): void {
-
+        this.clearAllPersistView();
     }
 
 }

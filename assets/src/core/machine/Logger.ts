@@ -2,12 +2,12 @@
  * @Author       : ougato
  * @Date         : 2020-08-10 17:52:46
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-13 16:20:46
- * @FilePath     : \client\assets\src\core\machine\Logger.ts
+ * @LastEditTime : 2020-08-25 23:48:50
+ * @FilePath     : \client242\assets\src\core\machine\Logger.ts
  * @Description  : 日志管理器，封装 JS 基础 console.log、console.warn、console.error 扩展写入日志数据
  */
 
-export class Logger {
+export default class Logger {
 
     private static g_instance: Logger = null;
     

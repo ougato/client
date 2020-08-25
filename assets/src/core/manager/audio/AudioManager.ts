@@ -2,12 +2,12 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:04
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-17 10:48:36
- * @FilePath     : \client\assets\src\core\manager\audio\AudioManager.ts
+ * @LastEditTime : 2020-08-25 23:54:02
+ * @FilePath     : \client242\assets\src\core\manager\audio\AudioManager.ts
  * @Description  : 声音管理器，用于播放（背景音乐 和 游戏音效），格式：[wav、mp3、ogg]
  */
 
-import { Manager } from "../Manager";
+import Manager from "../Manager";
 import { AudioDefine } from "../../../define/AudioDefine";
 
 // 声音资源路径
@@ -17,7 +17,7 @@ const MUSIC_RELPATH = "music/";
 // 音效相对文件夹
 const EFFECT_RELPATH = "effect/";
 
-export class AudioManager extends Manager implements IManager {
+export default class AudioManager extends Manager implements IManager {
 
     private static g_instance: AudioManager = null;
     

@@ -2,20 +2,20 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-13 16:18:08
- * @FilePath     : \client\assets\src\core\Global.ts
+ * @LastEditTime : 2020-08-26 00:01:30
+ * @FilePath     : \client242\assets\src\core\Global.ts
  * @Description  : 框架初始化类
  */
 
-import { EventManager } from "./manager/event/EventManager";
-import { AudioManager } from "./manager/audio/AudioManager";
-import { ViewManager } from "./manager/view/ViewManager";
-import { AnimationManager } from "./manager/animation/AnimationManager";
-import { NetworkManager } from "./manager/network/NetworkManager";
+import EventManager from "./manager/event/EventManager";
+import AudioManager from "./manager/audio/AudioManager";
+import ViewManager from "./manager/view/ViewManager";
+import AnimationManager from "./manager/animation/AnimationManager";
+import NetworkManager from "./manager/network/NetworkManager";
 import { Loader } from "./machine/Loader";
-import { Logger } from "./machine/Logger";
+import Logger from "./machine/Logger";
 
-export class Global {
+export default class Global {
 
     private static g_instance: Global = null;
 

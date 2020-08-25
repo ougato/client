@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-22 11:03:13
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-25 12:37:16
+ * @LastEditTime : 2020-08-25 23:59:52
  * @FilePath     : \client242\assets\src\define\ViewDefine.ts
  * @Description  : 视图定义
  */
@@ -23,7 +23,7 @@ export enum CustomViewDefine {
 }
 
 // 视图定义
-export const ViewDefine = { ...SystemViewDefine, ...CustomViewDefine };
+export default { ...SystemViewDefine, ...CustomViewDefine };
 
 // 层级间隔
 const ORDER_INTERVAL: number = 100;

@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-25 11:51:17
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-25 16:58:02
+ * @LastEditTime : 2020-08-26 02:57:10
  * @FilePath     : \client242\assets\src\ui\view\animation\LoadingClip.ts
  * @Description  : 加载转动的剪辑动画
  */
@@ -20,19 +20,29 @@ enum Order {
 export default class LoadingClip extends cc.Component {
 
     @property(cc.Sprite)
-    imgBall1: cc.Sprite = null;
+    private imgBall1: cc.Sprite = null;
 
     @property(cc.Sprite)
-    imgBall2: cc.Sprite = null;
+    private imgBall2: cc.Sprite = null;
+
+    // 动画组件
+    private m_anim: cc.Animation = null;
 
     protected onLoad(): void {
-        console.log("aaa");
+        this.initData();
+        this.initView();
     }
 
-    start() {
-        console.log("bbb");
-    }
+    protected start(): void {
 
+    } 
+
+    /**
+     * 初始化数据
+     */
+    private initData(): void {
+        this.m_anim = this.node.getComponent(cc.Animation)
+    }
 
     /**
      * 初始化视图
@@ -54,9 +64,8 @@ export default class LoadingClip extends cc.Component {
      * 播放加载动画
      */
     public play(): void {
-        let anim: cc.Animation = this.node.getComponent(cc.Animation);
-        if (anim) {
-            anim.play();
+        if (this.m_anim) {
+            this.m_anim.play();
         }
     }
 
@@ -64,9 +73,8 @@ export default class LoadingClip extends cc.Component {
      * 停止加载动画
      */
     public stop(): void {
-        let anim: cc.Animation = this.node.getComponent(cc.Animation);
-        if(anim) {
-            anim.stop();
+        if (this.m_anim) {
+            this.m_anim.stop();
         }
         this.initView();
     }

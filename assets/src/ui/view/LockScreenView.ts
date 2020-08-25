@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-24 09:33:11
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-25 15:55:04
+ * @LastEditTime : 2020-08-26 02:40:55
  * @FilePath     : \client242\assets\src\ui\view\LockScreenView.ts
  * @Description  : 屏幕短暂时间不能触摸屏幕内容时，使用锁定视图
  */
@@ -16,6 +16,7 @@ export default class LoadScreenView extends BaseView {
 
     protected onLoad(): void {
         this.initView();
+
     }
 
     protected start(): void {
@@ -26,7 +27,7 @@ export default class LoadScreenView extends BaseView {
      * 初始化视图
      */
     private initView():void {
-        this.node.active = false;
+
     }
 
     /**

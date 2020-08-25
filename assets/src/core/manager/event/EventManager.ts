@@ -2,18 +2,18 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:41:52
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-13 16:22:40
- * @FilePath     : \client\assets\src\core\manager\event\EventManager.ts
+ * @LastEditTime : 2020-08-25 23:55:45
+ * @FilePath     : \client242\assets\src\core\manager\event\EventManager.ts
  * @Description  : 事件管理器，使用侦察者模式设计，用于整个游戏中的消息事件注册、接收、发送工作，各模块之间交互和解耦
  */
 
-import { Manager } from "../Manager";
+import Manager from "../Manager";
 import { EventDefine } from "../../../define/EventDefine";
 
 // 间隔毫秒调用
 const INTERVAL_MS = 0.001;
 
-export class EventManager extends Manager implements IManager {
+export default class EventManager extends Manager implements IManager {
 
     private static g_instance: EventManager = null;
 

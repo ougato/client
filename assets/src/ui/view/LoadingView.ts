@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-23 17:27:05
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-25 15:54:32
+ * @LastEditTime : 2020-08-26 02:41:19
  * @FilePath     : \client242\assets\src\ui\view\LoadingView.ts
  * @Description  : 加载视图
  */
@@ -43,7 +43,6 @@ export default class LoadingView extends BaseView {
      * 初始化视图
      */
     private initView(): void {
-        this.node.active = false;
         this.labTips.string = "";
     }
 

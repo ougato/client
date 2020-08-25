@@ -2,11 +2,11 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:03:24
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-22 16:24:02
+ * @LastEditTime : 2020-08-25 23:57:11
  * @FilePath     : \client242\global.d.ts
  * @Description  : 全局变量定义
  */
-import { Global } from "./assets/src/core/Global";
+import Global from "./assets/src/core/Global";
 import { PreloadMusicDefine, PreloadEffectDefine, DynamicMusicDefine, DynamicEffectDefine } from "./assets/src/define/AudioDefine";
 import { SystemViewDefine, CustomViewDefine } from "./assets/src/define/ViewDefine";
 import { SystemSceneDefine, CustomSceneDefine } from "./assets/src/define/SceneDefine";

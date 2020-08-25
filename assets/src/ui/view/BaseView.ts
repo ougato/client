@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-25 15:48:07
+ * @LastEditTime : 2020-08-26 00:48:14
  * @FilePath     : \client242\assets\src\ui\view\BaseView.ts
  * @Description  : 视图的父类，用于统一处理界面需要扩展的调用
  */
@@ -35,7 +35,7 @@ export class BaseView extends cc.Component {
      * 当附加到一个激活的节点上或者其节点第一次激活时候调用。onLoad 总是会在任何 start 方法调用前执行，这能用于安排脚本的初始化顺序。 
      */
     protected onLoad(): void {
-
+        console.log("SSS");
     }
 
     /**
