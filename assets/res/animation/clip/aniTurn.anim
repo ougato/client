@@ -1,9 +1,197 @@
 {
   "__type__": "cc.AnimationClip",
-  "_name": "",
+  "_name": "aniTurn",
   "_objFlags": 0,
-  "_duration": 0,
-  "sample": 60,
-  "curveData": {},
-  "events": []
+  "_native": "",
+  "_duration": 1.3333333333333333,
+  "sample": 30,
+  "speed": 1,
+  "wrapMode": 2,
+  "curveData": {
+    "paths": {
+      "imgBall1": {
+        "props": {
+          "x": [
+            {
+              "frame": 0,
+              "value": -40
+            },
+            {
+              "frame": 0.5666666666666667,
+              "value": 40
+            },
+            {
+              "frame": 0.6666666666666666,
+              "value": 43
+            },
+            {
+              "frame": 1.2333333333333334,
+              "value": -40
+            },
+            {
+              "frame": 1.3333333333333333,
+              "value": -43
+            }
+          ],
+          "scale": [
+            {
+              "frame": 0,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "frame": 0.3,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 0.8,
+                "y": 0.8
+              }
+            },
+            {
+              "frame": 0.3333333333333333,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 0.8,
+                "y": 0.8
+              }
+            },
+            {
+              "frame": 0.6666666666666666,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "frame": 0.9666666666666667,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1.2,
+                "y": 1.2
+              }
+            },
+            {
+              "frame": 1,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1.2,
+                "y": 1.2
+              }
+            },
+            {
+              "frame": 1.3333333333333333,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1,
+                "y": 1
+              }
+            }
+          ]
+        }
+      },
+      "imgBall2": {
+        "props": {
+          "x": [
+            {
+              "frame": 0,
+              "value": 40
+            },
+            {
+              "frame": 0.5666666666666667,
+              "value": -40
+            },
+            {
+              "frame": 0.6666666666666666,
+              "value": -43
+            },
+            {
+              "frame": 1.2333333333333334,
+              "value": 40
+            },
+            {
+              "frame": 1.3333333333333333,
+              "value": 43
+            }
+          ],
+          "scale": [
+            {
+              "frame": 0,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "frame": 0.3,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1.2,
+                "y": 1.2
+              }
+            },
+            {
+              "frame": 0.3333333333333333,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1.2,
+                "y": 1.2
+              }
+            },
+            {
+              "frame": 0.6666666666666666,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1,
+                "y": 1
+              }
+            },
+            {
+              "frame": 0.9666666666666667,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 0.8,
+                "y": 0.8
+              }
+            },
+            {
+              "frame": 1,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 0.8,
+                "y": 0.8
+              }
+            },
+            {
+              "frame": 1.3333333333333333,
+              "value": {
+                "__type__": "cc.Vec2",
+                "x": 1,
+                "y": 1
+              }
+            }
+          ]
+        }
+      }
+    },
+    "props": {
+      "x": []
+    }
+  },
+  "events": [
+    {
+      "frame": 0.6666666666666666,
+      "func": "onSwitchOrder",
+      "params": []
+    },
+    {
+      "frame": 1.3333333333333333,
+      "func": "onSwitchOrder",
+      "params": []
+    }
+  ]
 }

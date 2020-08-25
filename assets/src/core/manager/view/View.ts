@@ -2,12 +2,11 @@
  * @Author       : ougato
  * @Date         : 2020-08-22 18:32:45
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-24 10:24:07
+ * @LastEditTime : 2020-08-25 15:48:21
  * @FilePath     : \client242\assets\src\core\manager\view\View.ts
  * @Description  : 封装视图类
  */
 
-import { Order } from "../../../define/ViewDefine";
 import { ViewDefine } from "../../../define/ViewDefine";
 
 export class View {
@@ -40,7 +39,7 @@ export class View {
      * @param name {string} 脚本名
      * @return 脚本绑定对象
      */
-    getScript(name?: string): cc.Component {
+    getScript(name?: string): any {
         if (name) {
             return this.m_node.getComponent(name);
         } else {

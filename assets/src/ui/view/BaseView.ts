@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-22 15:55:22
+ * @LastEditTime : 2020-08-25 15:48:07
  * @FilePath     : \client242\assets\src\ui\view\BaseView.ts
  * @Description  : 视图的父类，用于统一处理界面需要扩展的调用
  */
@@ -11,9 +11,6 @@ const { ccclass, property } = cc._decorator;
 
 @ccclass
 export class BaseView extends cc.Component {
-
-    // 视图名
-    protected m_name: string;
 
     constructor() {
         super();
@@ -88,10 +85,6 @@ export class BaseView extends cc.Component {
      */
     protected resetInEditor(): void {
 
-    }
-
-    protected closeView(): void {
-        console.log("ssss");
     }
 
 }

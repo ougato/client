@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-22 11:03:13
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-25 01:28:46
+ * @LastEditTime : 2020-08-25 12:37:16
  * @FilePath     : \client242\assets\src\define\ViewDefine.ts
  * @Description  : 视图定义
  */
@@ -10,11 +10,11 @@
 // 系统视图
 export enum SystemViewDefine {
     // 转菊花等待
-    LoadingView = "prefab/LoadingView",
+    LoadingView = "prefab/persist/LoadingView",
     // 锁屏
-    LockScreenView = "prefab/LockScreenView",
+    LockScreenView = "prefab/persist/LockScreenView",
     // 进度加载
-    ProgressView = "prefab/ProgressView",
+    ProgressView = "prefab/persist/ProgressView",
 }
 
 // 自定义的视图都放这里

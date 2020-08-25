@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-24 21:20:45
+ * @LastEditTime : 2020-08-25 17:00:39
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
@@ -60,9 +60,10 @@ export class BootScene extends cc.Component {
         // await this.asyncPreloadScene();
         await this.asyncLoadSDK();
         if (await this.asyncCheckUpdate()) {
-            G.ViewMgr.openPopups()
+            // G.ViewMgr.openPopups()
             this.intoUpdate();
         } else {
+            console.log("ddd");
             this.intoGame();
         }
     }
@@ -75,6 +76,7 @@ export class BootScene extends cc.Component {
             G.ViewMgr.loadPersistView((finish: number, total: number, path: string) => {
                 this.onLoadDependProgress(path);
             }, (error: Error) => {
+                console.log("ccc");
                 resolve();
             });
         });
@@ -141,7 +143,9 @@ export class BootScene extends cc.Component {
      * 进入游戏
      */
     private intoGame(): void {
-        G.ViewMgr.openScene(SceneDefine.AccountScene);
+        // G.ViewMgr.openScene(SceneDefine.AccountScene);
+        G.ViewMgr.openLoading("666");
+        // G.ViewMgr.openLockScreen();
     }
 
 }

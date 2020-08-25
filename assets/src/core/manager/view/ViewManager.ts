@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-25 01:17:40
+ * @LastEditTime : 2020-08-25 16:59:24
  * @FilePath     : \client242\assets\src\core\manager\view\ViewManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
@@ -13,6 +13,8 @@ import { Logger } from "../../machine/Logger";
 import * as SceneDefine from "../../../define/SceneDefine";
 import * as ViewDefine from "../../../define/ViewDefine";
 import { View } from "./View";
+import LoadingView from "../../../ui/view/LoadingView";
+import LockScreenView from "../../../ui/view/LockScreenView";
 
 export class ViewManager extends Manager implements IManager {
 
@@ -41,6 +43,10 @@ export class ViewManager extends Manager implements IManager {
         this.m_persistViewMap = new Map();
     }
 
+    /**
+     * 获取系统常驻视图路径
+     * @return 所有系统常驻路径
+     */
     private getSystemPersistViewPath(): string[] {
         let persistList: string | string[] = [];
         for (let persistView in ViewDefine.SystemViewDefine) {
@@ -50,20 +56,31 @@ export class ViewManager extends Manager implements IManager {
     }
 
     /**
+     * 获取系统常驻视图绑定的脚本
+     * @param path {string} 路径
+     * @return 绑定的脚本
+     */
+    private getSystemPersistScript(path: ViewDefine.SystemViewDefine): any {
+        let persistPath: string = path.toString();
+        let view: View = this.m_persistViewMap.get(persistPath);
+        return view.getScript();
+    }
+
+    /**
      * 加载常驻视图
      */
     public loadPersistView(progressCallback?: (finish: number, total: number, path: string) => void, completeCallback?: (error: Error) => void): void {
         let list: string[] = this.getSystemPersistViewPath();
-        let unloadList: string[] = [];
+        let notloadedList: string[] = [];
         for (let i: number = 0; i < list.length; ++i) {
             let persistPath: string = list[i];
             let persistView: View = this.m_persistViewMap.get(persistPath);
             if (!persistView) {
-                unloadList.push(persistPath);
+                notloadedList.push(persistPath);
             }
         }
 
-        if (unloadList.length <= 0) {
+        if (notloadedList.length <= 0) {
             return;
         }
 
@@ -88,7 +105,6 @@ export class ViewManager extends Manager implements IManager {
                     if (!persistView) {
                         let view = new View(node);
                         this.m_persistViewMap.set(ViewDefine.SystemViewDefine[node.name].toString(), view);
-                        // node.active = false;
                         currScene.addChild(node);
                         cc.game.addPersistRootNode(node);
                     }
@@ -110,6 +126,7 @@ export class ViewManager extends Manager implements IManager {
             if (persistView) {
                 let node: cc.Node = persistView.getNode();
                 if (node.isValid) {
+                    cc.game.removePersistRootNode(node);
                     node.removeFromParent();
                     this.m_persistViewMap.delete(persistPath);
                     persistView = null;
@@ -137,10 +154,9 @@ export class ViewManager extends Manager implements IManager {
      * 打开加载视图
      */
     public openLoading(content?: string): void {
-        let loadingViewPath: string = ViewDefine.SystemViewDefine.LoadingView.toString();
-        let loadingView:View = this.m_persistViewMap.get(loadingViewPath);
-        if(loadingView) {
-            loadingView.getScript().open();
+        let loadingScript: LoadingView = this.getSystemPersistScript(ViewDefine.SystemViewDefine.LoadingView);
+        if(loadingScript) {
+            loadingScript.open(content);
         }
     }
 
@@ -148,21 +164,30 @@ export class ViewManager extends Manager implements IManager {
      * 关闭加载视图
      */
     public closeLoading(): void {
-
+        let loadingScript: LoadingView = this.getSystemPersistScript(ViewDefine.SystemViewDefine.LoadingView);
+        if(loadingScript) {
+            loadingScript.close();
+        }
     }
 
     /**
      * 打开锁定屏幕视图（在最顶部覆盖一层防止触摸视图）
      */
     public openLockScreen(): void {
-
+        let lockScreenScript: LockScreenView = this.getSystemPersistScript(ViewDefine.SystemViewDefine.LockScreenView);
+        if(lockScreenScript) {
+            lockScreenScript.open();
+        }
     }
 
     /**
      * 关闭锁定屏幕视图
      */
     public closeLockScreen(): void {
-
+        let lockScreenScript: LockScreenView = this.getSystemPersistScript(ViewDefine.SystemViewDefine.LockScreenView);
+        if(lockScreenScript) {
+            lockScreenScript.close();
+        }
     }
 
     /**
@@ -174,7 +199,7 @@ export class ViewManager extends Manager implements IManager {
      * @param retryCallback {Function} 重试回调方法
      */
     public openPopups(content: string, title?: string, confirmCallback?: Function, cancelCallback?: Function, retryCallback?: Function): void {
-        if (this.m_persistViewMap.get())
+        // if (this.m_persistViewMap.get())
     }
 
     /**
