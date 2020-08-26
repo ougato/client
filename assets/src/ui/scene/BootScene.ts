@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-26 02:59:25
+ * @LastEditTime : 2020-08-26 11:12:04
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
@@ -131,7 +131,7 @@ export default class BootScene extends cc.Component {
     }
 
     private onClickLoading():void {
-
+        G.ViewMgr.openLoading("111");
     }
 
 }
