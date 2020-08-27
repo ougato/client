@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-26 02:32:04
+ * @LastEditTime : 2020-08-27 16:45:08
  * @FilePath     : \client242\assets\src\core\manager\view\ViewManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
@@ -66,6 +66,7 @@ export default class ViewManager extends Manager implements IManager {
             if (node) {
                 cc.game.removePersistRootNode(node);
                 node.removeFromParent();
+                node.destroy();
                 this.m_loadingView = null;
             }
         }
@@ -89,6 +90,7 @@ export default class ViewManager extends Manager implements IManager {
             if (node) {
                 cc.game.removePersistRootNode(node);
                 node.removeFromParent();
+                node.destroy();
                 this.m_progressView = null;
             }
         }
@@ -112,6 +114,7 @@ export default class ViewManager extends Manager implements IManager {
             if (node) {
                 cc.game.removePersistRootNode(node);
                 node.removeFromParent();
+                node.destroy();
                 this.m_lockScreenView = null;
             }
         }
@@ -120,7 +123,7 @@ export default class ViewManager extends Manager implements IManager {
     /**
      * 清理所有常驻视图
      */
-    private clearAllPersistView():void {
+    private clearAllPersistView(): void {
         this.clearLoadingView();
         this.clearProgressView();
         this.clearLockScreenView();
@@ -165,6 +168,17 @@ export default class ViewManager extends Manager implements IManager {
         let progressScript: ProgressView = this.m_progressView.getScript();
         if (progressScript) {
             progressScript.open();
+        }
+    }
+
+    public setProgress(percent: number): void {
+        if (this.m_loadingView === null) {
+            Logger.getInstance().warn("未找到 ProgressView，检查 BootScene 是否已经 G.ViewMgr.setProgressView() 方法");
+            return;
+        }
+        let progressScript: ProgressView = this.m_progressView.getScript();
+        if (progressScript) {
+            progressScript.setPercent(percent);
         }
     }
 
