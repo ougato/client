@@ -189,7 +189,7 @@
       "array": [
         0,
         0,
-        358.5345171667576,
+        364.7996696972607,
         0,
         0,
         0,
@@ -672,8 +672,8 @@
     "_enabled": true,
     "_normalMaterial": null,
     "_grayMaterial": null,
-    "duration": 1,
-    "zoomScale": 2,
+    "duration": 0.1,
+    "zoomScale": 1.2,
     "clickEvents": [
       {
         "__id__": 15
@@ -826,7 +826,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_objFlags": 512,
+    "_objFlags": 0,
     "_parent": {
       "__id__": 1
     },
@@ -872,7 +872,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_objFlags": 512,
+    "_objFlags": 0,
     "_parent": {
       "__id__": 1
     },
@@ -918,7 +918,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_objFlags": 512,
+    "_objFlags": 0,
     "_parent": {
       "__id__": 1
     },
@@ -964,7 +964,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_objFlags": 512,
+    "_objFlags": 0,
     "_parent": {
       "__id__": 1
     },

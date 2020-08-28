@@ -19,10 +19,4 @@ export enum CustomSceneDefine {
 }
 
 // 场景定义
-export const SceneDefine = { ...SystemSceneDefine, ...CustomSceneDefine };
-
-// 场景加载完成返回
-export type CompleteCallback = () => void;
-
-// 场景加载百分比返回
-export type ProgressCallback = () => void;
+export default { ...SystemSceneDefine, ...CustomSceneDefine };

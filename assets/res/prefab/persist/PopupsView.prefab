@@ -561,7 +561,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        -166.6,
+        -133.33,
         -162,
         0,
         0,
@@ -986,7 +986,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        -33.33,
+        133.33,
         -162,
         0,
         0,
@@ -1162,8 +1162,8 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "取消",
-    "_N$string": "取消",
+    "_string": "确定",
+    "_N$string": "确定",
     "_fontSize": 20,
     "_lineHeight": 40,
     "_enableWrapText": false,

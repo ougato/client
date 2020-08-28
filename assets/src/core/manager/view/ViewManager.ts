@@ -10,13 +10,15 @@
 import Manager from "../Manager";
 import { IViewParam } from "../../interface/IView";
 import Logger from "../../machine/Logger";
-import * as SceneDefine from "../../../define/SceneDefine";
 import View from "./View";
 import LoadingView from "../../../ui/view/LoadingView";
 import LockScreenView from "../../../ui/view/LockScreenView";
 import ProgressView from "../../../ui/view/ProgressView";
-import PopupsView from "../../../ui/view/popup/PopupsView";
+import PopupsView from "../../../ui/view/PopupsView";
 import { Order } from "../../../define/ViewDefine";
+
+// 预加载场景等待多少秒未完成，就显示进度条界面
+const PRELOAD_SCENE_WAITIMG_TIME: number = 1;
 
 export default class ViewManager extends Manager implements IManager {
 
@@ -172,6 +174,16 @@ export default class ViewManager extends Manager implements IManager {
     }
 
     /**
+     * 关闭所有常驻视图，用于场景切换后的新场景干净
+     */
+    private closeAllPersistView(): void {
+        this.closeLoading();
+        this.closeProgress();
+        this.closeLockScreen();
+        this.closePopups();
+    }
+
+    /**
      * 打开加载视图
      */
     public openLoading(content?: string): void {
@@ -294,19 +306,65 @@ export default class ViewManager extends Manager implements IManager {
     }
 
     /**
+     * 手动关闭弹窗
+     */
+    private closePopups(): void {
+        if (this.m_popupsView === null) {
+            Logger.getInstance().warn("未找到 PopupsView BootScene 是否已经 G.ViewMgr.setPopupsView() 方法");
+            return;
+        }
+        let popupsScript: PopupsView = this.m_popupsView.getScript();
+        if (popupsScript) {
+            popupsScript.close();
+        }
+    }
+
+    /**
      * 打开场景
      * @param name {string} 场景名
      * @param data {any} 任意数据
      * @param progressCallback {Function} 加载百分比回调
      * @param completeCallback {Function} 加载完成回调
      */
-    public openScene(name: SceneDefineType, data?: any, progressCallback?: SceneDefine.ProgressCallback, completeCallback?: SceneDefine.CompleteCallback): void {
-        let sceneName: string = name.toString();
-        cc.director.loadScene(sceneName);
+    public openScene(name: SceneDefineType, data?: any, completeCallback?: (error: Error, scene: cc.Scene) => void, progressCallback?: (completedCount: number, totalCount: number, item: any) => void): void {
+        this.openLockScreen();
+
+        let preloadTimer: number = setTimeout(() => {
+            this.openProgress();
+        }, PRELOAD_SCENE_WAITIMG_TIME * 1000);
 
         cc.director.preloadScene(name, (completedCount: number, totalCount: number, item: any) => {
-
+            if (progressCallback) {
+                progressCallback(completedCount, totalCount, item);
+            }
+            this.setProgress((completedCount / totalCount) * 100);
         }, (error: Error) => {
+            if (preloadTimer !== null) {
+                clearTimeout(preloadTimer);
+                preloadTimer = null;
+            }
+            if (error) {
+                Logger.getInstance().warn("预加载场景出错", error);
+                this.closeProgress();
+                this.closeLockScreen();
+            } else {
+                cc.director.loadScene(name, (error: Error, scene: cc.Scene) => {
+                    if (error) {
+                        Logger.getInstance().warn("切换场景出错", error);
+                        this.closeProgress();
+                        this.closeLockScreen();
+                    } else {
+                        if (completeCallback) {
+                            completeCallback(error, scene);
+                        }
+                        if(data !== undefined && data !== null) {
+                            let sceneScript: any = scene.getChildByName("Canvas").getComponent(scene.name);
+                            sceneScript.data = data;
+                        }
+                        this.closeAllPersistView();
+                    }
+                });
+            }
 
         });
 

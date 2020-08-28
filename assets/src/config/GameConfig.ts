@@ -7,7 +7,7 @@
  * @Description  : 游戏常量配置
  */
 
-import { SceneDefine } from "../define/SceneDefine";
+import SceneDefine from "../define/SceneDefine";
 
 // 默认进入场景（BootScene 初始化完成后的默认切换场景）
 export const DEFAULT_LAUNCH_SCENE: string = SceneDefine.AccountScene;

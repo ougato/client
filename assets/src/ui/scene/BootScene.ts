@@ -8,24 +8,23 @@
  */
 
 import Global from "../../core/Global";
-import * as GameConfig from "../../config/GameConfig";
-import { SceneDefine } from "../../define/SceneDefine";
+import SceneDefine from "../../define/SceneDefine";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class BootScene extends cc.Component {
 
-    @property({type: cc.Node, tooltip: "加载视图"})
+    @property({ type: cc.Node, tooltip: "加载视图" })
     private loadingView: cc.Node = null;
 
-    @property({type: cc.Node, tooltip: "进度视图"})
-    private progressView:cc.Node = null;
+    @property({ type: cc.Node, tooltip: "进度视图" })
+    private progressView: cc.Node = null;
 
-    @property({type: cc.Node, tooltip: "触摸锁定视图"})
+    @property({ type: cc.Node, tooltip: "触摸锁定视图" })
     private lockScreenView: cc.Node = null;
 
-    @property({type: cc.Node, tooltip: "弹窗视图"})
+    @property({ type: cc.Node, tooltip: "弹窗视图" })
     private popupsView: cc.Node = null;
 
     constructor() {
@@ -127,12 +126,39 @@ export default class BootScene extends cc.Component {
 
     }
 
-    private onClickLoading():void {
-        G.ViewMgr.openPopups("键盘侠你好啊", "标题党",()=>{ 
-            console.log("点击确定按钮");
-        }, ()=> {
-            console.log("点击取消按钮");
+    private onClickLoading(): void {
+        let arr: Function[] = [];
+        // arr.push(() => {
+        //     G.ViewMgr.openLockScreen();
+        // });
+        // arr.push(() => {
+        //     G.ViewMgr.openLoading("网络不行了");
+        // });
+        // arr.push(() => {
+        //     G.ViewMgr.openProgress()
+        //     G.ViewMgr.setProgress(100);
+        // });
+        // arr.push(() => {
+        //     G.ViewMgr.openPopups("键盘侠你好啊", "标题党", () => {
+        //         console.log("点击确定按钮");
+        //     });
+        // })
+
+        arr.push(() => {
+            G.ViewMgr.openScene(SceneDefine.AccountScene);
         });
+        let index: number = 0;
+        let timer = setInterval(() => {
+            let fn: Function = arr[index++];
+            if (fn) {
+                fn();
+            } else {
+                clearInterval(timer);
+            }
+        }, 0);
+
+
+
     }
 
 }

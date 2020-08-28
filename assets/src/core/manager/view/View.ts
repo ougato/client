@@ -19,10 +19,11 @@ export default class View {
     private m_node: cc.Node = null;
 
     constructor(node: cc.Node) {
-        let relpath: string = ViewDefine[node.name];
+        let relpath: ViewDefineType = ViewDefine[node.name];
         if(relpath) {
-            this.m_relpath = ViewDefine[node.name].toString();
+            this.m_relpath = relpath.toString();
         } else {
+            // 常驻节点，没有在 resources 下的相对路径
             this.m_relpath = "";
         }
         this.m_script = node.getComponent(node.name);

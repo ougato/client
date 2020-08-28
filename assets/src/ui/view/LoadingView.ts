@@ -62,9 +62,11 @@ export default class LoadingView extends BaseView {
      * 关闭加载界面
      */
     public close(): void {
-        this.node.active = false;
-        this.initView();
-        this.m_loadingScript.stop();
+        if(this.node.active) {
+            this.node.active = false;
+            this.initView();
+            this.m_loadingScript.stop();
+        }
     }
 
 }

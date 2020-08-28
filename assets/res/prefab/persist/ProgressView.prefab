@@ -14,7 +14,7 @@
   {
     "__type__": "cc.Node",
     "_name": "ProgressView",
-    "_objFlags": 512,
+    "_objFlags": 0,
     "_parent": null,
     "_children": [
       {
@@ -168,9 +168,7 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_spriteFrame": {
-      "__uuid__": "8c30ffb1-ad22-48cc-94b1-0c66c82a48da"
-    },
+    "_spriteFrame": null,
     "_type": 0,
     "_sizeMode": 0,
     "_fillType": 0,
@@ -297,7 +295,7 @@
   {
     "__type__": "cc.Node",
     "_name": "bar",
-    "_objFlags": 512,
+    "_objFlags": 0,
     "_parent": {
       "__id__": 6
     },

@@ -83,9 +83,11 @@ export default class ProgressView extends BaseView {
      * 关闭进度条视图（不销毁）
      */
     public close(): void {
-        this.initData();
-        this.initView();
-        this.node.active = false;
+        if (this.node.active) {
+            this.initData();
+            this.initView();
+            this.node.active = false;
+        }
     }
 
     /**
@@ -97,6 +99,8 @@ export default class ProgressView extends BaseView {
             let differencePercent: number = this.m_realTimePercent - this.m_currPercent;
             let intervalStep = 0;
             if (differencePercent < MIN_SMOOTH_STEP) {
+                intervalStep = differencePercent;
+            } else if (this.m_realTimePercent >= MAX_PERCENT) {
                 intervalStep = differencePercent;
             } else {
                 intervalStep = differencePercent / TOTAL_CMOOTH_STEP;

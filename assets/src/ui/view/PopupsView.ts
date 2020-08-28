@@ -86,8 +86,9 @@ export default class PopupsView extends BaseView {
             this.m_cancelCallback = cancelCallback;
             // 分布排列（取消在左，确定在右）
             let parent: cc.Node = this.btnCancel.node.parent;
-            let cancelX: number = (parent.width - (this.btnCancel.node.width + this.btnConfirm.node.width)) / 3;
-            let confirmX: number = cancelX * 2;
+            let intervalWidth: number = (parent.width - this.btnCancel.node.width - this.btnConfirm.node.width) / 3;
+            let cancelX: number = ((parent.width / 2) * -1) + intervalWidth + (this.btnCancel.node.width / 2);
+            let confirmX: number = cancelX + (this.btnCancel.node.width / 2) + intervalWidth + (this.btnConfirm.node.width / 2);
             this.btnCancel.node.x = cancelX;
             this.btnConfirm.node.x = confirmX;
             this.btnCancel.node.active = true;
@@ -100,10 +101,12 @@ export default class PopupsView extends BaseView {
         this.btnConfirm.node.active = true;
     }
 
-    private close(): void {
-        this.initData();
-        this.initView();
-        this.node.active = false;
+    public close(): void {
+        if(this.node.active) {
+            this.initData();
+            this.initView();
+            this.node.active = false;
+        }
     }
 
     /**
