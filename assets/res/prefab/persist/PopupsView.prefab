@@ -561,7 +561,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        -125,
+        -166.6,
         -162,
         0,
         0,
@@ -589,7 +589,7 @@
   {
     "__type__": "cc.Node",
     "_name": "Background",
-    "_objFlags": 512,
+    "_objFlags": 0,
     "_parent": {
       "__id__": 13
     },
@@ -660,7 +660,7 @@
   {
     "__type__": "cc.Node",
     "_name": "Label",
-    "_objFlags": 512,
+    "_objFlags": 0,
     "_parent": {
       "__id__": 14
     },
@@ -986,7 +986,7 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        119,
+        -33.33,
         -162,
         0,
         0,
@@ -1014,7 +1014,7 @@
   {
     "__type__": "cc.Node",
     "_name": "Background",
-    "_objFlags": 512,
+    "_objFlags": 0,
     "_parent": {
       "__id__": 24
     },
@@ -1085,7 +1085,7 @@
   {
     "__type__": "cc.Node",
     "_name": "Label",
-    "_objFlags": 512,
+    "_objFlags": 0,
     "_parent": {
       "__id__": 25
     },
