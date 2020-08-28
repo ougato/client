@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-27 23:58:36
+ * @LastEditTime : 2020-08-28 17:25:04
  * @FilePath     : \client242\assets\src\core\manager\view\ViewManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
@@ -11,23 +11,27 @@ import Manager from "../Manager";
 import { IViewParam } from "../../interface/IView";
 import Logger from "../../machine/Logger";
 import * as SceneDefine from "../../../define/SceneDefine";
-import ViewDefine from "../../../define/ViewDefine";
-import { SystemViewDefine } from "../../../define/ViewDefine";
 import View from "./View";
 import LoadingView from "../../../ui/view/LoadingView";
 import LockScreenView from "../../../ui/view/LockScreenView";
 import ProgressView from "../../../ui/view/ProgressView";
+import PopupsView from "../../../ui/view/popup/PopupsView";
+import { Order } from "../../../define/ViewDefine";
 
 export default class ViewManager extends Manager implements IManager {
 
     private static g_instance: ViewManager = null;
 
-    // 加载视图
+    // 系统层级下标
+    private m_systemOrderIndex: number = Order.SYSTEM;
+    // 加载视图（常驻节点）
     private m_loadingView: View = null;
-    // 进度视图
+    // 进度视图（常驻节点）
     private m_progressView: View = null;
-    // 触摸锁定视图
+    // 触摸锁定视图（常驻节点）
     private m_lockScreenView: View = null;
+    // 弹窗视图（普通可销毁节点）
+    private m_popupsView: View = null;
 
     public static getInstance(): ViewManager {
         if (this.g_instance === null) {
@@ -53,8 +57,11 @@ export default class ViewManager extends Manager implements IManager {
      * @param node {cc.Node} 视图节点
      */
     public setLoadingView(node: cc.Node): void {
-        cc.game.addPersistRootNode(node);
-        this.m_loadingView = new View(node);
+        if (node && !this.m_loadingView) {
+            node.active = false;
+            cc.game.addPersistRootNode(node);
+            this.m_loadingView = new View(node);
+        }
     }
 
     /**
@@ -77,8 +84,11 @@ export default class ViewManager extends Manager implements IManager {
      * @param node {cc.Node} 视图节点
      */
     public setProgressView(node: cc.Node): void {
-        cc.game.addPersistRootNode(node);
-        this.m_progressView = new View(node);
+        if (node && !this.m_progressView) {
+            node.active = false;
+            cc.game.addPersistRootNode(node);
+            this.m_progressView = new View(node);
+        }
     }
 
     /**
@@ -101,8 +111,11 @@ export default class ViewManager extends Manager implements IManager {
      * @param node {cc.Node} 视图节点
      */
     public setLockScreenView(node: cc.Node): void {
-        cc.game.addPersistRootNode(node);
-        this.m_lockScreenView = new View(node);
+        if (node && !this.m_lockScreenView) {
+            node.active = false;
+            cc.game.addPersistRootNode(node);
+            this.m_lockScreenView = new View(node);
+        }
     }
 
     /**
@@ -121,12 +134,41 @@ export default class ViewManager extends Manager implements IManager {
     }
 
     /**
+     * 设置弹窗视图
+     * @param node {cc.Node} 视图节点
+     */
+    public setPopupsView(node: cc.Node): void {
+        if (node && !this.m_popupsView) {
+            node.active = false;
+            cc.game.addPersistRootNode(node);
+            this.m_popupsView = new View(node);
+        }
+    }
+
+
+    /**
+     * 清理触摸锁定视图
+     */
+    private clearPopupsView(): void {
+        if (this.m_popupsView) {
+            let node = this.m_popupsView.getNode();
+            if (node) {
+                cc.game.removePersistRootNode(node);
+                node.removeFromParent();
+                node.destroy();
+                this.m_popupsView = null;
+            }
+        }
+    }
+
+    /**
      * 清理所有常驻视图
      */
     private clearAllPersistView(): void {
         this.clearLoadingView();
         this.clearProgressView();
         this.clearLockScreenView();
+        this.clearPopupsView();
     }
 
     /**
@@ -138,7 +180,9 @@ export default class ViewManager extends Manager implements IManager {
             return;
         }
         let loadingScript: LoadingView = this.m_loadingView.getScript();
-        if (loadingScript) {
+        let loadingNode: cc.Node = this.m_loadingView.getNode();
+        if (loadingScript && loadingNode) {
+            loadingNode.zIndex = ++this.m_systemOrderIndex;
             loadingScript.open(content);
         }
     }
@@ -166,7 +210,9 @@ export default class ViewManager extends Manager implements IManager {
             return;
         }
         let progressScript: ProgressView = this.m_progressView.getScript();
+        let progressNode: cc.Node = this.m_progressView.getNode();
         if (progressScript) {
+            progressNode.zIndex = ++this.m_systemOrderIndex;
             progressScript.open();
         }
     }
@@ -206,7 +252,9 @@ export default class ViewManager extends Manager implements IManager {
             return;
         }
         let lockScreenScript: LockScreenView = this.m_lockScreenView.getScript();
+        let lockScreenNode: cc.Node = this.m_lockScreenView.getNode();
         if (lockScreenScript) {
+            lockScreenNode.zIndex = ++this.m_systemOrderIndex;
             lockScreenScript.open();
         }
     }
@@ -231,17 +279,18 @@ export default class ViewManager extends Manager implements IManager {
      * @param title {string} 标题
      * @param confirmCallback {Function} 确定回调方法
      * @param cancelCallback {Function} 取消回调方法
-     * @param retryCallback {Function} 重试回调方法
      */
-    public openPopups(content: string, title?: string, confirmCallback?: Function, cancelCallback?: Function, retryCallback?: Function): void {
-        // if (this.m_persistViewMap.get())
-    }
-
-    /**
-     * 关闭弹窗
-     */
-    public closePopups(): void {
-
+    public openPopups(content: string, title?: string, confirmCallback?: Function, cancelCallback?: Function): void {
+        if (this.m_popupsView === null) {
+            Logger.getInstance().warn("未找到 PopupsView BootScene 是否已经 G.ViewMgr.setPopupsView() 方法");
+            return;
+        }
+        let popupsScript: PopupsView = this.m_popupsView.getScript();
+        let popupsNode: cc.Node = this.m_popupsView.getNode();
+        if (popupsScript) {
+            popupsNode.zIndex = ++this.m_systemOrderIndex;
+            popupsScript.open(content, title, confirmCallback, cancelCallback);
+        }
     }
 
     /**

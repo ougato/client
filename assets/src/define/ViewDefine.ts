@@ -2,19 +2,14 @@
  * @Author       : ougato
  * @Date         : 2020-08-22 11:03:13
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-25 23:59:52
+ * @LastEditTime : 2020-08-28 14:43:55
  * @FilePath     : \client242\assets\src\define\ViewDefine.ts
  * @Description  : 视图定义
  */
 
-// 系统视图
-export enum SystemViewDefine {
-    // 转菊花等待
-    LoadingView = "prefab/persist/LoadingView",
-    // 锁屏
-    LockScreenView = "prefab/persist/LockScreenView",
-    // 进度加载
-    ProgressView = "prefab/persist/ProgressView",
+// 通用视图
+export enum CommonViewDefine {
+    
 }
 
 // 自定义的视图都放这里
@@ -23,7 +18,7 @@ export enum CustomViewDefine {
 }
 
 // 视图定义
-export default { ...SystemViewDefine, ...CustomViewDefine };
+export default { ...CommonViewDefine, ...CustomViewDefine };
 
 // 层级间隔
 const ORDER_INTERVAL: number = 100;
@@ -35,5 +30,4 @@ export enum Order {
     POPUP = 2 * ORDER_INTERVAL,
     TOP = 3 * ORDER_INTERVAL,
     SYSTEM = 4 * ORDER_INTERVAL,
-
 }

@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-22 11:42:45
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-24 16:35:21
+ * @LastEditTime : 2020-08-28 17:11:49
  * @FilePath     : \client242\assets\src\core\interface\IView.ts
  * @Description  : 
  */

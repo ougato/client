@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-24 09:33:11
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-28 00:06:51
+ * @LastEditTime : 2020-08-28 15:02:08
  * @FilePath     : \client242\assets\src\ui\view\ProgressView.ts
  * @Description  : 加载进度视图
  */
@@ -29,8 +29,6 @@ export default class ProgressView extends BaseView {
     private m_currPercent: number = null;
     // 实时进度百分比
     private m_realTimePercent: number = null;
-    // 每帧动态间隔步长百分比
-    private m_intervalStep: number = null;
 
     protected onLoad(): void {
         this.initData();
@@ -47,7 +45,6 @@ export default class ProgressView extends BaseView {
     initData(): void {
         this.m_currPercent = 0;
         this.m_realTimePercent = 0;
-        this.m_intervalStep = 0;
     }
 
     /**

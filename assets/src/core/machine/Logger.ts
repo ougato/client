@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-10 17:52:46
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-25 23:48:50
+ * @LastEditTime : 2020-08-28 15:25:06
  * @FilePath     : \client242\assets\src\core\machine\Logger.ts
  * @Description  : 日志管理器，封装 JS 基础 console.log、console.warn、console.error 扩展写入日志数据
  */
@@ -35,7 +35,7 @@ export default class Logger {
      */
     public log(...data: any[]): void {
         data.unshift("信息：");
-        console.log.apply(this, data);
+        console.log.apply(console, data);
     }
 
     /**
@@ -44,7 +44,7 @@ export default class Logger {
      */
     public warn(...data: any[]): void {
         data.unshift("警告：");
-        console.warn.apply(this, data);
+        console.warn.apply(console, data);
     }
 
     /**
@@ -53,7 +53,7 @@ export default class Logger {
      */
     public error(...data: any[]): void {
         data.unshift("错误：");
-        console.error.apply(this, data);
+        console.error.apply(console, data);
     }
 
     /**

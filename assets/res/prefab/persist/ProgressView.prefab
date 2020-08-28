@@ -14,7 +14,7 @@
   {
     "__type__": "cc.Node",
     "_name": "ProgressView",
-    "_objFlags": 0,
+    "_objFlags": 512,
     "_parent": null,
     "_children": [
       {
@@ -24,7 +24,7 @@
         "__id__": 6
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 13

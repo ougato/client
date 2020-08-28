@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-28 00:09:25
+ * @LastEditTime : 2020-08-28 17:50:12
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
@@ -25,8 +25,8 @@ export default class BootScene extends cc.Component {
     @property({type: cc.Node, tooltip: "触摸锁定视图"})
     private lockScreenView: cc.Node = null;
 
-    @property({type:cc.Label, tooltip:"加载内容"})
-    private labFilePath: cc.Label = null;
+    @property({type: cc.Node, tooltip: "弹窗视图"})
+    private popupsView: cc.Node = null;
 
     constructor() {
         super();
@@ -64,13 +64,10 @@ export default class BootScene extends cc.Component {
      * 初始化视图
      */
     private initView(): void {
-        this.loadingView.active = false;
-        this.progressView.active = false;
-        this.lockScreenView.active = false;
-
         G.ViewMgr.setLoadingView(this.loadingView);
         G.ViewMgr.setProgressView(this.progressView);
         G.ViewMgr.setLockScreenView(this.lockScreenView);
+        G.ViewMgr.setPopupsView(this.popupsView);
     }
 
     /**
@@ -131,7 +128,11 @@ export default class BootScene extends cc.Component {
     }
 
     private onClickLoading():void {
-
+        G.ViewMgr.openPopups("键盘侠你好啊", "标题党",()=>{ 
+            console.log("点击确定按钮");
+        }, ()=> {
+            console.log("点击取消按钮");
+        });
     }
 
 }
