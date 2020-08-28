@@ -2,12 +2,11 @@
  * @Author       : ougato
  * @Date         : 2020-08-24 09:33:11
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-27 18:50:50
+ * @LastEditTime : 2020-08-28 00:06:51
  * @FilePath     : \client242\assets\src\ui\view\ProgressView.ts
  * @Description  : 加载进度视图
  */
 import { BaseView } from "./BaseView";
-import Logger from "../../core/machine/Logger";
 
 const { ccclass, property } = cc._decorator;
 
@@ -15,8 +14,10 @@ const { ccclass, property } = cc._decorator;
 const MIN_PERCENT = 0;
 // 最大百分比
 const MAX_PERCENT = 100;
-// 每帧增加百分比间隔
-const PER_FRAME_INTERVAL_PERCENT = 1;
+// 最小步长 低于这个值就不进行平滑动画
+const MIN_SMOOTH_STEP = 1;
+// 总步长 百分比 a 到百分比 b，平滑过渡需要多少步
+const TOTAL_CMOOTH_STEP = 10;
 
 @ccclass
 export default class ProgressView extends BaseView {
@@ -28,6 +29,8 @@ export default class ProgressView extends BaseView {
     private m_currPercent: number = null;
     // 实时进度百分比
     private m_realTimePercent: number = null;
+    // 每帧动态间隔步长百分比
+    private m_intervalStep: number = null;
 
     protected onLoad(): void {
         this.initData();
@@ -44,6 +47,7 @@ export default class ProgressView extends BaseView {
     initData(): void {
         this.m_currPercent = 0;
         this.m_realTimePercent = 0;
+        this.m_intervalStep = 0;
     }
 
     /**
@@ -65,13 +69,17 @@ export default class ProgressView extends BaseView {
      * @param value {number} 百分比值
      */
     public setPercent(value: number): void {
+        // 没有打开进度视图 不允许赋值
+        if (!this.node.active) {
+            return;
+        }
+
         if (value < MIN_PERCENT) {
             value = MIN_PERCENT;
-        } else if(value > MAX_PERCENT) {
+        } else if (value > MAX_PERCENT) {
             value = MAX_PERCENT;
-        } else {
-            this.m_realTimePercent = value;
         }
+        this.m_realTimePercent = value;
     }
 
     /**
@@ -88,9 +96,16 @@ export default class ProgressView extends BaseView {
      * @param {number} 距离上次被调用的间隔时间（单位：秒）
      */
     protected update(dt: number): void {
-        if (this.m_currPercent < this.m_realTimePercent) {
-            this.m_currPercent += PER_FRAME_INTERVAL_PERCENT;
-            this.pobLoad.progress = this.m_currPercent / 100;
+        if (this.m_realTimePercent > this.m_currPercent) {
+            let differencePercent: number = this.m_realTimePercent - this.m_currPercent;
+            let intervalStep = 0;
+            if (differencePercent < MIN_SMOOTH_STEP) {
+                intervalStep = differencePercent;
+            } else {
+                intervalStep = differencePercent / TOTAL_CMOOTH_STEP;
+            }
+            this.m_currPercent += intervalStep;
+            this.pobLoad.progress = this.m_currPercent / MAX_PERCENT;
         }
     }
 

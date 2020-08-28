@@ -186,7 +186,7 @@
       "array": [
         0,
         0,
-        358.5345171667576,
+        280.14568647733176,
         0,
         0,
         0,
@@ -438,7 +438,7 @@
   {
     "__type__": "cc.Node",
     "_name": "Background",
-    "_objFlags": 512,
+    "_objFlags": 0,
     "_parent": {
       "__id__": 8
     },
@@ -507,7 +507,7 @@
   {
     "__type__": "cc.Node",
     "_name": "Label",
-    "_objFlags": 512,
+    "_objFlags": 0,
     "_parent": {
       "__id__": 9
     },
@@ -830,7 +830,7 @@
       "__id__": 20
     },
     "_name": "LoadingView",
-    "_active": true,
+    "_active": false,
     "_trs": {
       "__type__": "TypedArray",
       "ctor": "Float64Array",
@@ -867,7 +867,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_objFlags": 0,
+    "_objFlags": 512,
     "_parent": {
       "__id__": 1
     },
@@ -876,7 +876,7 @@
       "__id__": 22
     },
     "_name": "ProgressView",
-    "_active": true,
+    "_active": false,
     "_trs": {
       "__type__": "TypedArray",
       "ctor": "Float64Array",
@@ -917,12 +917,12 @@
     "_parent": {
       "__id__": 1
     },
-    "_id": "57K7No/mBLN5bzOocBn2au",
+    "_id": "15Cf6z6f5H/IsG7iqGDtuP",
     "_prefab": {
       "__id__": 24
     },
     "_name": "LockScreenView",
-    "_active": true,
+    "_active": false,
     "_trs": {
       "__type__": "TypedArray",
       "ctor": "Float64Array",

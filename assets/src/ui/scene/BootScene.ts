@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-27 18:45:36
+ * @LastEditTime : 2020-08-28 00:09:25
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
@@ -127,20 +127,11 @@ export default class BootScene extends cc.Component {
      * 进入游戏
      */
     private intoGame(): void {
-        G.ViewMgr.openProgress();
 
-        let percent: number = 0;
-        let timer =  setInterval(()=>{
-            percent += (Math.random()*10);
-            G.ViewMgr.setProgress(percent);
-            if(percent >= 100) {
-                clearInterval(timer);
-            }
-        }, 10);
     }
 
     private onClickLoading():void {
-        G.ViewMgr.openProgress();
+
     }
 
 }

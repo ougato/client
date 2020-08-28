@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-27 16:45:08
+ * @LastEditTime : 2020-08-27 23:58:36
  * @FilePath     : \client242\assets\src\core\manager\view\ViewManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
@@ -176,6 +176,7 @@ export default class ViewManager extends Manager implements IManager {
             Logger.getInstance().warn("未找到 ProgressView，检查 BootScene 是否已经 G.ViewMgr.setProgressView() 方法");
             return;
         }
+
         let progressScript: ProgressView = this.m_progressView.getScript();
         if (progressScript) {
             progressScript.setPercent(percent);
