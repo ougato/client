@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-30 20:56:06
+ * @LastEditTime : 2020-08-31 01:41:25
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
@@ -10,32 +10,35 @@
 import Global from "../../core/Global";
 import SceneDefine from "../../define/SceneDefine";
 import UIComponent from "../view/UIComponent";
+import EventDefine from "../../define/EventDefine";
+import ViewDefine from "../../define/ViewDefine";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class BootScene extends UIComponent {
 
-    @property({ type: cc.Node, tooltip: "加载视图" })
-    private loadingView: cc.Node = null;
+    @property({ type: cc.Node, tooltip: "加载节点" })
+    private loadingNode: cc.Node = null;
 
-    @property({ type: cc.Node, tooltip: "进度视图" })
-    private progressView: cc.Node = null;
+    @property({ type: cc.Node, tooltip: "进度节点" })
+    private progressNode: cc.Node = null;
 
-    @property({ type: cc.Node, tooltip: "触摸锁定视图" })
-    private lockScreenView: cc.Node = null;
+    @property({ type: cc.Node, tooltip: "禁止点击节点" })
+    private lockTouchNode: cc.Node = null;
 
-    @property({ type: cc.Node, tooltip: "弹窗视图" })
-    private popupsView: cc.Node = null;
+    @property({ type: cc.Node, tooltip: "弹窗节点" })
+    private popupsNode: cc.Node = null;
 
-    @property({ type: cc.Node, tooltip: "向上飘动提示" })
-    private tipsView: cc.Node = null;
+    @property({ type: cc.Node, tooltip: "向上飘动提示节点" })
+    private tipsNode: cc.Node = null;
 
 
     constructor() {
         super();
         // 初始化全局变量
         this.initGlobal();
+
     }
 
     protected onLoad(): void {
@@ -68,10 +71,11 @@ export default class BootScene extends UIComponent {
      * 初始化视图
      */
     private initView(): void {
-        G.UIMgr.initLoadingView(this.loadingView);
-        G.UIMgr.setProgressView(this.progressView);
-        G.UIMgr.setLockScreenView(this.lockScreenView);
-        G.UIMgr.setPopupsView(this.popupsView);
+        G.UIMgr.initLoading(this.loadingNode);
+        G.UIMgr.initProgress(this.progressNode);
+        G.UIMgr.initLockTouch(this.lockTouchNode);
+        G.UIMgr.initPopups(this.popupsNode);
+        G.UIMgr.initTips(this.tipsNode);
     }
 
     /**
@@ -134,7 +138,7 @@ export default class BootScene extends UIComponent {
     private onClickLoading(): void {
         let arr: Function[] = [];
         // arr.push(() => {
-        //     G.UIMgr.openLockScreen();
+        //     G.UIMgr.openLockTouch();
         // });
         // arr.push(() => {
         //     G.UIMgr.openLoading("网络不行了");
@@ -150,7 +154,7 @@ export default class BootScene extends UIComponent {
         // })
 
         arr.push(() => {
-            G.UIMgr.openScene(SceneDefine.AccountScene);
+            G.UIMgr.openLoading("123");
         });
         let index: number = 0;
         let timer = setInterval(() => {

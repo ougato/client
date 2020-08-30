@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-10 17:52:46
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-28 15:25:06
+ * @LastEditTime : 2020-08-31 01:40:03
  * @FilePath     : \client242\assets\src\core\machine\Logger.ts
  * @Description  : 日志管理器，封装 JS 基础 console.log、console.warn、console.error 扩展写入日志数据
  */

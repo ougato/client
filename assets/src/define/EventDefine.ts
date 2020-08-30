@@ -2,14 +2,20 @@
  * @Author       : ougato
  * @Date         : 2020-08-10 15:59:46
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-10 16:04:31
- * @FilePath     : \client\assets\src\define\EventDefine.ts
+ * @LastEditTime : 2020-08-30 23:27:09
+ * @FilePath     : \client242\assets\src\define\EventDefine.ts
  * @Description  : 事件定义
  */
 
-export enum EventDefine {
-    // 预留 0-10000 给框架事件
+// 系统事件定义 范围从 0-10000
+export enum SystemEventDefine {
 
-    // 游戏内逻辑从 10001 开始
-    START_GAME = 10001,
 }
+
+// 游戏事件定义 范围从 10001~ 开始
+export enum GameEventDefine {
+    // 开始游戏
+    STRAT_GAME = 10001,
+}
+
+export default { ...SystemEventDefine, ...GameEventDefine };

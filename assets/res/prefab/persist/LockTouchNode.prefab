@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "LockScreenView",
+    "_name": "LockTouchNode",
     "_objFlags": 0,
     "_parent": null,
     "_children": [],

@@ -2,9 +2,9 @@
  * @Author       : ougato
  * @Date         : 2020-08-23 17:27:05
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-30 16:45:16
- * @FilePath     : \client242\assets\src\ui\view\persist\LoadingView.ts
- * @Description  : 加载视图
+ * @LastEditTime : 2020-08-30 23:09:34
+ * @FilePath     : \client242\assets\src\ui\view\persist\LoadingNode.ts
+ * @Description  : 加载等待节点
  */
 
 import UIComponent from "../UIComponent";
@@ -13,12 +13,12 @@ import LoadingClip from "../animation/LoadingClip";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class LoadingView extends UIComponent {
+export default class LoadingNode extends UIComponent {
 
-    @property(cc.Label)
+    @property({type:cc.Label, tooltip: "文字提示"})
     private labTips: cc.Label = null;
 
-    @property(cc.Node)
+    @property({type:cc.Node, tooltip:"转动动画"})
     private loadingClip: cc.Node = null;
 
     private m_loadingScript: LoadingClip = null;

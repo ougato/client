@@ -2,9 +2,9 @@
  * @Author       : ougato
  * @Date         : 2020-08-24 09:33:11
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-30 16:46:30
- * @FilePath     : \client242\assets\src\ui\view\persist\ProgressView.ts
- * @Description  : 加载进度视图
+ * @LastEditTime : 2020-08-30 23:17:10
+ * @FilePath     : \client242\assets\src\ui\view\persist\ProgressNode.ts
+ * @Description  : 加载进度节点
  */
 
 import UIComponent from "../UIComponent";
@@ -21,7 +21,7 @@ const MIN_SMOOTH_STEP = 1;
 const TOTAL_CMOOTH_STEP = 10;
 
 @ccclass
-export default class ProgressView extends UIComponent {
+export default class ProgressNode extends UIComponent {
 
     @property({ type: cc.ProgressBar, tooltip: "加载资源进度条" })
     private pobLoad: cc.ProgressBar = null;
@@ -56,7 +56,7 @@ export default class ProgressView extends UIComponent {
     }
 
     /**
-     * 打开进度条视图（只做单纯显示，百分比增加需要调用 setPercent 方法）
+     * 打开进度条界面（只做单纯显示，百分比增加需要调用 setPercent 方法）
      */
     public open(): void {
         this.node.active = true;
@@ -67,7 +67,7 @@ export default class ProgressView extends UIComponent {
      * @param value {number} 百分比值
      */
     public setPercent(value: number): void {
-        // 没有打开进度视图 不允许赋值
+        // 没有打开进度界面 不允许赋值
         if (!this.node.active) {
             return;
         }
@@ -81,7 +81,7 @@ export default class ProgressView extends UIComponent {
     }
 
     /**
-     * 关闭进度条视图（不销毁）
+     * 关闭进度条界面（不销毁）
      */
     public close(): void {
         if (this.node.active) {

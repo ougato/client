@@ -2,14 +2,14 @@
  * @Author       : ougato
  * @Date         : 2020-08-22 18:32:45
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-28 17:54:28
- * @FilePath     : \client242\assets\src\core\manager\view\View.ts
+ * @LastEditTime : 2020-08-31 02:12:46
+ * @FilePath     : \client242\assets\src\core\manager\ui\View.ts
  * @Description  : 封装视图类
  */
 
 import ViewDefine from "../../../define/ViewDefine";
 
-export default class View {
+export default class View extends cc.Node {
 
     // 相对路径
     private m_relpath: string = null;
@@ -19,6 +19,7 @@ export default class View {
     private m_node: cc.Node = null;
 
     constructor(node: cc.Node) {
+        super();
         let relpath: ViewDefineType = ViewDefine[node.name];
         if(relpath) {
             this.m_relpath = relpath.toString();

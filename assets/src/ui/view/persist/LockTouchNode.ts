@@ -2,9 +2,9 @@
  * @Author       : ougato
  * @Date         : 2020-08-24 09:33:11
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-30 16:46:14
- * @FilePath     : \client242\assets\src\ui\view\persist\LockScreenView.ts
- * @Description  : 屏幕短暂时间不能触摸屏幕内容时，使用锁定视图
+ * @LastEditTime : 2020-08-30 23:16:22
+ * @FilePath     : \client242\assets\src\ui\view\persist\LockTouchNode.ts
+ * @Description  : 屏幕短暂时间不能点击屏幕内容，当打开此节点时，最顶层遮挡了所有触摸事件
  */
 
 import UIComponent from "../UIComponent";
@@ -12,7 +12,7 @@ import UIComponent from "../UIComponent";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class LoadScreenView extends UIComponent {
+export default class LockTouchNode extends UIComponent {
 
     protected onLoad(): void {
         this.initView();
@@ -24,21 +24,21 @@ export default class LoadScreenView extends UIComponent {
     }
 
     /**
-     * 初始化视图
+     * 初始化节点
      */
     private initView():void {
 
     }
 
     /**
-     * 打开锁定触摸视图
+     * 打开禁止点击界面
      */
     public open(): void {
         this.node.active = true;
     }
 
     /**
-     * 关闭锁定触摸视图
+     * 关闭禁止点击界面
      */
     public close(): void {
         this.node.active = false;

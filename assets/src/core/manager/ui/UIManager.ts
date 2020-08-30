@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-30 18:02:11
+ * @LastEditTime : 2020-08-31 02:18:35
  * @FilePath     : \client242\assets\src\core\manager\ui\UIManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
@@ -10,30 +10,23 @@
 import Manager from "../Manager";
 import Logger from "../../machine/Logger";
 import View from "./View";
-import LoadingView from "../../../ui/view/persist/LoadingView";
-import LockScreenView from "../../../ui/view/persist/LockScreenView";
-import ProgressView from "../../../ui/view/persist/ProgressView";
-import PopupsView from "../../../ui/view/persist/PopupsView";
-import { Order } from "../../../define/ViewDefine";
-import UIComponent from "../../../ui/view/UIComponent";
+import PersistNodeDefine from "../../../define/PersistNodeDefine";
+import ProgressNode from "../../../ui/view/persist/ProgressNode";
+import ViewOrderDefine from "../../../define/ViewOrderDefine";
 
 // 预加载场景等待多少秒未完成，就显示进度条界面
 const PRELOAD_SCENE_WAITIMG_TIME: number = 1;
+// 默认视图层级
+const DEFAULT_VIEW_ORDER = ViewOrderDefine.UI;
 
 export default class UIManager extends Manager implements ManagerInterface {
 
     private static g_instance: UIManager = null;
 
     // 系统层级下标
-    private m_systemOrderIndex: number = Order.SYSTEM;
-    // 加载视图（常驻节点）
-    private m_loadingView: View = null;
-    // 进度视图（常驻节点）
-    private m_progressView: View = null;
-    // 触摸锁定视图（常驻节点）
-    private m_lockScreenView: View = null;
-    // 弹窗视图（常驻节点）
-    private m_popupsView: View = null;
+    private m_systemOrderIndex: number = null;
+    // 常驻节点
+    private m_persistNodeMap: Map<PersistNodeType, cc.Node> = null;
 
     public static getInstance(): UIManager {
         if (this.g_instance === null) {
@@ -52,286 +45,283 @@ export default class UIManager extends Manager implements ManagerInterface {
     constructor() {
         super();
 
+        this.initData();
     }
 
     /**
-     * 设置加载视图
-     * @param node {cc.Node} 视图节点
+     * 初始化数据
      */
-    public initLoadingView(node: cc.Node): void {
-        if (node && !this.m_loadingView) {
+    private initData(): void {
+        this.m_systemOrderIndex = ViewOrderDefine.SYSTEM;
+        this.m_persistNodeMap = new Map<PersistNodeType, cc.Node>();
+    }
+
+    /**
+     * 统一初始化常驻节点
+     * @param nodeName {PersistNodeType} 常驻节点名
+     * @param node {cc.Node} 常驻节点
+     */
+    private initPersistNode(nodeName: PersistNodeType, node: cc.Node): void {
+        if (node && !this.m_persistNodeMap.has(nodeName)) {
             node.active = false;
             cc.game.addPersistRootNode(node);
-            this.m_loadingView = new View(node);
+            this.m_persistNodeMap.set(nodeName, node);
         }
     }
 
     /**
-     * 清理加载视图
-     */
-    private clearLoadingView(): void {
-        if (this.m_loadingView) {
-            let node = this.m_loadingView.getNode();
-            if (node) {
-                cc.game.removePersistRootNode(node);
-                node.removeFromParent();
-                node.destroy();
-                this.m_loadingView = null;
-            }
-        }
-    }
-
-    /**
-     * 设置进度视图
+     * 初始化加载界面
      * @param node {cc.Node} 视图节点
      */
-    public setProgressView(node: cc.Node): void {
-        if (node && !this.m_progressView) {
-            node.active = false;
-            cc.game.addPersistRootNode(node);
-            this.m_progressView = new View(node);
-        }
+    public initLoading(node: cc.Node): void {
+        this.initPersistNode(PersistNodeDefine.LoadingNode, node);
     }
 
     /**
-     * 清理进度视图
-     */
-    private clearProgressView(): void {
-        if (this.m_progressView) {
-            let node = this.m_progressView.getNode();
-            if (node) {
-                cc.game.removePersistRootNode(node);
-                node.removeFromParent();
-                node.destroy();
-                this.m_progressView = null;
-            }
-        }
-    }
-
-    /**
-     * 设置触摸锁定视图
+     * 初始化进度界面
      * @param node {cc.Node} 视图节点
      */
-    public setLockScreenView(node: cc.Node): void {
-        if (node && !this.m_lockScreenView) {
-            node.active = false;
-            cc.game.addPersistRootNode(node);
-            this.m_lockScreenView = new View(node);
-        }
+    public initProgress(node: cc.Node): void {
+        this.initPersistNode(PersistNodeDefine.ProgressNode, node);
     }
 
     /**
-     * 清理触摸锁定视图
-     */
-    private clearLockScreenView(): void {
-        if (this.m_lockScreenView) {
-            let node = this.m_lockScreenView.getNode();
-            if (node) {
-                cc.game.removePersistRootNode(node);
-                node.removeFromParent();
-                node.destroy();
-                this.m_lockScreenView = null;
-            }
-        }
-    }
-
-    /**
-     * 设置弹窗视图
+     * 初始化禁止点击界面
      * @param node {cc.Node} 视图节点
      */
-    public setPopupsView(node: cc.Node): void {
-        if (node && !this.m_popupsView) {
-            node.active = false;
-            cc.game.addPersistRootNode(node);
-            this.m_popupsView = new View(node);
+    public initLockTouch(node: cc.Node): void {
+        this.initPersistNode(PersistNodeDefine.LockTouchNode, node);
+    }
+
+    /**
+     * 初始化弹窗界面
+     * @param node {cc.Node} 视图节点
+     */
+    public initPopups(node: cc.Node): void {
+        this.initPersistNode(PersistNodeDefine.PopupsNode, node);
+    }
+
+    /**
+     * 初始化向上飘动提示界面
+     * @param node {cc.Node} 视图节点
+     */
+    public initTips(node: cc.Node): void {
+        this.initPersistNode(PersistNodeDefine.TipsNode, node);
+    }
+
+    /**
+     * 统一清理常驻节点
+     * @param nodeName {PersistNodeType} 常驻节点名
+     */
+    private clearPersistNode(nodeName: PersistNodeType): void {
+        let node: cc.Node = this.m_persistNodeMap.get(nodeName);
+        if (node) {
+            this.m_persistNodeMap.delete(nodeName);
+            cc.game.removePersistRootNode(node);
+            node.removeFromParent();
+            node.destroy();
+            node = null;
         }
     }
 
+    /**
+     * 清理加载界面
+     */
+    private clearLoading(): void {
+        this.clearPersistNode(PersistNodeDefine.LoadingNode);
+    }
 
     /**
-     * 清理触摸锁定视图
+     * 清理进度界面
      */
-    private clearPopupsView(): void {
-        if (this.m_popupsView) {
-            let node = this.m_popupsView.getNode();
-            if (node) {
-                cc.game.removePersistRootNode(node);
-                node.removeFromParent();
-                node.destroy();
-                this.m_popupsView = null;
+    private clearProgress(): void {
+        this.clearPersistNode(PersistNodeDefine.ProgressNode);
+    }
+
+    /**
+     * 清理禁止点击界面
+     */
+    private clearLockTouch(): void {
+        this.clearPersistNode(PersistNodeDefine.LockTouchNode);
+    }
+
+    /**
+     * 清理禁止点击界面
+     */
+    private clearPopups(): void {
+        this.clearPersistNode(PersistNodeDefine.PopupsNode);
+    }
+
+    /**
+     * 清理提示界面
+     */
+    private clearTips(): void {
+        this.clearPersistNode(PersistNodeDefine.TipsNode);
+    }
+
+    /**
+     * 清理所有常驻界面
+     */
+    private clearAllPersistNode(): void {
+        this.clearLoading();
+        this.clearProgress();
+        this.clearLockTouch();
+        this.clearPopups();
+        this.clearTips();
+    }
+
+    /**
+     * 统一打开常驻节点
+     * @param nodeName {PersistNodeType} 节点名
+     * @param args {any[]} 任意多参数
+     */
+    private openPersistNode(nodeName: PersistNodeType, ...args: any[]): void {
+        let node: cc.Node = this.m_persistNodeMap.get(nodeName);
+        if (node) {
+            let script: any = node.getComponent(nodeName);
+            if (script) {
+                node.zIndex = ++this.m_systemOrderIndex;
+                script.open.apply(script, args);
+            } else {
+                Logger.getInstance().warn(`${nodeName} 节点未绑定 ${nodeName} 脚本组件`);
             }
+        } else {
+            Logger.getInstance().warn(`未找到 ${nodeName}，检查 BootScene 是否已经挂载 ${nodeName} 节点`);
         }
     }
 
     /**
-     * 清理所有常驻视图
-     */
-    private clearAllPersistView(): void {
-        this.clearLoadingView();
-        this.clearProgressView();
-        this.clearLockScreenView();
-        this.clearPopupsView();
-    }
-
-    /**
-     * 关闭所有常驻视图，用于场景切换后的新场景干净
-     */
-    private closeAllPersistView(): void {
-        this.closeLoading();
-        this.closeProgress();
-        this.closeLockScreen();
-        this.closePopups();
-    }
-
-    /**
-     * 打开加载视图
+     * 打开加载界面
+     * @param content {string} 内容
      */
     public openLoading(content?: string): void {
-        if (this.m_loadingView === null) {
-            Logger.getInstance().warn("未找到 LoadingView，检查 BootScene 是否已经 G.UIMgr.setLoadingVew() 方法");
-            return;
-        }
-        let loadingScript: LoadingView = this.m_loadingView.getScript();
-        let loadingNode: cc.Node = this.m_loadingView.getNode();
-        if (loadingScript && loadingNode) {
-            loadingNode.zIndex = ++this.m_systemOrderIndex;
-            loadingScript.open(content);
-        }
+        this.openPersistNode(PersistNodeDefine.LoadingNode, content);
     }
 
     /**
-     * 关闭加载视图
-     */
-    public closeLoading(): void {
-        if (this.m_loadingView === null) {
-            Logger.getInstance().warn("未找到 LoadingView，检查 BootScene 是否已经 G.UIMgr.setLoadingVew() 方法");
-            return;
-        }
-        let loadingScript: LoadingView = this.m_loadingView.getScript();
-        if (loadingScript) {
-            loadingScript.close();
-        }
-    }
-
-    /**
-     * 打开进度视图
+     * 打开进度界面
      */
     public openProgress(): void {
-        if (this.m_loadingView === null) {
-            Logger.getInstance().warn("未找到 ProgressView，检查 BootScene 是否已经 G.UIMgr.setProgressView() 方法");
-            return;
-        }
-        let progressScript: ProgressView = this.m_progressView.getScript();
-        let progressNode: cc.Node = this.m_progressView.getNode();
-        if (progressScript) {
-            progressNode.zIndex = ++this.m_systemOrderIndex;
-            progressScript.open();
-        }
-    }
-
-    public setProgress(percent: number): void {
-        if (this.m_loadingView === null) {
-            Logger.getInstance().warn("未找到 ProgressView，检查 BootScene 是否已经 G.UIMgr.setProgressView() 方法");
-            return;
-        }
-
-        let progressScript: ProgressView = this.m_progressView.getScript();
-        if (progressScript) {
-            progressScript.setPercent(percent);
-        }
+        this.openPersistNode(PersistNodeDefine.ProgressNode);
     }
 
     /**
-     * 关闭进度视图
+     * 打开禁止点击界面（在最顶部覆盖一层防止点击）
      */
-    public closeProgress(): void {
-        if (this.m_loadingView === null) {
-            Logger.getInstance().warn("未找到 ProgressView，检查 BootScene 是否已经 G.UIMgr.setProgressView() 方法");
-            return;
-        }
-        let progressScript: ProgressView = this.m_progressView.getScript();
-        if (progressScript) {
-            progressScript.close();
-        }
+    public openLockTouch(): void {
+        this.openPersistNode(PersistNodeDefine.LockTouchNode);
     }
 
     /**
-     * 打开锁定屏幕视图（在最顶部覆盖一层防止触摸视图）
-     */
-    public openLockScreen(): void {
-        if (this.m_lockScreenView === null) {
-            Logger.getInstance().warn("未找到 LockScreenView BootScene 是否已经 G.UIMgr.setLockScreenView() 方法");
-            return;
-        }
-        let lockScreenScript: LockScreenView = this.m_lockScreenView.getScript();
-        let lockScreenNode: cc.Node = this.m_lockScreenView.getNode();
-        if (lockScreenScript) {
-            lockScreenNode.zIndex = ++this.m_systemOrderIndex;
-            lockScreenScript.open();
-        }
-    }
-
-    /**
-     * 关闭锁定屏幕视图
-     */
-    public closeLockScreen(): void {
-        if (this.m_lockScreenView === null) {
-            Logger.getInstance().warn("未找到 LockScreenView BootScene 是否已经 G.UIMgr.setLockScreenView() 方法");
-            return;
-        }
-        let lockScreenScript: LockScreenView = this.m_lockScreenView.getScript();
-        if (lockScreenScript) {
-            lockScreenScript.close();
-        }
-    }
-
-    /**
-     * 打开弹窗
+     * 打开弹窗界面
      * @param content {string} 内容
      * @param title {string} 标题
      * @param confirmCallback {Function} 确定回调方法
      * @param cancelCallback {Function} 取消回调方法
      */
     public openPopups(content: string, title?: string, confirmCallback?: Function, cancelCallback?: Function): void {
-        if (this.m_popupsView === null) {
-            Logger.getInstance().warn("未找到 PopupsView BootScene 是否已经 G.UIMgr.setPopupsView() 方法");
-            return;
-        }
-        let popupsScript: PopupsView = this.m_popupsView.getScript();
-        let popupsNode: cc.Node = this.m_popupsView.getNode();
-        if (popupsScript) {
-            popupsNode.zIndex = ++this.m_systemOrderIndex;
-            popupsScript.open(content, title, confirmCallback, cancelCallback);
+        this.openPersistNode(PersistNodeDefine.PopupsNode, content, title, confirmCallback, cancelCallback);
+    }
+
+    /**
+     * 打开提示界面
+     * @param content {string} 内容
+     */
+    public openTips(content: string): void {
+        this.openPersistNode(PersistNodeDefine.TipsNode, content);
+    }
+
+    /**
+     * 设置进度界面百分比
+     * @param percent {number} 百分比 0-100
+     */
+
+    public setProgress(percent: number): void {
+        let node: cc.Node = this.m_persistNodeMap.get(PersistNodeDefine.ProgressNode);
+        if (node) {
+            let script: ProgressNode = node.getComponent(PersistNodeDefine.ProgressNode);
+            if (script) {
+                script.setPercent(percent);
+            }
         }
     }
 
     /**
-     * 手动关闭弹窗
+     * 统一关闭常驻节点
+     * @param nodeName 
+     */
+    private closePersistNode(nodeName: PersistNodeType): void {
+        let node: cc.Node = this.m_persistNodeMap.get(nodeName);
+        if (node) {
+            let script: any = node.getComponent(nodeName);
+            if (script) {
+                script.close();
+            } else {
+                Logger.getInstance().warn(`${nodeName} 节点未绑定 ${nodeName} 脚本组件`);
+            }
+        } else {
+            Logger.getInstance().warn(`未找到 ${nodeName}，检查 BootScene 是否已经挂载 ${nodeName} 节点`);
+        }
+    }
+
+    /**
+     * 关闭加载界面
+     */
+    public closeLoading(): void {
+        this.closePersistNode(PersistNodeDefine.LoadingNode);
+    }
+
+    /**
+     * 关闭进度界面
+     */
+    public closeProgress(): void {
+        this.closePersistNode(PersistNodeDefine.ProgressNode);
+    }
+
+    /**
+     * 关闭禁止点击界面
+     */
+    public closeLockTouch(): void {
+        this.closePersistNode(PersistNodeDefine.LockTouchNode);
+    }
+
+    /**
+     * 手动关闭弹窗界面
      */
     private closePopups(): void {
-        if (this.m_popupsView === null) {
-            Logger.getInstance().warn("未找到 PopupsView BootScene 是否已经 G.UIMgr.setPopupsView() 方法");
-            return;
-        }
-        let popupsScript: PopupsView = this.m_popupsView.getScript();
-        if (popupsScript) {
-            popupsScript.close();
-        }
+        this.closePersistNode(PersistNodeDefine.PopupsNode);
+    }
+
+    /**
+     * 关闭提示界面
+     */
+    private closeTips(): void {
+        this.closePersistNode(PersistNodeDefine.TipsNode);
+    }
+
+    /**
+     * 关闭所有常驻界面，为了场景切换后的新场景干净
+     */
+    private closeAllPersistNode(): void {
+        this.closeLoading();
+        this.closeProgress();
+        this.closeLockTouch();
+        this.closePopups();
+        this.closeTips();
     }
 
     /**
      * 打开场景
      * @param name {string} 场景名
-     * @param data {any} 任意数据
+     * @param data {T} 任意数据
      * @param progressCallback {Function} 加载百分比回调
      * @param completeCallback {Function} 加载完成回调
      */
-    public openScene(name: SceneDefineType, data?: any, completeCallback?: (error: Error, scene: cc.Scene) => void, progressCallback?: (completedCount: number, totalCount: number, item: any) => void): void {
-        this.openLockScreen();
-
+    public openScene<T>(name: SceneDefineType, data?: T, completeCallback?: (error: Error, scene: cc.Scene) => void, progressCallback?: (completedCount: number, totalCount: number, item: any) => void): void {
+        this.openLockTouch();
         let preloadTimer: number = setTimeout(() => {
             this.openProgress();
-        }, PRELOAD_SCENE_WAITIMG_TIME * 1000); 
+        }, PRELOAD_SCENE_WAITIMG_TIME * 1000);
 
         cc.director.preloadScene(name, (completedCount: number, totalCount: number, item: any) => {
             if (progressCallback) {
@@ -344,25 +334,29 @@ export default class UIManager extends Manager implements ManagerInterface {
                 preloadTimer = null;
                 this.closeProgress();
             }
-            if (error) {
-                Logger.getInstance().warn("预加载场景出错", error);
-                this.closeLockScreen();
-            } else {
+            if (!error) {
                 cc.director.loadScene(name, (error: Error, scene: cc.Scene) => {
-                    if (error) {
-                        Logger.getInstance().warn("切换场景出错", error);
-                        this.closeLockScreen();
-                    } else {
+                    if (!error) {
+                        if (data !== undefined && data !== null) {
+                            let script: any = scene.getChildByName("Canvas").getComponent(scene.name);
+                            if (script) {
+                                script.data = data;
+                            } else {
+                                Logger.getInstance().warn(`${name} 场景未挂载 ${name} 脚本`);
+                            }
+                        }
+                        this.closeAllPersistNode();
                         if (completeCallback) {
                             completeCallback(error, scene);
                         }
-                        if (data !== undefined && data !== null) {
-                            let sceneScript: UIComponent = scene.getChildByName("Canvas").getComponent(scene.name);
-                            sceneScript.data = data;
-                        }
-                        this.closeAllPersistView();
+                    } else {
+                        Logger.getInstance().warn(`切换 ${name} 场景失败`, error);
+                        this.closeLockTouch();
                     }
                 });
+            } else {
+                Logger.getInstance().warn(`预加载 ${name} 场景失败`, error);
+                this.closeLockTouch();
             }
 
         });
@@ -374,8 +368,23 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param data {T} 渲染数据
      * @param completeCallback {Function}
      */
-    private openView(path: ViewDefineType, data?: any, completeCallback?: () => void): void {
-        cc.resources.load(path, cc.Prefab)
+    private openView<T>(path: ViewDefineType, data?: T, completeCallback?: () => void): void {
+        this.openLockTouch();
+        let preloadTimer: number = setTimeout(() => {
+            this.openProgress();
+        }, PRELOAD_SCENE_WAITIMG_TIME * 1000);
+        cc.resources.load(path, cc.Prefab, (finish: number, total: number, item: cc.AssetManager.RequestItem) => {
+            this.setProgress((finish / total) * 100);
+        }, (error: Error, assets: cc.Prefab) => {
+            this.closeLockTouch();
+            if (!error) {
+                let node: cc.Node = cc.instantiate(assets);
+                let view: View = new View(node);
+                
+            } else {
+                Logger.getInstance().warn(`加载 ${path} 视图失败`, error);
+            }
+        });
     }
 
     // /**
@@ -406,7 +415,10 @@ export default class UIManager extends Manager implements ManagerInterface {
      * 销毁
      */
     public destroy(): void {
-        this.clearAllPersistView();
+        this.clearAllPersistNode();
+        this.m_systemOrderIndex = null;
+        this.m_persistNodeMap.clear();
+        this.m_persistNodeMap = null;
     }
 
 }

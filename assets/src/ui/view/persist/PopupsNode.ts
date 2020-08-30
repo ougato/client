@@ -2,9 +2,9 @@
  * @Author       : ougato
  * @Date         : 2020-08-28 11:38:37
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-30 16:46:22
- * @FilePath     : \client242\assets\src\ui\view\persist\PopupsView.ts
- * @Description  : 通用弹窗
+ * @LastEditTime : 2020-08-30 23:16:43
+ * @FilePath     : \client242\assets\src\ui\view\persist\PopupsNode.ts
+ * @Description  : 通用用户交互弹窗
  */
 
 import UIComponent from "../UIComponent";
@@ -12,7 +12,7 @@ import UIComponent from "../UIComponent";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class PopupsView extends UIComponent {
+export default class PopupsNode extends UIComponent {
 
     @property({ type: cc.Label, tooltip: "标题" })
     labTitle: cc.Label = null;
@@ -101,8 +101,11 @@ export default class PopupsView extends UIComponent {
         this.btnConfirm.node.active = true;
     }
 
+    /**
+     * 关闭弹窗界面
+     */
     public close(): void {
-        if(this.node.active) {
+        if (this.node.active) {
             this.initData();
             this.initView();
             this.node.active = false;
@@ -130,7 +133,7 @@ export default class PopupsView extends UIComponent {
     }
 
     /**
-     * 打开弹窗视图
+     * 打开弹窗界面
      * @param content {string} 内容
      * @param title {string} 标题
      * @param confirmCallback {Function} 确定回调方法
