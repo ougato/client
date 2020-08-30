@@ -17,7 +17,7 @@ const MUSIC_RELPATH = "music/";
 // 音效相对文件夹
 const EFFECT_RELPATH = "effect/";
 
-export default class AudioManager extends Manager implements IManager {
+export default class AudioManager extends Manager implements ManagerInterface {
 
     private static g_instance: AudioManager = null;
     

@@ -2,17 +2,17 @@
  * @Author       : ougato
  * @Date         : 2020-08-28 11:38:37
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-28 18:22:31
- * @FilePath     : \client242\assets\src\ui\view\PopupsView.ts
+ * @LastEditTime : 2020-08-30 16:46:22
+ * @FilePath     : \client242\assets\src\ui\view\persist\PopupsView.ts
  * @Description  : 通用弹窗
  */
 
-import { BaseView } from "./BaseView";
+import UIComponent from "../UIComponent";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class PopupsView extends BaseView {
+export default class PopupsView extends UIComponent {
 
     @property({ type: cc.Label, tooltip: "标题" })
     labTitle: cc.Label = null;

@@ -2,18 +2,18 @@
  * @Author       : ougato
  * @Date         : 2020-08-23 17:27:05
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-26 02:41:19
- * @FilePath     : \client242\assets\src\ui\view\LoadingView.ts
+ * @LastEditTime : 2020-08-30 16:45:16
+ * @FilePath     : \client242\assets\src\ui\view\persist\LoadingView.ts
  * @Description  : 加载视图
  */
 
-import { BaseView } from "./BaseView";
-import LoadingClip from "./animation/LoadingClip";
+import UIComponent from "../UIComponent";
+import LoadingClip from "../animation/LoadingClip";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class LoadingView extends BaseView {
+export default class LoadingView extends UIComponent {
 
     @property(cc.Label)
     private labTips: cc.Label = null;

@@ -27,6 +27,9 @@
       },
       {
         "__id__": 25
+      },
+      {
+        "__id__": 27
       }
     ],
     "_active": false,
@@ -189,7 +192,7 @@
       "array": [
         0,
         0,
-        364.7996696972607,
+        360.429171093469,
         0,
         0,
         0,
@@ -491,7 +494,7 @@
         1,
         1,
         1,
-        0
+        1
       ]
     },
     "_eulerAngles": {
@@ -1006,6 +1009,52 @@
       "__uuid__": "968e25e6-6ba6-4276-8c09-26ac8d0e71cc"
     },
     "fileId": "7ec6cY4EtLwpgC3ih/TPA6",
+    "sync": true
+  },
+  {
+    "__type__": "cc.Node",
+    "_objFlags": 0,
+    "_parent": {
+      "__id__": 1
+    },
+    "_id": "59nLLxyGhMur9SA3DtyXF9",
+    "_prefab": {
+      "__id__": 28
+    },
+    "_name": "TipsView",
+    "_active": true,
+    "_trs": {
+      "__type__": "TypedArray",
+      "ctor": "Float64Array",
+      "array": [
+        375,
+        667,
+        0,
+        0,
+        0,
+        0,
+        1,
+        1,
+        1,
+        1
+      ]
+    },
+    "_eulerAngles": {
+      "__type__": "cc.Vec3",
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
+  },
+  {
+    "__type__": "cc.PrefabInfo",
+    "root": {
+      "__id__": 27
+    },
+    "asset": {
+      "__uuid__": "b79b148f-af45-42a0-8b82-0cf82b20c032"
+    },
+    "fileId": "59nLLxyGhMur9SA3DtyXF9",
     "sync": true
   }
 ]

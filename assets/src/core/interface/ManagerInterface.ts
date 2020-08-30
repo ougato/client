@@ -2,6 +2,6 @@
 /**
  * 管理器接口
  */
-interface IManager {
+interface ManagerInterface {
     destroy(): void;
 }

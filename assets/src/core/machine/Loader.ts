@@ -2,16 +2,14 @@
  * @Author       : ougato
  * @Date         : 2020-08-13 02:00:18
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-18 10:35:04
- * @FilePath     : \client\assets\src\core\machine\Loader.ts
+ * @LastEditTime : 2020-08-30 00:39:43
+ * @FilePath     : \client242\assets\src\core\machine\Loader.ts
  * @Description  : 加载器 封装 Creator 对资源加载、释放没有完成的部分
  */
 
-export class Loader {
+export default class Loader {
 
     private static g_instance: Loader = null;
-
-    // private m_cache
 
     public static getInstance(): Loader {
         if (this.g_instance === null) {
@@ -31,47 +29,7 @@ export class Loader {
 
     }
 
-    // private makeLoadResParam(): IResLoadParam {
-
-    // }
-
-    public loadRes(url: string, use?: string): void;
-    public loadRes(url: string, onCompleted: CompletedCallback, use?: string): void;
-    public loadRes(url: string, onProgess: ProcessCallback, onCompleted: CompletedCallback, use?: string): void;
-    public loadRes(url: string, type: typeof cc.Asset, use?: string): void;
-    public loadRes(url: string, type: typeof cc.Asset, onCompleted: CompletedCallback, use?: string): void;
-    public loadRes(url: string, type: typeof cc.Asset, onProgess: ProcessCallback, onCompleted: CompletedCallback, use?: string): void;
-    public loadRes(): void {
-        if (arguments.length <= 0) {
-            console.warn("资源加载参数错误");
-            return;
-        }
-
-        // 生成参数
-        let resLoadParam: IResLoadParam = {}
-        resLoadParam.url = arguments[0];
-        for (let i = 1; i < arguments.length; ++i) {
-            if (i == 1 && cc.isChildClassOf(arguments[i], cc.RawAsset)) {
-                resLoadParam.type = arguments[i];
-            } else if (i == arguments.length - 1 && typeof arguments[i] == "string") {
-                resLoadParam.use = arguments[i];
-            } else if (typeof arguments[i] == "function") {
-                if (arguments.length > i + 1 && typeof arguments[i + 1] == "function") {
-                    resLoadParam.onProgess = arguments[i];
-                } else {
-                    resLoadParam.onCompleted = arguments[i];
-                }
-            }
-        }
-
-        
-    }
-
-    /**
-     * 销毁
-     */
-    public destroy(): void {
+    private destroy(): void {
 
     }
-
 }

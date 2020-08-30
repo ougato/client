@@ -2,17 +2,17 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-26 00:01:30
+ * @LastEditTime : 2020-08-30 16:48:52
  * @FilePath     : \client242\assets\src\core\Global.ts
  * @Description  : 框架初始化类
  */
 
 import EventManager from "./manager/event/EventManager";
 import AudioManager from "./manager/audio/AudioManager";
-import ViewManager from "./manager/view/ViewManager";
+import UIManager from "./manager/ui/UIManager";
 import AnimationManager from "./manager/animation/AnimationManager";
 import NetworkManager from "./manager/network/NetworkManager";
-import { Loader } from "./machine/Loader";
+import Loader from "./machine/Loader";
 import Logger from "./machine/Logger";
 
 export default class Global {
@@ -59,11 +59,11 @@ export default class Global {
     }
 
     /**
-     * 视图访问器
-     * @return {ViewManager} 视图管理器
+     * 界面访问器
+     * @return {UIManager} 界面管理器
      */
-    public get ViewMgr(): ViewManager {
-        return ViewManager.getInstance();
+    public get UIMgr(): UIManager {
+        return UIManager.getInstance();
     }
 
     /**
@@ -104,7 +104,7 @@ export default class Global {
     public destroy(): void {
         EventManager.destroy();
         AudioManager.destroy();
-        ViewManager.destroy();
+        UIManager.destroy();
         AnimationManager.destroy();
         NetworkManager.destroy();
         Loader.destroy();

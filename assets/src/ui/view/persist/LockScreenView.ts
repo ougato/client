@@ -2,17 +2,17 @@
  * @Author       : ougato
  * @Date         : 2020-08-24 09:33:11
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-26 02:40:55
- * @FilePath     : \client242\assets\src\ui\view\LockScreenView.ts
+ * @LastEditTime : 2020-08-30 16:46:14
+ * @FilePath     : \client242\assets\src\ui\view\persist\LockScreenView.ts
  * @Description  : 屏幕短暂时间不能触摸屏幕内容时，使用锁定视图
  */
 
-import { BaseView } from "./BaseView";
+import UIComponent from "../UIComponent";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class LoadScreenView extends BaseView {
+export default class LoadScreenView extends UIComponent {
 
     protected onLoad(): void {
         this.initView();

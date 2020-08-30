@@ -9,7 +9,7 @@
 
 import Manager from "../Manager";
 
-export default class NetworkManager extends Manager implements IManager {
+export default class NetworkManager extends Manager implements ManagerInterface {
 
     private static g_instance: NetworkManager = null;
 

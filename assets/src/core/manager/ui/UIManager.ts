@@ -2,27 +2,27 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-28 17:25:04
- * @FilePath     : \client242\assets\src\core\manager\view\ViewManager.ts
+ * @LastEditTime : 2020-08-30 18:02:11
+ * @FilePath     : \client242\assets\src\core\manager\ui\UIManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
 
 import Manager from "../Manager";
-import { IViewParam } from "../../interface/IView";
 import Logger from "../../machine/Logger";
 import View from "./View";
-import LoadingView from "../../../ui/view/LoadingView";
-import LockScreenView from "../../../ui/view/LockScreenView";
-import ProgressView from "../../../ui/view/ProgressView";
-import PopupsView from "../../../ui/view/PopupsView";
+import LoadingView from "../../../ui/view/persist/LoadingView";
+import LockScreenView from "../../../ui/view/persist/LockScreenView";
+import ProgressView from "../../../ui/view/persist/ProgressView";
+import PopupsView from "../../../ui/view/persist/PopupsView";
 import { Order } from "../../../define/ViewDefine";
+import UIComponent from "../../../ui/view/UIComponent";
 
 // 预加载场景等待多少秒未完成，就显示进度条界面
 const PRELOAD_SCENE_WAITIMG_TIME: number = 1;
 
-export default class ViewManager extends Manager implements IManager {
+export default class UIManager extends Manager implements ManagerInterface {
 
-    private static g_instance: ViewManager = null;
+    private static g_instance: UIManager = null;
 
     // 系统层级下标
     private m_systemOrderIndex: number = Order.SYSTEM;
@@ -32,12 +32,12 @@ export default class ViewManager extends Manager implements IManager {
     private m_progressView: View = null;
     // 触摸锁定视图（常驻节点）
     private m_lockScreenView: View = null;
-    // 弹窗视图（普通可销毁节点）
+    // 弹窗视图（常驻节点）
     private m_popupsView: View = null;
 
-    public static getInstance(): ViewManager {
+    public static getInstance(): UIManager {
         if (this.g_instance === null) {
-            this.g_instance = new ViewManager();
+            this.g_instance = new UIManager();
         }
         return this.g_instance;
     }
@@ -188,7 +188,7 @@ export default class ViewManager extends Manager implements IManager {
      */
     public openLoading(content?: string): void {
         if (this.m_loadingView === null) {
-            Logger.getInstance().warn("未找到 LoadingView，检查 BootScene 是否已经 G.ViewMgr.setLoadingVew() 方法");
+            Logger.getInstance().warn("未找到 LoadingView，检查 BootScene 是否已经 G.UIMgr.setLoadingVew() 方法");
             return;
         }
         let loadingScript: LoadingView = this.m_loadingView.getScript();
@@ -204,7 +204,7 @@ export default class ViewManager extends Manager implements IManager {
      */
     public closeLoading(): void {
         if (this.m_loadingView === null) {
-            Logger.getInstance().warn("未找到 LoadingView，检查 BootScene 是否已经 G.ViewMgr.setLoadingVew() 方法");
+            Logger.getInstance().warn("未找到 LoadingView，检查 BootScene 是否已经 G.UIMgr.setLoadingVew() 方法");
             return;
         }
         let loadingScript: LoadingView = this.m_loadingView.getScript();
@@ -218,7 +218,7 @@ export default class ViewManager extends Manager implements IManager {
      */
     public openProgress(): void {
         if (this.m_loadingView === null) {
-            Logger.getInstance().warn("未找到 ProgressView，检查 BootScene 是否已经 G.ViewMgr.setProgressView() 方法");
+            Logger.getInstance().warn("未找到 ProgressView，检查 BootScene 是否已经 G.UIMgr.setProgressView() 方法");
             return;
         }
         let progressScript: ProgressView = this.m_progressView.getScript();
@@ -231,7 +231,7 @@ export default class ViewManager extends Manager implements IManager {
 
     public setProgress(percent: number): void {
         if (this.m_loadingView === null) {
-            Logger.getInstance().warn("未找到 ProgressView，检查 BootScene 是否已经 G.ViewMgr.setProgressView() 方法");
+            Logger.getInstance().warn("未找到 ProgressView，检查 BootScene 是否已经 G.UIMgr.setProgressView() 方法");
             return;
         }
 
@@ -246,7 +246,7 @@ export default class ViewManager extends Manager implements IManager {
      */
     public closeProgress(): void {
         if (this.m_loadingView === null) {
-            Logger.getInstance().warn("未找到 ProgressView，检查 BootScene 是否已经 G.ViewMgr.setProgressView() 方法");
+            Logger.getInstance().warn("未找到 ProgressView，检查 BootScene 是否已经 G.UIMgr.setProgressView() 方法");
             return;
         }
         let progressScript: ProgressView = this.m_progressView.getScript();
@@ -260,7 +260,7 @@ export default class ViewManager extends Manager implements IManager {
      */
     public openLockScreen(): void {
         if (this.m_lockScreenView === null) {
-            Logger.getInstance().warn("未找到 LockScreenView BootScene 是否已经 G.ViewMgr.setLockScreenView() 方法");
+            Logger.getInstance().warn("未找到 LockScreenView BootScene 是否已经 G.UIMgr.setLockScreenView() 方法");
             return;
         }
         let lockScreenScript: LockScreenView = this.m_lockScreenView.getScript();
@@ -276,7 +276,7 @@ export default class ViewManager extends Manager implements IManager {
      */
     public closeLockScreen(): void {
         if (this.m_lockScreenView === null) {
-            Logger.getInstance().warn("未找到 LockScreenView BootScene 是否已经 G.ViewMgr.setLockScreenView() 方法");
+            Logger.getInstance().warn("未找到 LockScreenView BootScene 是否已经 G.UIMgr.setLockScreenView() 方法");
             return;
         }
         let lockScreenScript: LockScreenView = this.m_lockScreenView.getScript();
@@ -294,7 +294,7 @@ export default class ViewManager extends Manager implements IManager {
      */
     public openPopups(content: string, title?: string, confirmCallback?: Function, cancelCallback?: Function): void {
         if (this.m_popupsView === null) {
-            Logger.getInstance().warn("未找到 PopupsView BootScene 是否已经 G.ViewMgr.setPopupsView() 方法");
+            Logger.getInstance().warn("未找到 PopupsView BootScene 是否已经 G.UIMgr.setPopupsView() 方法");
             return;
         }
         let popupsScript: PopupsView = this.m_popupsView.getScript();
@@ -310,7 +310,7 @@ export default class ViewManager extends Manager implements IManager {
      */
     private closePopups(): void {
         if (this.m_popupsView === null) {
-            Logger.getInstance().warn("未找到 PopupsView BootScene 是否已经 G.ViewMgr.setPopupsView() 方法");
+            Logger.getInstance().warn("未找到 PopupsView BootScene 是否已经 G.UIMgr.setPopupsView() 方法");
             return;
         }
         let popupsScript: PopupsView = this.m_popupsView.getScript();
@@ -331,7 +331,7 @@ export default class ViewManager extends Manager implements IManager {
 
         let preloadTimer: number = setTimeout(() => {
             this.openProgress();
-        }, PRELOAD_SCENE_WAITIMG_TIME * 1000);
+        }, PRELOAD_SCENE_WAITIMG_TIME * 1000); 
 
         cc.director.preloadScene(name, (completedCount: number, totalCount: number, item: any) => {
             if (progressCallback) {
@@ -342,23 +342,22 @@ export default class ViewManager extends Manager implements IManager {
             if (preloadTimer !== null) {
                 clearTimeout(preloadTimer);
                 preloadTimer = null;
+                this.closeProgress();
             }
             if (error) {
                 Logger.getInstance().warn("预加载场景出错", error);
-                this.closeProgress();
                 this.closeLockScreen();
             } else {
                 cc.director.loadScene(name, (error: Error, scene: cc.Scene) => {
                     if (error) {
                         Logger.getInstance().warn("切换场景出错", error);
-                        this.closeProgress();
                         this.closeLockScreen();
                     } else {
                         if (completeCallback) {
                             completeCallback(error, scene);
                         }
-                        if(data !== undefined && data !== null) {
-                            let sceneScript: any = scene.getChildByName("Canvas").getComponent(scene.name);
+                        if (data !== undefined && data !== null) {
+                            let sceneScript: UIComponent = scene.getChildByName("Canvas").getComponent(scene.name);
                             sceneScript.data = data;
                         }
                         this.closeAllPersistView();
@@ -367,7 +366,6 @@ export default class ViewManager extends Manager implements IManager {
             }
 
         });
-
     }
 
     /**
@@ -376,34 +374,33 @@ export default class ViewManager extends Manager implements IManager {
      * @param data {T} 渲染数据
      * @param completeCallback {Function}
      */
-    private openView1(path: ViewDefineType, data?: any, completeCallback?: () => void): void {
-        cc.resources.load(path.toString(), cc.Prefab)
+    private openView(path: ViewDefineType, data?: any, completeCallback?: () => void): void {
+        cc.resources.load(path, cc.Prefab)
     }
 
-    /**
-     * 定义打开多个视图使用
-     * @param viewParams {IViewParam[]} 数据接口参数
-     */
-    private openView2(...viewParams: IViewParam[]): void {
-        console.log("11111");
-        console.log(viewParams);
-    }
+    // /**
+    //  * 定义打开多个视图使用
+    //  * @param viewParams {IViewParam[]} 数据接口参数
+    //  */
+    // private openView2(...viewParams: ViewMultipleInterface[]): void {
+    //     console.log("11111");
+    //     console.log(viewParams);
+    // }
 
-    public openView(path: ViewDefineType, data?: any, completeCallback?: () => void): void;
-    public openView(...viewParams: IViewParam[]): void;
-    public openView(): void {
-        if (arguments.length <= 0) {
-            Logger.getInstance().error("参数不能为空");
-            return;
-        }
+    // public openView(path: ViewDefineType, data?: any, completeCallback?: () => void): void;
+    // public openView(...viewParams: IViewParam[]): void;
+    // public openView(): void {
+    //     if (arguments.length <= 0) {
+    //         Logger.getInstance().error("参数不能为空");
+    //         return;
+    //     }
 
-        if (typeof (arguments[0]) === "string") {
-            this.openView1.apply(this, arguments);
-        } else {
-            this.openView2.apply(this, arguments);
-        }
-    }
-
+    //     if (typeof (arguments[0]) === "string") {
+    //         this.openView1.apply(this, arguments);
+    //     } else {
+    //         this.openView2.apply(this, arguments);
+    //     }
+    // }
 
     /**
      * 销毁

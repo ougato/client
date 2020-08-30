@@ -2,19 +2,21 @@
  * @Author       : ougato
  * @Date         : 2020-08-22 11:03:13
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-28 14:43:55
+ * @LastEditTime : 2020-08-30 17:29:17
  * @FilePath     : \client242\assets\src\define\ViewDefine.ts
  * @Description  : 视图定义
  */
 
 // 通用视图
-export enum CommonViewDefine {
-    
+enum CommonViewDefine {
+    // 滚动公告视图（跑马灯）
+    RollNoticeView = "prefab/RollNoticeView",
 }
 
 // 自定义的视图都放这里
-export enum CustomViewDefine {
-
+enum CustomViewDefine {
+    // 登陆视图
+    LoginView = "prefab/LoginView",
 }
 
 // 视图定义

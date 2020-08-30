@@ -2,11 +2,12 @@
  * @Author       : ougato
  * @Date         : 2020-08-24 09:33:11
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-28 15:02:08
- * @FilePath     : \client242\assets\src\ui\view\ProgressView.ts
+ * @LastEditTime : 2020-08-30 16:46:30
+ * @FilePath     : \client242\assets\src\ui\view\persist\ProgressView.ts
  * @Description  : 加载进度视图
  */
-import { BaseView } from "./BaseView";
+
+import UIComponent from "../UIComponent";
 
 const { ccclass, property } = cc._decorator;
 
@@ -20,7 +21,7 @@ const MIN_SMOOTH_STEP = 1;
 const TOTAL_CMOOTH_STEP = 10;
 
 @ccclass
-export default class ProgressView extends BaseView {
+export default class ProgressView extends UIComponent {
 
     @property({ type: cc.ProgressBar, tooltip: "加载资源进度条" })
     private pobLoad: cc.ProgressBar = null;

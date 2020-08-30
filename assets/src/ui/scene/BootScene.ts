@@ -2,18 +2,19 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-28 17:50:12
+ * @LastEditTime : 2020-08-30 16:47:18
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
 
 import Global from "../../core/Global";
 import SceneDefine from "../../define/SceneDefine";
+import UIComponent from "../view/UIComponent";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class BootScene extends cc.Component {
+export default class BootScene extends UIComponent {
 
     @property({ type: cc.Node, tooltip: "加载视图" })
     private loadingView: cc.Node = null;
@@ -63,10 +64,10 @@ export default class BootScene extends cc.Component {
      * 初始化视图
      */
     private initView(): void {
-        G.ViewMgr.setLoadingView(this.loadingView);
-        G.ViewMgr.setProgressView(this.progressView);
-        G.ViewMgr.setLockScreenView(this.lockScreenView);
-        G.ViewMgr.setPopupsView(this.popupsView);
+        G.UIMgr.setLoadingView(this.loadingView);
+        G.UIMgr.setProgressView(this.progressView);
+        G.UIMgr.setLockScreenView(this.lockScreenView);
+        G.UIMgr.setPopupsView(this.popupsView);
     }
 
     /**
@@ -75,7 +76,7 @@ export default class BootScene extends cc.Component {
     private async asyncLaunchDepend(): Promise<void> {
         await this.asyncLoadSDK();
         if (await this.asyncCheckUpdate()) {
-            // G.ViewMgr.openPopups()
+            // G.UIMgr.openPopups()
             this.intoUpdate();
         } else {
             this.intoGame();
@@ -129,23 +130,23 @@ export default class BootScene extends cc.Component {
     private onClickLoading(): void {
         let arr: Function[] = [];
         // arr.push(() => {
-        //     G.ViewMgr.openLockScreen();
+        //     G.UIMgr.openLockScreen();
         // });
         // arr.push(() => {
-        //     G.ViewMgr.openLoading("网络不行了");
+        //     G.UIMgr.openLoading("网络不行了");
         // });
         // arr.push(() => {
-        //     G.ViewMgr.openProgress()
-        //     G.ViewMgr.setProgress(100);
+        //     G.UIMgr.openProgress()
+        //     G.UIMgr.setProgress(100);
         // });
         // arr.push(() => {
-        //     G.ViewMgr.openPopups("键盘侠你好啊", "标题党", () => {
+        //     G.UIMgr.openPopups("键盘侠你好啊", "标题党", () => {
         //         console.log("点击确定按钮");
         //     });
         // })
 
         arr.push(() => {
-            G.ViewMgr.openScene(SceneDefine.AccountScene);
+            G.UIMgr.openScene(SceneDefine.AccountScene);
         });
         let index: number = 0;
         let timer = setInterval(() => {

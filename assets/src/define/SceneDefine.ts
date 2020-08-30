@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-18 12:02:49
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-22 16:41:23
+ * @LastEditTime : 2020-08-30 16:29:44
  * @FilePath     : \client242\assets\src\define\SceneDefine.ts
  * @Description  : 场景名定义
  */

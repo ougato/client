@@ -13,7 +13,7 @@ import { EventDefine } from "../../../define/EventDefine";
 // 间隔毫秒调用
 const INTERVAL_MS = 0.001;
 
-export default class EventManager extends Manager implements IManager {
+export default class EventManager extends Manager implements ManagerInterface {
 
     private static g_instance: EventManager = null;
 

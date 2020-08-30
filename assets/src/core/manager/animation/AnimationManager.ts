@@ -9,7 +9,7 @@
 
 import Manager from "../Manager";
 
-export default class AnimationManager extends Manager implements IManager {
+export default class AnimationManager extends Manager implements ManagerInterface {
 
     private static g_instance: AnimationManager = null;
 
