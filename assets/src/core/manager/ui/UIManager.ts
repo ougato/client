@@ -58,7 +58,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * 设置加载视图
      * @param node {cc.Node} 视图节点
      */
-    public setLoadingView(node: cc.Node): void {
+    public initLoadingView(node: cc.Node): void {
         if (node && !this.m_loadingView) {
             node.active = false;
             cc.game.addPersistRootNode(node);

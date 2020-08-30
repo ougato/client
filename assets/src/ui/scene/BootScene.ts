@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-30 16:47:18
+ * @LastEditTime : 2020-08-30 20:56:06
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
@@ -27,6 +27,10 @@ export default class BootScene extends UIComponent {
 
     @property({ type: cc.Node, tooltip: "弹窗视图" })
     private popupsView: cc.Node = null;
+
+    @property({ type: cc.Node, tooltip: "向上飘动提示" })
+    private tipsView: cc.Node = null;
+
 
     constructor() {
         super();
@@ -64,7 +68,7 @@ export default class BootScene extends UIComponent {
      * 初始化视图
      */
     private initView(): void {
-        G.UIMgr.setLoadingView(this.loadingView);
+        G.UIMgr.initLoadingView(this.loadingView);
         G.UIMgr.setProgressView(this.progressView);
         G.UIMgr.setLockScreenView(this.lockScreenView);
         G.UIMgr.setPopupsView(this.popupsView);
