@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-31 01:41:25
+ * @LastEditTime : 2020-08-31 17:49:37
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
@@ -154,7 +154,7 @@ export default class BootScene extends UIComponent {
         // })
 
         arr.push(() => {
-            G.UIMgr.openLoading("123");
+            G.UIMgr.openView(ViewDefine.RollNoticeView);
         });
         let index: number = 0;
         let timer = setInterval(() => {

@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-22 18:32:45
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-31 02:12:46
+ * @LastEditTime : 2020-08-31 18:44:35
  * @FilePath     : \client242\assets\src\core\manager\ui\View.ts
  * @Description  : 封装视图类
  */
@@ -20,44 +20,47 @@ export default class View extends cc.Node {
 
     constructor(node: cc.Node) {
         super();
-        let relpath: ViewDefineType = ViewDefine[node.name];
-        if(relpath) {
-            this.m_relpath = relpath.toString();
-        } else {
-            // 常驻节点，没有在 resources 下的相对路径
-            this.m_relpath = "";
-        }
-        this.m_script = node.getComponent(node.name);
-        this.m_node = node;
+
+        this.copy(node);
     }
 
     /**
-     * 获取当前视图文件的相对路径
-     * @return 相对路径
+     * 浅拷贝 Node 数据到当前 this
+     * @param node 节点
      */
-    getPath(): string {
-        return this.m_relpath;
-    }
-
-    /**
-     * 获取绑定的脚本
-     * @param name {string} 脚本名
-     * @return 脚本绑定对象
-     */
-    getScript(name?: string): any {
-        if (name) {
-            return this.m_node.getComponent(name);
-        } else {
-            return this.m_script;
+    private copy(node: cc.Node): void {
+        for (let key in node) {
+            this[key] = node[key];
         }
     }
 
-    /**
-     * 获取当前节点
-     * @return 实例化后的节点
-     */
-    getNode(): cc.Node {
-        return this.m_node;
-    }
+    // /**
+    //  * 获取当前视图文件的相对路径
+    //  * @return 相对路径
+    //  */
+    // getPath(): string {
+    //     return this.m_relpath;
+    // }
+
+    // /**
+    //  * 获取绑定的脚本
+    //  * @param name {string} 脚本名
+    //  * @return 脚本绑定对象
+    //  */
+    // getScript(name?: string): any {
+    //     if (name) {
+    //         return this.m_node.getComponent(name);
+    //     } else {
+    //         return this.m_script;
+    //     }
+    // }
+
+    // /**
+    //  * 获取当前节点
+    //  * @return 实例化后的节点
+    //  */
+    // getNode(): cc.Node {
+    //     return this.m_node;
+    // }
 
 }

@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-31 02:18:35
+ * @LastEditTime : 2020-08-31 17:50:01
  * @FilePath     : \client242\assets\src\core\manager\ui\UIManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
@@ -13,6 +13,7 @@ import View from "./View";
 import PersistNodeDefine from "../../../define/PersistNodeDefine";
 import ProgressNode from "../../../ui/view/persist/ProgressNode";
 import ViewOrderDefine from "../../../define/ViewOrderDefine";
+import ViewDefine from "../../../define/ViewDefine";
 
 // 预加载场景等待多少秒未完成，就显示进度条界面
 const PRELOAD_SCENE_WAITIMG_TIME: number = 1;
@@ -368,19 +369,24 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param data {T} 渲染数据
      * @param completeCallback {Function}
      */
-    private openView<T>(path: ViewDefineType, data?: T, completeCallback?: () => void): void {
+    public openView<T>(path: ViewDefineType, data?: T, completeCallback?: () => void): void {
         this.openLockTouch();
-        let preloadTimer: number = setTimeout(() => {
+        let loadTimer: number = setTimeout(() => {
             this.openProgress();
         }, PRELOAD_SCENE_WAITIMG_TIME * 1000);
         cc.resources.load(path, cc.Prefab, (finish: number, total: number, item: cc.AssetManager.RequestItem) => {
             this.setProgress((finish / total) * 100);
         }, (error: Error, assets: cc.Prefab) => {
             this.closeLockTouch();
+            if(loadTimer !== null) {
+                clearTimeout(loadTimer);
+                loadTimer = null;
+                this.closeProgress();
+            }
             if (!error) {
                 let node: cc.Node = cc.instantiate(assets);
                 let view: View = new View(node);
-                
+                console.log(view);
             } else {
                 Logger.getInstance().warn(`加载 ${path} 视图失败`, error);
             }

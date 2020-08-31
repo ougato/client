@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-22 11:03:13
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-31 02:07:33
+ * @LastEditTime : 2020-08-31 18:18:06
  * @FilePath     : \client242\assets\src\define\ViewDefine.ts
  * @Description  : 视图路径定义
  */
@@ -10,7 +10,7 @@
 // 通用视图
 enum CommonViewDefine {
     // 滚动公告视图（跑马灯）
-    RollNoticeView = "prefab/RollNoticeView",
+    RollNoticeView = "prefab/notice/RollNoticeView",
 }
 
 // 自定义的视图都放这里
