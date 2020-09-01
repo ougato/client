@@ -2,12 +2,12 @@
  * @Author       : ougato
  * @Date         : 2020-08-10 16:40:17
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-17 17:51:35
- * @FilePath     : \client\assets\src\test\Test.ts
+ * @LastEditTime : 2020-09-01 18:11:31
+ * @FilePath     : \client242\assets\src\test\Test.ts
  * @Description  : 
  */
 
-import { TimeUtil } from "../utils/TimeUtil";
+import TimeUtil from "../utils/TimeUtil";
 
 const MAX: number = 1000000;
 

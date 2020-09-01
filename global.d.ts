@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:03:24
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-30 23:28:03
+ * @LastEditTime : 2020-09-01 17:36:00
  * @FilePath     : \client242\global.d.ts
  * @Description  : 全局变量定义
  */
@@ -12,6 +12,8 @@ import { PreloadMusicDefine, PreloadEffectDefine, DynamicMusicDefine, DynamicEff
 import { CommonViewDefine, CustomViewDefine } from "./assets/src/define/ViewDefine";
 import { SystemSceneDefine, CustomSceneDefine } from "./assets/src/define/SceneDefine";
 import PersistNodeDefine from "./assets/src/define/PersistNodeDefine";
+import ViewOrderDefine from "./assets/src/define/ViewOrderDefine";
+import ViewStyleDefine from "./assets/src/define/ViewStyleDefine";
 
 declare global {
 
@@ -26,4 +28,5 @@ declare global {
     type ViewDefineType = CommonViewDefine | CustomViewDefine;
     type SceneDefineType = SystemSceneDefine | CustomSceneDefine;
     type PersistNodeType = PersistNodeDefine;
+    type ViewStyleType = ViewStyleDefine;
 }

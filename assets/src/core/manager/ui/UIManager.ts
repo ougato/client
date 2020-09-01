@@ -2,17 +2,18 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-31 17:50:01
+ * @LastEditTime : 2020-09-01 18:41:15
  * @FilePath     : \client242\assets\src\core\manager\ui\UIManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
 
 import Manager from "../Manager";
 import Logger from "../../machine/Logger";
-import View from "./View";
 import PersistNodeDefine from "../../../define/PersistNodeDefine";
 import ProgressNode from "../../../ui/view/persist/ProgressNode";
 import ViewOrderDefine from "../../../define/ViewOrderDefine";
+import { ORDER_INTERVAL } from "../../../define/ViewOrderDefine";
+import AnimationUtil from "../../../utils/AnimationUtil";
 import ViewDefine from "../../../define/ViewDefine";
 
 // 预加载场景等待多少秒未完成，就显示进度条界面
@@ -24,10 +25,12 @@ export default class UIManager extends Manager implements ManagerInterface {
 
     private static g_instance: UIManager = null;
 
-    // 系统层级下标
-    private m_systemOrderIndex: number = null;
     // 常驻节点
     private m_persistNodeMap: Map<PersistNodeType, cc.Node> = null;
+    // 视图节点
+    private m_viewNodeMap: Map<ViewDefineType, cc.Node> = null;
+    // 视图最高层级
+    private m_viewTopOrderMap: Map<ViewOrderDefine, number> = null;
 
     public static getInstance(): UIManager {
         if (this.g_instance === null) {
@@ -53,8 +56,15 @@ export default class UIManager extends Manager implements ManagerInterface {
      * 初始化数据
      */
     private initData(): void {
-        this.m_systemOrderIndex = ViewOrderDefine.SYSTEM;
         this.m_persistNodeMap = new Map<PersistNodeType, cc.Node>();
+        this.m_viewNodeMap = new Map<ViewDefineType, cc.Node>();
+        this.m_viewTopOrderMap = new Map<ViewOrderDefine, number>();
+        for (let order in ViewOrderDefine) {
+            let numOrder: ViewOrderDefine = Number(order);
+            if (!isNaN(numOrder)) {
+                this.m_viewTopOrderMap.set(numOrder, numOrder);
+            }
+        }
     }
 
     /**
@@ -181,7 +191,12 @@ export default class UIManager extends Manager implements ManagerInterface {
         if (node) {
             let script: any = node.getComponent(nodeName);
             if (script) {
-                node.zIndex = ++this.m_systemOrderIndex;
+                let order: number = this.m_viewTopOrderMap.get(ViewOrderDefine.SYSTEM);
+                if (this.checkBounds(ViewOrderDefine.SYSTEM, ++order)) {
+                    order = this.resetViewOrder(ViewOrderDefine.SYSTEM);
+                }
+                this.m_viewTopOrderMap.set(ViewOrderDefine.SYSTEM, order);
+                node.zIndex = order;
                 script.open.apply(script, args);
             } else {
                 Logger.getInstance().warn(`${nodeName} 节点未绑定 ${nodeName} 脚本组件`);
@@ -369,7 +384,32 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param data {T} 渲染数据
      * @param completeCallback {Function}
      */
-    public openView<T>(path: ViewDefineType, data?: T, completeCallback?: () => void): void {
+    public openView<T>(path: ViewDefineType, data?: T, completeCallback?: (node: cc.Node) => void, layer?: ViewOrderDefine, style?: ViewStyleType): void {
+        let view: cc.Node = this.m_viewNodeMap.get(path)
+        if (view) {
+            if (data !== null && data !== undefined) {
+                let script: UIInterface<T> = view.getComponent(view.name);
+                script.refresh(data);
+            }
+
+            if (layer !== null && layer !== undefined) {
+                view.zIndex = this.getLayerTopOrder(layer);
+                view.active = true;
+            }
+            if (style !== null && style !== undefined) {
+                AnimationUtil.play(view, style, () => {
+                    if (completeCallback) {
+                        completeCallback(view);
+                    }
+                });
+            } else {
+                if (completeCallback) {
+                    completeCallback(view);
+                }
+            }
+            return;
+        }
+
         this.openLockTouch();
         let loadTimer: number = setTimeout(() => {
             this.openProgress();
@@ -378,15 +418,19 @@ export default class UIManager extends Manager implements ManagerInterface {
             this.setProgress((finish / total) * 100);
         }, (error: Error, assets: cc.Prefab) => {
             this.closeLockTouch();
-            if(loadTimer !== null) {
+            if (loadTimer !== null) {
                 clearTimeout(loadTimer);
                 loadTimer = null;
                 this.closeProgress();
             }
             if (!error) {
                 let node: cc.Node = cc.instantiate(assets);
-                let view: View = new View(node);
-                console.log(view);
+                let currScene: cc.Scene = cc.director.getScene();
+                if (layer !== null && layer !== undefined) {
+                    node.zIndex = this.getLayerTopOrder(layer);
+                }
+                currScene.getChildByName("Canvas").addChild(node);
+                this.m_viewNodeMap.set(path, node);
             } else {
                 Logger.getInstance().warn(`加载 ${path} 视图失败`, error);
             }
@@ -417,12 +461,90 @@ export default class UIManager extends Manager implements ManagerInterface {
     //     }
     // }
 
+    private getLayerViewChild(layer: ViewOrderDefine): cc.Node[] {
+        let views: cc.Node[] = [];
+
+        // 找出同一个层的视图
+        this.m_viewNodeMap.forEach((value: cc.Node, key: ViewDefineType, map: Map<ViewDefineType, cc.Node>) => {
+            let layerDiff: number = value.zIndex - layer;
+            let isLayerInView: boolean = layerDiff >= 0 && layerDiff < ORDER_INTERVAL;
+            if (isLayerInView) {
+                views.push(value);
+            }
+        });
+
+        // 层级排序
+        views.sort((a: cc.Node, b: cc.Node) => {
+            if (a.zIndex < b.zIndex) {
+                return 1;
+            } else {
+                return -1
+            }
+        });
+
+        return views;
+    }
+
+    /**
+     * 获取视图层 的 最高层级+1
+     * @param layer {ViewOrderDefine} 层
+     * @return {number}
+     */
+    private getLayerTopOrder(layer: ViewOrderDefine): number {
+        let order: number = layer;
+        let views: cc.Node[] = this.getLayerViewChild(layer);
+        let size: number = views.length;
+        if (size <= 0) {
+            return order;
+        } else if (views.length > ORDER_INTERVAL) {
+            Logger.getInstance().warn(`${ViewOrderDefine[ViewOrderDefine[layer]]} 层容量不足，超过了原本设定的 ${ORDER_INTERVAL} 个`);
+            return ORDER_INTERVAL - 1;
+        }
+        return views[size - 1].zIndex + 1;
+    }
+
+    /**
+     * 重置视图层 的 层级，返回相应的最高层级+1
+     * @param layer {ViewOrderDefine} 层
+     * @return {number}
+     */
+    private resetViewOrder(layer: ViewOrderDefine): number {
+        let order: number = layer;
+        let views: cc.Node[] = this.getLayerViewChild(layer);
+
+        if (views.length <= 0) {
+            return order;
+        } else if (views.length > ORDER_INTERVAL) {
+            Logger.getInstance().warn(`${ViewOrderDefine[ViewOrderDefine[layer]]} 层容量不足，超过了原本设定的 ${ORDER_INTERVAL} 个`);
+            return ORDER_INTERVAL - 1;
+        }
+
+        for (let i: number = 0; i < views.length; ++i) {
+            views[i].zIndex = order++;
+        }
+
+        return order;
+    }
+
+    /**
+     * 检测层级是否超过了间隔单位
+     * @param layer {ViewOrderDefine} 视图层
+     * @param order {number} 层级
+     * @return {boolean}
+     */
+    private checkBounds(layer: ViewOrderDefine, order: number): boolean {
+        return (order - layer) > ORDER_INTERVAL;
+    }
+
+    /**
+     * 
+     */
+
     /**
      * 销毁
      */
     public destroy(): void {
         this.clearAllPersistNode();
-        this.m_systemOrderIndex = null;
         this.m_persistNodeMap.clear();
         this.m_persistNodeMap = null;
     }

@@ -2,11 +2,11 @@
  * @Author       : ougato
  * @Date         : 2020-08-10 17:16:17
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-20 16:13:57
+ * @LastEditTime : 2020-09-01 18:11:24
  * @FilePath     : \client242\assets\src\utils\TimeUtil.ts
  * @Description  : 
  */
-export class TimeUtil {
+export default class TimeUtil {
 
     /**
      * 记录运行时间
