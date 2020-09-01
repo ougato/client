@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-01 18:11:11
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-02 01:02:32
+ * @LastEditTime : 2020-09-02 01:53:06
  * @FilePath     : \client242\assets\src\utils\AnimationUtil.ts
  * @Description  : 动画工具
  */
@@ -11,7 +11,7 @@ import ViewStyleDefine from "../define/ViewStyleDefine";
 import Logger from "../core/machine/Logger";
 
 // 渐显渐隐时间（单位：秒）
-const FACE_TIME = 1;
+const FACE_TIME = 0.2;
 
 export default class AnimationUtil {
 
