@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-01 18:41:15
+ * @LastEditTime : 2020-09-02 01:49:25
  * @FilePath     : \client242\assets\src\core\manager\ui\UIManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
@@ -14,12 +14,11 @@ import ProgressNode from "../../../ui/view/persist/ProgressNode";
 import ViewOrderDefine from "../../../define/ViewOrderDefine";
 import { ORDER_INTERVAL } from "../../../define/ViewOrderDefine";
 import AnimationUtil from "../../../utils/AnimationUtil";
-import ViewDefine from "../../../define/ViewDefine";
 
 // 预加载场景等待多少秒未完成，就显示进度条界面
 const PRELOAD_SCENE_WAITIMG_TIME: number = 1;
 // 默认视图层级
-const DEFAULT_VIEW_ORDER = ViewOrderDefine.UI;
+const DEFAULT_VIEW_LAYER = ViewOrderDefine.UI;
 
 export default class UIManager extends Manager implements ManagerInterface {
 
@@ -191,8 +190,8 @@ export default class UIManager extends Manager implements ManagerInterface {
         if (node) {
             let script: any = node.getComponent(nodeName);
             if (script) {
-                let order: number = this.m_viewTopOrderMap.get(ViewOrderDefine.SYSTEM);
-                if (this.checkBounds(ViewOrderDefine.SYSTEM, ++order)) {
+                let order: number = this.getLayerTopOrder(ViewOrderDefine.SYSTEM);
+                if (this.checkBounds(ViewOrderDefine.SYSTEM, order)) {
                     order = this.resetViewOrder(ViewOrderDefine.SYSTEM);
                 }
                 this.m_viewTopOrderMap.set(ViewOrderDefine.SYSTEM, order);
@@ -264,7 +263,7 @@ export default class UIManager extends Manager implements ManagerInterface {
 
     /**
      * 统一关闭常驻节点
-     * @param nodeName 
+     * @param nodeName {PersistNodeType} 常驻节点名
      */
     private closePersistNode(nodeName: PersistNodeType): void {
         let node: cc.Node = this.m_persistNodeMap.get(nodeName);
@@ -379,88 +378,59 @@ export default class UIManager extends Manager implements ManagerInterface {
     }
 
     /**
-     * 定义打开单个视图使用
+     * 打开单个视图使用
      * @param path {ViewDefineType} 路径
      * @param data {T} 渲染数据
-     * @param completeCallback {Function}
+     * @param completeCallback {Function} 完成后的回调
+     * @param layer {ViewOrderDefine} 层
+     * @param style {ViewStyleType} 显示时动画风格
      */
     public openView<T>(path: ViewDefineType, data?: T, completeCallback?: (node: cc.Node) => void, layer?: ViewOrderDefine, style?: ViewStyleType): void {
         let view: cc.Node = this.m_viewNodeMap.get(path)
         if (view) {
-            if (data !== null && data !== undefined) {
-                let script: UIInterface<T> = view.getComponent(view.name);
-                script.refresh(data);
-            }
-
-            if (layer !== null && layer !== undefined) {
-                view.zIndex = this.getLayerTopOrder(layer);
-                view.active = true;
-            }
-            if (style !== null && style !== undefined) {
-                AnimationUtil.play(view, style, () => {
-                    if (completeCallback) {
-                        completeCallback(view);
-                    }
-                });
-            } else {
-                if (completeCallback) {
-                    completeCallback(view);
-                }
-            }
-            return;
+            this.directShow(view, data, completeCallback, layer, style);
+        } else {
+            this.loadShow(path, data, completeCallback, layer, style);
         }
-
-        this.openLockTouch();
-        let loadTimer: number = setTimeout(() => {
-            this.openProgress();
-        }, PRELOAD_SCENE_WAITIMG_TIME * 1000);
-        cc.resources.load(path, cc.Prefab, (finish: number, total: number, item: cc.AssetManager.RequestItem) => {
-            this.setProgress((finish / total) * 100);
-        }, (error: Error, assets: cc.Prefab) => {
-            this.closeLockTouch();
-            if (loadTimer !== null) {
-                clearTimeout(loadTimer);
-                loadTimer = null;
-                this.closeProgress();
-            }
-            if (!error) {
-                let node: cc.Node = cc.instantiate(assets);
-                let currScene: cc.Scene = cc.director.getScene();
-                if (layer !== null && layer !== undefined) {
-                    node.zIndex = this.getLayerTopOrder(layer);
-                }
-                currScene.getChildByName("Canvas").addChild(node);
-                this.m_viewNodeMap.set(path, node);
-            } else {
-                Logger.getInstance().warn(`加载 ${path} 视图失败`, error);
-            }
-        });
     }
 
-    // /**
-    //  * 定义打开多个视图使用
-    //  * @param viewParams {IViewParam[]} 数据接口参数
-    //  */
-    // private openView2(...viewParams: ViewMultipleInterface[]): void {
-    //     console.log("11111");
-    //     console.log(viewParams);
-    // }
+    /**
+     * 关闭单个视图使用
+     * @param path {ViewDefineType} 路径
+     * @param completeCallback {Function} 完成后的回调
+     * @param style {ViewStyleType} 显示时动画风格
+     */    
+    public closeView(path: ViewDefineType, completeCallback?: Function, style?: ViewStyleType): void {
+        this.openLockTouch();
+        let view: cc.Node = this.m_viewNodeMap.get(path);
+        if (view) {
+            if (style !== null && style !== undefined) {
+                AnimationUtil.playClose(view, style, () => {
+                    if (completeCallback) {
+                        completeCallback();
+                    }
+                    view.destroy();
+                    view = null;
+                    this.m_viewNodeMap.delete(path);
+                    this.closeLockTouch();
+                })
+            } else {
+                if (completeCallback) {
+                    completeCallback();
+                }
+                view.destroy();
+                view = null;
+                this.m_viewNodeMap.delete(path);
+                this.closeLockTouch();
+            }
+        }
+    }
 
-    // public openView(path: ViewDefineType, data?: any, completeCallback?: () => void): void;
-    // public openView(...viewParams: IViewParam[]): void;
-    // public openView(): void {
-    //     if (arguments.length <= 0) {
-    //         Logger.getInstance().error("参数不能为空");
-    //         return;
-    //     }
-
-    //     if (typeof (arguments[0]) === "string") {
-    //         this.openView1.apply(this, arguments);
-    //     } else {
-    //         this.openView2.apply(this, arguments);
-    //     }
-    // }
-
+    /**
+     * 获取层级上的所有视图并排序返回
+     * @param layer {ViewOrderDefine} 层
+     * @returns {cc.Node[]}
+     */
     private getLayerViewChild(layer: ViewOrderDefine): cc.Node[] {
         let views: cc.Node[] = [];
 
@@ -476,9 +446,9 @@ export default class UIManager extends Manager implements ManagerInterface {
         // 层级排序
         views.sort((a: cc.Node, b: cc.Node) => {
             if (a.zIndex < b.zIndex) {
-                return 1;
+                return -1;
             } else {
-                return -1
+                return 1;
             }
         });
 
@@ -533,12 +503,111 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @return {boolean}
      */
     private checkBounds(layer: ViewOrderDefine, order: number): boolean {
-        return (order - layer) > ORDER_INTERVAL;
+        return (order - layer) >= ORDER_INTERVAL;
+    }
+
+
+    /**
+     * 直接显示
+     * @param view {cc.Node} 视图节点
+     * @param data {T} 渲染数据
+     * @param completeCallback {Function} 完成后的回调
+     * @param layer {ViewOrderDefine} 层
+     * @param style {ViewStyleType} 显示时动画风格
+     */
+    private directShow<T>(view: cc.Node, data?: T, completeCallback?: (node: cc.Node) => void, layer?: ViewOrderDefine, style?: ViewStyleType): void {
+        this.openLockTouch();
+        if (data !== null && data !== undefined) {
+            let script: UIInterface<T> = view.getComponent(view.name);
+            script.refresh(data);
+        }
+
+        if (layer === null || layer === undefined) {
+            layer = DEFAULT_VIEW_LAYER;
+        }
+        let order: number = this.getLayerTopOrder(layer)
+        if (this.checkBounds(layer, order)) {
+            order = this.resetViewOrder(layer);
+        }
+        console.log(order);
+        view.zIndex = order;
+
+        if (style !== null && style !== undefined) {
+            view.active = false;
+            AnimationUtil.playOpen(view, style, () => {
+                if (completeCallback) {
+                    completeCallback(view);
+                    this.closeLockTouch();
+                }
+            });
+        } else {
+            view.active = true;
+            if (completeCallback) {
+                completeCallback(view);
+                this.closeLockTouch();
+            }
+        }
+        this.m_viewTopOrderMap.set(layer, order);
     }
 
     /**
-     * 
+     * 加载显示
+     * @param path {ViewDefineType} 路径
+     * @param data {T} 渲染数据
+     * @param completeCallback {Function} 完成后的回调
+     * @param layer {ViewOrderDefine} 层
+     * @param style {ViewStyleType} 显示时动画风格
      */
+    private loadShow<T>(path: ViewDefineType, data?: T, completeCallback?: (node: cc.Node) => void, layer?: ViewOrderDefine, style?: ViewStyleType): void {
+        this.openLockTouch();
+        let loadTimer: number = setTimeout(() => {
+            this.openProgress();
+        }, PRELOAD_SCENE_WAITIMG_TIME * 1000);
+        cc.resources.load(path, cc.Prefab, (finish: number, total: number, item: cc.AssetManager.RequestItem) => {
+            this.setProgress((finish / total) * 100);
+        }, (error: Error, assets: cc.Prefab) => {
+            if (loadTimer !== null) {
+                clearTimeout(loadTimer);
+                loadTimer = null;
+                this.closeProgress();
+            }
+            if (!error) {
+                let node: cc.Node = cc.instantiate(assets);
+                let script: UIInterface<T> = node.getComponent(node.name);
+                let scene: cc.Scene = cc.director.getScene();
+                if (layer === null || layer === undefined) {
+                    layer = DEFAULT_VIEW_LAYER;
+                }
+
+                let order: number = this.getLayerTopOrder(layer)
+                if (this.checkBounds(layer, order)) {
+                    order = this.resetViewOrder(layer);
+                }
+
+                // 数据赋值
+                if (script && data !== null && data !== undefined) {
+                    script.data = data;
+                }
+
+                scene.getChildByName("Canvas").addChild(node, order);
+                // 动画播放
+                if (style !== null && style !== undefined) {
+                    AnimationUtil.playOpen(node, style, () => {
+                        completeCallback(node);
+                        this.closeLockTouch();
+                    })
+                } else {
+                    completeCallback(node);
+                    this.closeLockTouch();
+                }
+                this.m_viewTopOrderMap.set(layer, order);
+                this.m_viewNodeMap.set(path, node);
+            } else {
+                Logger.getInstance().warn(`加载 ${path} 视图失败`, error);
+                this.closeLockTouch();
+            }
+        });
+    }
 
     /**
      * 销毁

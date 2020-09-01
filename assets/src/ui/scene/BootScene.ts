@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-01 18:40:07
+ * @LastEditTime : 2020-09-02 00:31:31
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
@@ -44,7 +44,7 @@ export default class BootScene extends UIComponent {
     }
 
     protected onLoad(): void {
-
+        
     }
 
     protected start() {
@@ -156,9 +156,9 @@ export default class BootScene extends UIComponent {
         // })
 
         arr.push(() => {
-            // AnimationUtil.play(this.node, ViewStyleDefine.FADE);
-            G.UIMgr.openView(ViewDefine.RollNoticeView);
-        });
+            G.UIMgr.openView(ViewDefine.Test1, "BootScene call", () => {
+                console.log("完成Test2");
+            }, null, ViewStyleDefine.FADE));
         let index: number = 0;
         let timer = setInterval(() => {
             let fn: Function = arr[index++];

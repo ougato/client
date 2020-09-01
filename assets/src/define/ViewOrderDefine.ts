@@ -2,13 +2,13 @@
  * @Author       : ougato
  * @Date         : 2020-08-31 02:06:47
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-01 15:35:27
+ * @LastEditTime : 2020-09-02 00:49:33
  * @FilePath     : \client242\assets\src\define\ViewOrderDefine.ts
  * @Description  : 视图层级定义
  */
 
 // 层级间隔
-export const ORDER_INTERVAL: number = 100;
+export const ORDER_INTERVAL: number = 10;
 
 // 层级定义
 enum ViewOrderDefine {

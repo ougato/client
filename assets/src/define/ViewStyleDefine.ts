@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-01 17:29:22
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-01 17:35:30
+ * @LastEditTime : 2020-09-01 23:57:03
  * @FilePath     : \client242\assets\src\define\ViewStyleDefine.ts
  * @Description  : 视图打开动画风格定义
  */
@@ -10,8 +10,8 @@
 enum ViewStyleDefine {
     // 渐显/渐隐
     FADE,
-    // 旋转
-    ROTATE,
+    // 缩放
+    SCALE,
     // 从左到右
     LEFT_RIGHT,
     // 从右到左
