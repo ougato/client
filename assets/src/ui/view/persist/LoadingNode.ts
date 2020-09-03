@@ -13,12 +13,12 @@ import LoadingClip from "../animation/LoadingClip";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class LoadingNode extends UIComponent {
+export default class LoadingNode extends UIComponent implements PersistInterface {
 
-    @property({type:cc.Label, tooltip: "文字提示"})
+    @property({ type: cc.Label, tooltip: "文字提示" })
     private labTips: cc.Label = null;
 
-    @property({type:cc.Node, tooltip:"转动动画"})
+    @property({ type: cc.Node, tooltip: "转动动画" })
     private loadingClip: cc.Node = null;
 
     private m_loadingScript: LoadingClip = null;
@@ -62,7 +62,7 @@ export default class LoadingNode extends UIComponent {
      * 关闭加载界面
      */
     public close(): void {
-        if(this.node.active) {
+        if (this.node.active) {
             this.node.active = false;
             this.initView();
             this.m_loadingScript.stop();

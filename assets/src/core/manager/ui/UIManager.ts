@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-02 01:49:25
+ * @LastEditTime : 2020-09-04 01:33:58
  * @FilePath     : \client242\assets\src\core\manager\ui\UIManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
@@ -14,6 +14,7 @@ import ProgressNode from "../../../ui/view/persist/ProgressNode";
 import ViewOrderDefine from "../../../define/ViewOrderDefine";
 import { ORDER_INTERVAL } from "../../../define/ViewOrderDefine";
 import AnimationUtil from "../../../utils/AnimationUtil";
+import Loader from "../../machine/Loader";
 
 // 预加载场景等待多少秒未完成，就显示进度条界面
 const PRELOAD_SCENE_WAITIMG_TIME: number = 1;
@@ -28,7 +29,7 @@ export default class UIManager extends Manager implements ManagerInterface {
     private m_persistNodeMap: Map<PersistNodeType, cc.Node> = null;
     // 视图节点
     private m_viewNodeMap: Map<ViewDefineType, cc.Node> = null;
-    // 视图最高层级
+    // 视图每层最高层级
     private m_viewTopOrderMap: Map<ViewOrderDefine, number> = null;
 
     public static getInstance(): UIManager {
@@ -185,10 +186,10 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param nodeName {PersistNodeType} 节点名
      * @param args {any[]} 任意多参数
      */
-    private openPersistNode(nodeName: PersistNodeType, ...args: any[]): void {
-        let node: cc.Node = this.m_persistNodeMap.get(nodeName);
+    private openPersistNode(name: PersistNodeType, ...args: any[]): void {
+        let node: cc.Node = this.m_persistNodeMap.get(name);
         if (node) {
-            let script: any = node.getComponent(nodeName);
+            let script: PersistInterface = node.getComponent(name as string);
             if (script) {
                 let order: number = this.getLayerTopOrder(ViewOrderDefine.SYSTEM);
                 if (this.checkBounds(ViewOrderDefine.SYSTEM, order)) {
@@ -198,10 +199,10 @@ export default class UIManager extends Manager implements ManagerInterface {
                 node.zIndex = order;
                 script.open.apply(script, args);
             } else {
-                Logger.getInstance().warn(`${nodeName} 节点未绑定 ${nodeName} 脚本组件`);
+                Logger.getInstance().warn(`${name} 节点未绑定 ${name} 脚本组件`);
             }
         } else {
-            Logger.getInstance().warn(`未找到 ${nodeName}，检查 BootScene 是否已经挂载 ${nodeName} 节点`);
+            Logger.getInstance().warn(`未找到 ${name}，检查 BootScene 是否已经挂载 ${name} 节点`);
         }
     }
 
@@ -263,19 +264,19 @@ export default class UIManager extends Manager implements ManagerInterface {
 
     /**
      * 统一关闭常驻节点
-     * @param nodeName {PersistNodeType} 常驻节点名
+     * @param name {PersistNodeType} 常驻节点名
      */
-    private closePersistNode(nodeName: PersistNodeType): void {
-        let node: cc.Node = this.m_persistNodeMap.get(nodeName);
+    private closePersistNode(name: PersistNodeType): void {
+        let node: cc.Node = this.m_persistNodeMap.get(name);
         if (node) {
-            let script: any = node.getComponent(nodeName);
+            let script: PersistInterface = node.getComponent(name as string);
             if (script) {
                 script.close();
             } else {
-                Logger.getInstance().warn(`${nodeName} 节点未绑定 ${nodeName} 脚本组件`);
+                Logger.getInstance().warn(`${name} 节点未绑定 ${name} 脚本组件`);
             }
         } else {
-            Logger.getInstance().warn(`未找到 ${nodeName}，检查 BootScene 是否已经挂载 ${nodeName} 节点`);
+            Logger.getInstance().warn(`未找到 ${name}，检查 BootScene 是否已经挂载 ${name} 节点`);
         }
     }
 
@@ -325,18 +326,7 @@ export default class UIManager extends Manager implements ManagerInterface {
         this.closeTips();
     }
 
-    /**
-     * 打开场景
-     * @param name {string} 场景名
-     * @param data {T} 任意数据
-     * @param progressCallback {Function} 加载百分比回调
-     * @param completeCallback {Function} 加载完成回调
-     */
-    public openScene<T>(name: SceneDefineType, data?: T, completeCallback?: (error: Error, scene: cc.Scene) => void, progressCallback?: (completedCount: number, totalCount: number, item: any) => void): void {
-        this.openLockTouch();
-        let preloadTimer: number = setTimeout(() => {
-            this.openProgress();
-        }, PRELOAD_SCENE_WAITIMG_TIME * 1000);
+    private replaceScene<T>(name: SceneDefineType, data?: T, completeCallback?: (error: Error, scene: cc.Scene) => void, progressCallback?: (completedCount: number, totalCount: number, item: any) => void, timer?: number, appendNum?:number): void {
 
         cc.director.preloadScene(name, (completedCount: number, totalCount: number, item: any) => {
             if (progressCallback) {
@@ -344,16 +334,16 @@ export default class UIManager extends Manager implements ManagerInterface {
             }
             this.setProgress((completedCount / totalCount) * 100);
         }, (error: Error) => {
-            if (preloadTimer !== null) {
-                clearTimeout(preloadTimer);
-                preloadTimer = null;
+            if (timer !== null) {
+                clearTimeout(timer);
+                timer = null;
                 this.closeProgress();
             }
             if (!error) {
                 cc.director.loadScene(name, (error: Error, scene: cc.Scene) => {
                     if (!error) {
                         if (data !== undefined && data !== null) {
-                            let script: any = scene.getChildByName("Canvas").getComponent(scene.name);
+                            let script: UIInterface<T> = scene.getChildByName("Canvas").getComponent(scene.name);
                             if (script) {
                                 script.data = data;
                             } else {
@@ -378,6 +368,33 @@ export default class UIManager extends Manager implements ManagerInterface {
     }
 
     /**
+     * 打开场景
+     * @param name {string} 场景名
+     * @param data {T} 任意数据
+     * @param progressCallback {Function} 加载百分比回调
+     * @param completeCallback {Function} 加载完成回调
+     * @param preload {cc.Asset | cc.Asset[]} 预加载文件 或者 预加载列表
+     */
+    public openScene<T>(name: SceneDefineType, data?: T, completeCallback?: (error: Error, scene: cc.Scene) => void, progressCallback?: (completedCount: number, totalCount: number, item: any) => void, preload?: cc.Asset | cc.Asset[]): void {
+        this.openLockTouch();
+        let preloadTimer: number = setTimeout(() => {
+            this.openProgress();
+        }, PRELOAD_SCENE_WAITIMG_TIME * 1000);
+
+        const APPEND_NUM: number = 1;
+
+        if (preload !== null && preload !== undefined) {
+            Loader.getInstance().preload(preload, (items: cc.AssetManager.RequestItem[]) => {
+                this.replaceScene(name, data, completeCallback, progressCallback, preloadTimer, items.length + APPEND_NUM);
+            }, (percent: number) => {
+                this.setProgress(percent);
+            }, APPEND_NUM);
+        } else {
+            this.replaceScene(name, data, completeCallback, progressCallback, preloadTimer);
+        }
+    }
+
+    /**
      * 打开单个视图使用
      * @param path {ViewDefineType} 路径
      * @param data {T} 渲染数据
@@ -399,7 +416,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param path {ViewDefineType} 路径
      * @param completeCallback {Function} 完成后的回调
      * @param style {ViewStyleType} 显示时动画风格
-     */    
+     */
     public closeView(path: ViewDefineType, completeCallback?: Function, style?: ViewStyleType): void {
         this.openLockTouch();
         let view: cc.Node = this.m_viewNodeMap.get(path);

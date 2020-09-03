@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-02 00:31:31
+ * @LastEditTime : 2020-09-03 22:59:29
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
@@ -134,7 +134,7 @@ export default class BootScene extends UIComponent {
      * 进入游戏
      */
     private intoGame(): void {
-
+        G.UIMgr.openScene(SceneDefine.AccountScene);
     }
 
     private onClickLoading(): void {
@@ -156,9 +156,10 @@ export default class BootScene extends UIComponent {
         // })
 
         arr.push(() => {
-            G.UIMgr.openView(ViewDefine.Test1, "BootScene call", () => {
-                console.log("完成Test2");
-            }, null, ViewStyleDefine.FADE));
+            G.UIMgr.openScene(SceneDefine.AccountScene);
+            // G.UIMgr.openView(ViewDefine.Test1, "BootScene call", () => {
+            //     console.log("完成Test2");
+            // }, null, ViewStyleDefine.FADE));
         let index: number = 0;
         let timer = setInterval(() => {
             let fn: Function = arr[index++];

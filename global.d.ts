@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:03:24
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-01 17:36:00
+ * @LastEditTime : 2020-09-03 22:20:03
  * @FilePath     : \client242\global.d.ts
  * @Description  : 全局变量定义
  */
@@ -29,4 +29,5 @@ declare global {
     type SceneDefineType = SystemSceneDefine | CustomSceneDefine;
     type PersistNodeType = PersistNodeDefine;
     type ViewStyleType = ViewStyleDefine;
+    type AssetsPathDefineType = ViewDefineType | ViewDefineType[] | AudioDefineType | AudioDefineType[];
 }

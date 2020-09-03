@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:04
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-25 23:54:02
+ * @LastEditTime : 2020-09-03 08:05:07
  * @FilePath     : \client242\assets\src\core\manager\audio\AudioManager.ts
  * @Description  : 声音管理器，用于播放（背景音乐 和 游戏音效），格式：[wav、mp3、ogg]
  */
@@ -40,7 +40,7 @@ export default class AudioManager extends Manager implements ManagerInterface {
 
     }
 
-    public preloadAudio(): void {
+    public preloadAudio(list): void {
 
     }
 

@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-24 09:33:11
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-30 23:17:10
+ * @LastEditTime : 2020-09-04 00:06:07
  * @FilePath     : \client242\assets\src\ui\view\persist\ProgressNode.ts
  * @Description  : 加载进度节点
  */
@@ -21,7 +21,7 @@ const MIN_SMOOTH_STEP = 1;
 const TOTAL_CMOOTH_STEP = 10;
 
 @ccclass
-export default class ProgressNode extends UIComponent {
+export default class ProgressNode extends UIComponent implements PersistInterface {
 
     @property({ type: cc.ProgressBar, tooltip: "加载资源进度条" })
     private pobLoad: cc.ProgressBar = null;
