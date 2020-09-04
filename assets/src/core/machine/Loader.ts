@@ -2,12 +2,13 @@
  * @Author       : ougato
  * @Date         : 2020-08-13 02:00:18
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-04 01:30:53
+ * @LastEditTime : 2020-09-04 17:03:49
  * @FilePath     : \client242\assets\src\core\machine\Loader.ts
  * @Description  : 加载器 封装资源加载类
  */
 
 import Logger from "./Logger";
+import Util from "../../utils/Util";
 
 export default class Loader {
 
@@ -84,7 +85,7 @@ export default class Loader {
      * @param onProgress {(percent: number) => void} 预加载过程中的百分比（0-100）
      * @param appendNum {number} 追加百分比计算数量
      */
-    public preload(path: AssetsPathDefineType, onComplete?: (items: cc.AssetManager.RequestItem[]) => void, onProgress?: (percent: number) => void, appendNum?: number): void {
+    public preload(path: AssetsPathDefineType, onComplete?: (items: cc.AssetManager.RequestItem[]) => void, onProgress?: (percent: number) => void, appendTotal?: number): void {
         if (!this.checkLegal(path)) {
             if (onComplete) {
                 onComplete(null);
@@ -92,12 +93,12 @@ export default class Loader {
             return;
         }
 
-        if (appendNum === null || appendNum === undefined) {
-            appendNum = 0;
+        if (appendTotal === null || appendTotal === undefined) {
+            appendTotal = 0;
         }
 
         cc.resources.preload(path, (finish: number, total: number, item: cc.AssetManager.RequestItem) => {
-            let percent: number = Math.floor((finish / (total + appendNum) * 100) * 100) / 100;
+            let percent: number = Util.toFixed(finish / (total + appendTotal) * 100);
             if (onProgress) {
                 onProgress(percent);
             }

@@ -13,5 +13,6 @@
 interface UIInterface<T> {
     // 用于打开界面传入的处理数据
     data: T;
+    // 用于直接刷新视图的接口实现方法
     refresh(data?: T): void;
 }

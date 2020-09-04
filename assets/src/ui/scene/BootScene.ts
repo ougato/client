@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-03 22:59:29
+ * @LastEditTime : 2020-09-04 17:45:22
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
@@ -14,6 +14,7 @@ import EventDefine from "../../define/EventDefine";
 import ViewDefine from "../../define/ViewDefine";
 import AnimationUtil from "../../utils/AnimationUtil";
 import ViewStyleDefine from "../../define/ViewStyleDefine";
+import { DynamicEffectDefine } from "../../define/AudioDefine";
 
 const { ccclass, property } = cc._decorator;
 
@@ -134,44 +135,11 @@ export default class BootScene extends UIComponent {
      * 进入游戏
      */
     private intoGame(): void {
-        G.UIMgr.openScene(SceneDefine.AccountScene);
-    }
-
-    private onClickLoading(): void {
-        let arr: Function[] = [];
-        // arr.push(() => {
-        //     G.UIMgr.openLockTouch();
-        // });
-        // arr.push(() => {
-        //     G.UIMgr.openLoading("网络不行了");
-        // });
-        // arr.push(() => {
-        //     G.UIMgr.openProgress()
-        //     G.UIMgr.setProgress(100);
-        // });
-        // arr.push(() => {
-        //     G.UIMgr.openPopups("键盘侠你好啊", "标题党", () => {
-        //         console.log("点击确定按钮");
-        //     });
-        // })
-
-        arr.push(() => {
-            G.UIMgr.openScene(SceneDefine.AccountScene);
-            // G.UIMgr.openView(ViewDefine.Test1, "BootScene call", () => {
-            //     console.log("完成Test2");
-            // }, null, ViewStyleDefine.FADE));
-        let index: number = 0;
-        let timer = setInterval(() => {
-            let fn: Function = arr[index++];
-            if (fn) {
-                fn();
-            } else {
-                clearInterval(timer);
-            }
-        }, 0);
-
-
-
+        let arr:string[] = [];
+        for(let value in DynamicEffectDefine) {
+            arr.push(DynamicEffectDefine[value]);
+        }
+        G.UIMgr.openScene(SceneDefine.AccountScene, 4141, null, null, arr);
     }
 
 }

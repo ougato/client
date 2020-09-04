@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-04 01:33:58
+ * @LastEditTime : 2020-09-04 17:30:24
  * @FilePath     : \client242\assets\src\core\manager\ui\UIManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
@@ -15,6 +15,7 @@ import ViewOrderDefine from "../../../define/ViewOrderDefine";
 import { ORDER_INTERVAL } from "../../../define/ViewOrderDefine";
 import AnimationUtil from "../../../utils/AnimationUtil";
 import Loader from "../../machine/Loader";
+import Util from "../../../utils/Util";
 
 // 预加载场景等待多少秒未完成，就显示进度条界面
 const PRELOAD_SCENE_WAITIMG_TIME: number = 1;
@@ -326,19 +327,19 @@ export default class UIManager extends Manager implements ManagerInterface {
         this.closeTips();
     }
 
-    private replaceScene<T>(name: SceneDefineType, data?: T, completeCallback?: (error: Error, scene: cc.Scene) => void, progressCallback?: (completedCount: number, totalCount: number, item: any) => void, timer?: number, appendNum?:number): void {
+    /**
+     * 切换场景内部方法
+     * @param name {SceneDefineType} 场景名
+     * @param completeCallback {(scene: cc.Scene) => void} 完成后的场景
+     * @param progressCallback {(percent: number) => void} 场景预加载进度（保留 2 位小数）
+     */
+    private replaceScene<T>(name: SceneDefineType, data: T, completeCallback?: (error: Error, scene: cc.Scene) => void, progressCallback?: (percent: number) => void): void {
 
         cc.director.preloadScene(name, (completedCount: number, totalCount: number, item: any) => {
             if (progressCallback) {
-                progressCallback(completedCount, totalCount, item);
+                progressCallback(Util.toFixed((completedCount / totalCount) * 100));
             }
-            this.setProgress((completedCount / totalCount) * 100);
         }, (error: Error) => {
-            if (timer !== null) {
-                clearTimeout(timer);
-                timer = null;
-                this.closeProgress();
-            }
             if (!error) {
                 cc.director.loadScene(name, (error: Error, scene: cc.Scene) => {
                     if (!error) {
@@ -350,47 +351,93 @@ export default class UIManager extends Manager implements ManagerInterface {
                                 Logger.getInstance().warn(`${name} 场景未挂载 ${name} 脚本`);
                             }
                         }
-                        this.closeAllPersistNode();
-                        if (completeCallback) {
-                            completeCallback(error, scene);
-                        }
                     } else {
                         Logger.getInstance().warn(`切换 ${name} 场景失败`, error);
-                        this.closeLockTouch();
+                    }
+                    if (completeCallback) {
+                        completeCallback(error, scene);
                     }
                 });
             } else {
                 Logger.getInstance().warn(`预加载 ${name} 场景失败`, error);
-                this.closeLockTouch();
+                if (completeCallback) {
+                    completeCallback(error, null);
+                }
             }
-
         });
     }
 
     /**
      * 打开场景
-     * @param name {string} 场景名
+     * @param name {SceneDefineType} 场景名
      * @param data {T} 任意数据
-     * @param progressCallback {Function} 加载百分比回调
-     * @param completeCallback {Function} 加载完成回调
-     * @param preload {cc.Asset | cc.Asset[]} 预加载文件 或者 预加载列表
+     * @param progressCallback {(percent: number) => void} 加载百分比回调
+     * @param completeCallback {(error: Error, scene: cc.Scene) => void,} 加载完成回调
+     * @param preload {AssetsPathDefineType} 预加载文件 或者 预加载列表
      */
-    public openScene<T>(name: SceneDefineType, data?: T, completeCallback?: (error: Error, scene: cc.Scene) => void, progressCallback?: (completedCount: number, totalCount: number, item: any) => void, preload?: cc.Asset | cc.Asset[]): void {
+    public openScene<T>(name: SceneDefineType, data?: T, completeCallback?: (error: Error, scene: cc.Scene) => void, progressCallback?: (percent: number) => void, preload?: AssetsPathDefineType): void {
         this.openLockTouch();
         let preloadTimer: number = setTimeout(() => {
             this.openProgress();
         }, PRELOAD_SCENE_WAITIMG_TIME * 1000);
 
-        const APPEND_NUM: number = 1;
 
         if (preload !== null && preload !== undefined) {
+            const APPEND_TOTAL: number = 1;
+            let firstHalfPercent: number = 0;
+            let lastHalfPercent: number = 0;
             Loader.getInstance().preload(preload, (items: cc.AssetManager.RequestItem[]) => {
-                this.replaceScene(name, data, completeCallback, progressCallback, preloadTimer, items.length + APPEND_NUM);
+                this.replaceScene(name, data, (error: Error, scene: cc.Scene) => {
+                    this.setProgress(100);
+                    if (preloadTimer !== null && preloadTimer !== undefined) {
+                        clearTimeout(preloadTimer);
+                        preloadTimer = null;
+                        this.closeProgress();
+                    }
+
+                    if (completeCallback) {
+                        completeCallback(error, scene);
+                    }
+
+                    this.closeLockTouch();
+                }, (percent: number) => {
+                    // 后半段百分比
+                    lastHalfPercent = firstHalfPercent + Util.toFixed((percent / 100) * (100 - firstHalfPercent));
+                    this.setProgress(lastHalfPercent);
+                    if (progressCallback) {
+                        progressCallback(lastHalfPercent);
+                    }
+                    console.log(`后半段百分比：${lastHalfPercent}`);
+                });
+            }, (percent: number) => {
+                // 前半段百分比
+                firstHalfPercent = percent;
+                this.setProgress(firstHalfPercent);
+                if (progressCallback) {
+                    progressCallback(firstHalfPercent);
+                }
+                console.log(`前半段百分比：${firstHalfPercent}`);
+            }, APPEND_TOTAL);
+        } else {
+            this.replaceScene(name, data, (error: Error, scene: cc.Scene) => {
+                this.setProgress(100);
+                if (preloadTimer !== null && preloadTimer !== undefined) {
+                    clearTimeout(preloadTimer);
+                    preloadTimer = null;
+                    this.closeProgress();
+                }
+
+                if (completeCallback) {
+                    completeCallback(error, scene);
+                }
+
+                this.closeLockTouch();
             }, (percent: number) => {
                 this.setProgress(percent);
-            }, APPEND_NUM);
-        } else {
-            this.replaceScene(name, data, completeCallback, progressCallback, preloadTimer);
+                if (progressCallback) {
+                    progressCallback(percent);
+                }
+            });
         }
     }
 
@@ -581,7 +628,7 @@ export default class UIManager extends Manager implements ManagerInterface {
             this.openProgress();
         }, PRELOAD_SCENE_WAITIMG_TIME * 1000);
         cc.resources.load(path, cc.Prefab, (finish: number, total: number, item: cc.AssetManager.RequestItem) => {
-            this.setProgress((finish / total) * 100);
+            this.setProgress(Util.toFixed((finish / total) * 100));
         }, (error: Error, assets: cc.Prefab) => {
             if (loadTimer !== null) {
                 clearTimeout(loadTimer);
