@@ -2,10 +2,11 @@
  * @Author       : ougato
  * @Date         : 2020-08-25 11:51:17
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-26 02:57:10
+ * @LastEditTime : 2020-09-04 23:17:36
  * @FilePath     : \client242\assets\src\ui\view\animation\LoadingClip.ts
  * @Description  : 加载转动的剪辑动画
  */
+
 const { ccclass, property } = cc._decorator;
 
 // 层级交换
@@ -35,7 +36,7 @@ export default class LoadingClip extends cc.Component {
 
     protected start(): void {
 
-    } 
+    }
 
     /**
      * 初始化数据

@@ -2,19 +2,16 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-04 17:45:22
+ * @LastEditTime : 2020-09-05 01:12:42
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
 
 import Global from "../../core/Global";
 import SceneDefine from "../../define/SceneDefine";
-import UIComponent from "../view/UIComponent";
-import EventDefine from "../../define/EventDefine";
-import ViewDefine from "../../define/ViewDefine";
-import AnimationUtil from "../../utils/AnimationUtil";
-import ViewStyleDefine from "../../define/ViewStyleDefine";
+import UIComponent from "../UIComponent";
 import { DynamicEffectDefine } from "../../define/AudioDefine";
+import { CustomViewDefine } from "../../define/ViewDefine";
 
 const { ccclass, property } = cc._decorator;
 
@@ -45,7 +42,7 @@ export default class BootScene extends UIComponent {
     }
 
     protected onLoad(): void {
-        
+
     }
 
     protected start() {
@@ -135,9 +132,12 @@ export default class BootScene extends UIComponent {
      * 进入游戏
      */
     private intoGame(): void {
-        let arr:string[] = [];
-        for(let value in DynamicEffectDefine) {
+        let arr: string[] = [];
+        for (let value in DynamicEffectDefine) {
             arr.push(DynamicEffectDefine[value]);
+        }
+        for (let value in CustomViewDefine) {
+            arr.push(CustomViewDefine[value]);
         }
         G.UIMgr.openScene(SceneDefine.AccountScene, 4141, null, null, arr);
     }

@@ -7,7 +7,7 @@
  * @Description  : 向上飘动文字提示
  */
 
-import UIComponent from "../UIComponent";
+import UIComponent from "../../UIComponent";
 
 const { ccclass, property } = cc._decorator;
 

@@ -2,12 +2,12 @@
  * @Author       : ougato
  * @Date         : 2020-09-01 23:20:29
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-02 01:40:45
+ * @LastEditTime : 2020-09-05 02:05:40
  * @FilePath     : \client242\assets\src\test\Test2.ts
  * @Description  : 
  */
 
-import UIComponent from "../ui/view/UIComponent";
+import UIComponent from "../ui/UIComponent";
 import ViewDefine from "../define/ViewDefine";
 import ViewStyleDefine from "../define/ViewStyleDefine";
 
@@ -46,8 +46,8 @@ export default class Test2 extends UIComponent implements UIInterface<string> {
         }, null, ViewStyleDefine.FADE);
     }
 
-    private onClickClose():void {
-        G.UIMgr.closeView(ViewDefine.Test2, () => {
+    private onClickClose(): void {
+        G.UIMgr.closeView(ViewDefine.Test2, false, () => {
             console.log("关闭Test2");
         }, ViewStyleDefine.FADE);
     }

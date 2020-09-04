@@ -2,10 +2,11 @@
  * @Author       : ougato
  * @Date         : 2020-08-10 17:16:17
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-01 18:11:24
+ * @LastEditTime : 2020-09-04 23:19:22
  * @FilePath     : \client242\assets\src\utils\TimeUtil.ts
- * @Description  : 
+ * @Description  : 时间工具
  */
+
 export default class TimeUtil {
 
     /**

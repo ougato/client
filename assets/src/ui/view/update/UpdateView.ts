@@ -2,12 +2,12 @@
  * @Author       : ougato
  * @Date         : 2020-08-25 09:41:45
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-01 18:00:44
+ * @LastEditTime : 2020-09-04 23:18:34
  * @FilePath     : \client242\assets\src\ui\view\update\UpdateView.ts
  * @Description  : 热更新界面
  */
 
-import UIComponent from "../UIComponent";
+import UIComponent from "../../UIComponent";
 
 const { ccclass, property } = cc._decorator;
 

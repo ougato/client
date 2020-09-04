@@ -7,7 +7,7 @@
  * @Description  : 通用用户交互弹窗
  */
 
-import UIComponent from "../UIComponent";
+import UIComponent from "../../UIComponent";
 
 const { ccclass, property } = cc._decorator;
 

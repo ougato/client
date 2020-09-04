@@ -2,12 +2,12 @@
  * @Author       : ougato
  * @Date         : 2020-08-23 17:27:05
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-30 23:09:34
+ * @LastEditTime : 2020-09-04 23:17:58
  * @FilePath     : \client242\assets\src\ui\view\persist\LoadingNode.ts
  * @Description  : 加载等待节点
  */
 
-import UIComponent from "../UIComponent";
+import UIComponent from "../../UIComponent";
 import LoadingClip from "../animation/LoadingClip";
 
 const { ccclass, property } = cc._decorator;

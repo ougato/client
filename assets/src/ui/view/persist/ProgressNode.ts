@@ -2,12 +2,12 @@
  * @Author       : ougato
  * @Date         : 2020-08-24 09:33:11
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-04 00:06:07
+ * @LastEditTime : 2020-09-04 23:18:22
  * @FilePath     : \client242\assets\src\ui\view\persist\ProgressNode.ts
  * @Description  : 加载进度节点
  */
 
-import UIComponent from "../UIComponent";
+import UIComponent from "../../UIComponent";
 
 const { ccclass, property } = cc._decorator;
 

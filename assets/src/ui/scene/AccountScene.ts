@@ -1,49 +1,48 @@
 /*
  * @Author       : ougato
- * @Date         : 2020-08-31 00:42:13
+ * @Date         : 2020-09-04 23:07:17
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-04 00:38:07
+ * @LastEditTime : 2020-09-05 01:56:22
  * @FilePath     : \client242\assets\src\ui\scene\AccountScene.ts
  * @Description  : 
  */
-// Learn TypeScript:
-//  - https://docs.cocos.com/creator/manual/en/scripting/typescript.html
-// Learn Attribute:
-//  - https://docs.cocos.com/creator/manual/en/scripting/reference/attributes.html
-// Learn life-cycle callbacks:
-//  - https://docs.cocos.com/creator/manual/en/scripting/life-cycle-callbacks.html
-
+import UIComponent from "../UIComponent";
+import { DynamicEffectDefine } from "../../define/AudioDefine";
 import ViewDefine from "../../define/ViewDefine";
-import { AudioDefine } from "../../define/AudioDefine";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class NewClass extends cc.Component {
+export default class NewClass extends UIComponent {
 
-    @property(cc.Label)
-    label: cc.Label = null;
-
-    @property
-    text: string = 'hello';
-
-    // LIFE-CYCLE CALLBACKS:
-
-    // onLoad () {}
-
-    start() {
-        let arr: AssetsPathDefineType = [
-            ViewDefine.Test1,
-            ViewDefine.Test2,
-            AudioDefine.CLICK,
-        ]
-        G.Loader.preload(arr, (items: cc.AssetManager.RequestItem[]) => {
-            console.log(items);
-            console.log("完成");
-        }, (percent: number) => {
-            G.Loader.load(arr);
-        });
+    protected onLoad(): void {
+        this.initData();
+        this.initView();
     }
 
-    // update (dt) {}
+    protected start(): void {
+
+    }
+
+    /**
+     * 初始化数据
+     */
+    private initData(): void {
+
+    }
+
+    /**
+     * 初始化视图
+     */
+    private initView(): void {
+
+    }
+
+    /**
+     * 点击释放
+     */
+    private onClickRelease():void {
+        G.UIMgr.openView(ViewDefine.Test1);
+    }
+
 }

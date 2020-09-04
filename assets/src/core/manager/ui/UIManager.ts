@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-04 17:30:24
+ * @LastEditTime : 2020-09-05 01:44:53
  * @FilePath     : \client242\assets\src\core\manager\ui\UIManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
@@ -130,7 +130,6 @@ export default class UIManager extends Manager implements ManagerInterface {
         if (node) {
             this.m_persistNodeMap.delete(nodeName);
             cc.game.removePersistRootNode(node);
-            node.removeFromParent();
             node.destroy();
             node = null;
         }
@@ -381,6 +380,20 @@ export default class UIManager extends Manager implements ManagerInterface {
             this.openProgress();
         }, PRELOAD_SCENE_WAITIMG_TIME * 1000);
 
+        let done: Function = (error: Error, scene: cc.Scene) => {
+            if (preloadTimer !== null && preloadTimer !== undefined) {
+                clearTimeout(preloadTimer);
+                preloadTimer = null;
+                this.closeProgress();
+            }
+
+            Loader.getInstance().releaseAll();
+
+            if (completeCallback) {
+                completeCallback(error, scene);
+            }
+            this.closeLockTouch();
+        }
 
         if (preload !== null && preload !== undefined) {
             const APPEND_TOTAL: number = 1;
@@ -388,18 +401,7 @@ export default class UIManager extends Manager implements ManagerInterface {
             let lastHalfPercent: number = 0;
             Loader.getInstance().preload(preload, (items: cc.AssetManager.RequestItem[]) => {
                 this.replaceScene(name, data, (error: Error, scene: cc.Scene) => {
-                    this.setProgress(100);
-                    if (preloadTimer !== null && preloadTimer !== undefined) {
-                        clearTimeout(preloadTimer);
-                        preloadTimer = null;
-                        this.closeProgress();
-                    }
-
-                    if (completeCallback) {
-                        completeCallback(error, scene);
-                    }
-
-                    this.closeLockTouch();
+                    done(error, scene);
                 }, (percent: number) => {
                     // 后半段百分比
                     lastHalfPercent = firstHalfPercent + Util.toFixed((percent / 100) * (100 - firstHalfPercent));
@@ -407,7 +409,6 @@ export default class UIManager extends Manager implements ManagerInterface {
                     if (progressCallback) {
                         progressCallback(lastHalfPercent);
                     }
-                    console.log(`后半段百分比：${lastHalfPercent}`);
                 });
             }, (percent: number) => {
                 // 前半段百分比
@@ -416,22 +417,10 @@ export default class UIManager extends Manager implements ManagerInterface {
                 if (progressCallback) {
                     progressCallback(firstHalfPercent);
                 }
-                console.log(`前半段百分比：${firstHalfPercent}`);
             }, APPEND_TOTAL);
         } else {
             this.replaceScene(name, data, (error: Error, scene: cc.Scene) => {
-                this.setProgress(100);
-                if (preloadTimer !== null && preloadTimer !== undefined) {
-                    clearTimeout(preloadTimer);
-                    preloadTimer = null;
-                    this.closeProgress();
-                }
-
-                if (completeCallback) {
-                    completeCallback(error, scene);
-                }
-
-                this.closeLockTouch();
+                done(error, scene);
             }, (percent: number) => {
                 this.setProgress(percent);
                 if (progressCallback) {
@@ -461,31 +450,35 @@ export default class UIManager extends Manager implements ManagerInterface {
     /**
      * 关闭单个视图使用
      * @param path {ViewDefineType} 路径
+     * @param releaseRef {boolean} 是否清理引用计数
      * @param completeCallback {Function} 完成后的回调
      * @param style {ViewStyleType} 显示时动画风格
      */
-    public closeView(path: ViewDefineType, completeCallback?: Function, style?: ViewStyleType): void {
+    public closeView(path: ViewDefineType, releaseRef: boolean = true, completeCallback?: Function, style?: ViewStyleType): void {
         this.openLockTouch();
         let view: cc.Node = this.m_viewNodeMap.get(path);
+
+        let done: Function = () => {
+            view.destroy();
+            view = null;
+            if (completeCallback) {
+                completeCallback();
+            }
+            this.m_viewNodeMap.delete(path);
+
+            if (releaseRef) {
+                Loader.getInstance().release(path);
+            }
+            this.closeLockTouch();
+        }
+
         if (view) {
             if (style !== null && style !== undefined) {
                 AnimationUtil.playClose(view, style, () => {
-                    if (completeCallback) {
-                        completeCallback();
-                    }
-                    view.destroy();
-                    view = null;
-                    this.m_viewNodeMap.delete(path);
-                    this.closeLockTouch();
-                })
+                    done();
+                });
             } else {
-                if (completeCallback) {
-                    completeCallback();
-                }
-                view.destroy();
-                view = null;
-                this.m_viewNodeMap.delete(path);
-                this.closeLockTouch();
+                done();
             }
         }
     }
@@ -538,7 +531,7 @@ export default class UIManager extends Manager implements ManagerInterface {
     }
 
     /**
-     * 重置视图层 的 层级，返回相应的最高层级+1
+     * 重置视图层 的 层级，返回相应的最高层级 +1
      * @param layer {ViewOrderDefine} 层
      * @return {number}
      */
@@ -596,20 +589,21 @@ export default class UIManager extends Manager implements ManagerInterface {
         console.log(order);
         view.zIndex = order;
 
-        if (style !== null && style !== undefined) {
-            view.active = false;
-            AnimationUtil.playOpen(view, style, () => {
-                if (completeCallback) {
-                    completeCallback(view);
-                    this.closeLockTouch();
-                }
-            });
-        } else {
-            view.active = true;
+        let done: Function = () => {
             if (completeCallback) {
                 completeCallback(view);
                 this.closeLockTouch();
             }
+        }
+
+        if (style !== null && style !== undefined) {
+            view.active = false;
+            AnimationUtil.playOpen(view, style, () => {
+                done();
+            });
+        } else {
+            view.active = true;
+            done();
         }
         this.m_viewTopOrderMap.set(layer, order);
     }
@@ -627,50 +621,53 @@ export default class UIManager extends Manager implements ManagerInterface {
         let loadTimer: number = setTimeout(() => {
             this.openProgress();
         }, PRELOAD_SCENE_WAITIMG_TIME * 1000);
-        cc.resources.load(path, cc.Prefab, (finish: number, total: number, item: cc.AssetManager.RequestItem) => {
-            this.setProgress(Util.toFixed((finish / total) * 100));
-        }, (error: Error, assets: cc.Prefab) => {
+
+        Loader.getInstance().load(path, (items: cc.Prefab) => {
             if (loadTimer !== null) {
                 clearTimeout(loadTimer);
                 loadTimer = null;
                 this.closeProgress();
             }
-            if (!error) {
-                let node: cc.Node = cc.instantiate(assets);
-                let script: UIInterface<T> = node.getComponent(node.name);
-                let scene: cc.Scene = cc.director.getScene();
-                if (layer === null || layer === undefined) {
-                    layer = DEFAULT_VIEW_LAYER;
-                }
 
-                let order: number = this.getLayerTopOrder(layer)
-                if (this.checkBounds(layer, order)) {
-                    order = this.resetViewOrder(layer);
-                }
+            let node: cc.Node = cc.instantiate(items);
+            let script: UIInterface<T> = node.getComponent(node.name);
+            let scene: cc.Scene = cc.director.getScene();
+            if (layer === null || layer === undefined) {
+                layer = DEFAULT_VIEW_LAYER;
+            }
 
-                // 数据赋值
-                if (script && data !== null && data !== undefined) {
-                    script.data = data;
-                }
+            let order: number = this.getLayerTopOrder(layer)
+            if (this.checkBounds(layer, order)) {
+                order = this.resetViewOrder(layer);
+            }
 
-                scene.getChildByName("Canvas").addChild(node, order);
-                // 动画播放
-                if (style !== null && style !== undefined) {
-                    AnimationUtil.playOpen(node, style, () => {
-                        completeCallback(node);
-                        this.closeLockTouch();
-                    })
-                } else {
+            // 数据赋值
+            if (script && data !== null && data !== undefined) {
+                script.data = data;
+            }
+
+            let done: Function = () => {
+                if (completeCallback) {
                     completeCallback(node);
-                    this.closeLockTouch();
                 }
-                this.m_viewTopOrderMap.set(layer, order);
-                this.m_viewNodeMap.set(path, node);
-            } else {
-                Logger.getInstance().warn(`加载 ${path} 视图失败`, error);
                 this.closeLockTouch();
             }
+
+            scene.getChildByName("Canvas").addChild(node, order);
+            // 动画播放
+            if (style !== null && style !== undefined) {
+                AnimationUtil.playOpen(node, style, () => {
+                    done();
+                })
+            } else {
+                done();
+            }
+            this.m_viewTopOrderMap.set(layer, order);
+            this.m_viewNodeMap.set(path, node);
+        }, (percent: number) => {
+            this.setProgress(percent);
         });
+
     }
 
     /**

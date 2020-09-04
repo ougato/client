@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-13 02:00:18
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-04 17:03:49
+ * @LastEditTime : 2020-09-05 01:26:12
  * @FilePath     : \client242\assets\src\core\machine\Loader.ts
  * @Description  : 加载器 封装资源加载类
  */
@@ -153,24 +153,49 @@ export default class Loader {
 
     /**
      * 释放已动态加载过的资源
-     * @param path 
-     * @param onComplete 
-     * @param onProgress 
+     * @param path {AssetsPathDefineType} 动态资源路径
+     * @param onComplete {(items: cc.AssetManager.RequestItem[]) => void} 释放完成回调
+     * @param onProgress {(percent: number) => void} 释放过程中的百分比（0-100）
      */
     public release(path: AssetsPathDefineType, onComplete?: Function, onProgress?: (percent: number) => void) {
-        if (!this.checkLegal(path)) {
-            if (onComplete) {
-                onComplete(null);
+        if (this.checkLegal(path)) {
+            if (path instanceof Array) {
+                let releaseSize: number = path.length;
+                for (let i: number = 0; i < path.length; ++i) {
+                    if (onProgress) {
+                        onProgress(Util.toFixed((i + 1) / releaseSize * 100));
+                    }
+                    this.delAsset(path[i]);
+                }
+            } else {
+                this.delAsset(path);
             }
-            return;
         }
 
-        if (path instanceof Array) {
-            for (let i: number = 0; i < path.length; ++i) {
-                this.delAsset(path[i]);
-            }
-        } else {
-            this.delAsset(path);
+        if (onComplete) {
+            onComplete();
+        }
+    }
+
+    /**
+     * 释放所有已动态加载过的资源
+     * @param onComplete {(items: cc.AssetManager.RequestItem[]) => void} 释放所有完成回调
+     * @param onProgress {(percent: number) => void} 释放所有过程中的百分比（0-100）
+     */
+    public releaseAll(onComplete?: Function, onProgress?: (percent: number) => void): void {
+        let size: number = this.m_cacheAssets.size;
+        if (this.m_cacheAssets && size > 0) {
+            let index: number = 0;
+            this.m_cacheAssets.forEach((value: cc.Asset, key: AssetsPathDefineType, map: Map<AssetsPathDefineType, cc.Asset>) => {
+                if (onProgress) {
+                    onProgress(Util.toFixed((++index / size) * 100));
+                }
+                this.delAsset(key);
+            });
+        }
+
+        if (onComplete) {
+            onComplete();
         }
     }
 
