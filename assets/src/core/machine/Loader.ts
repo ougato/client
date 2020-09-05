@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-13 02:00:18
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-05 01:26:12
+ * @LastEditTime : 2020-09-05 17:22:10
  * @FilePath     : \client242\assets\src\core\machine\Loader.ts
  * @Description  : 加载器 封装资源加载类
  */
@@ -210,6 +210,5 @@ export default class Loader {
             this.m_cacheAssets.clear();
             this.m_cacheAssets = null;
         }
-
     }
 }

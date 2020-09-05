@@ -2,13 +2,13 @@
  * @Author       : ougato
  * @Date         : 2020-09-04 23:07:17
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-05 01:56:22
+ * @LastEditTime : 2020-09-05 16:41:32
  * @FilePath     : \client242\assets\src\ui\scene\AccountScene.ts
  * @Description  : 
  */
 import UIComponent from "../UIComponent";
-import { DynamicEffectDefine } from "../../define/AudioDefine";
 import ViewDefine from "../../define/ViewDefine";
+import ViewStyleDefine from "../../define/ViewStyleDefine";
 
 const { ccclass, property } = cc._decorator;
 
@@ -42,7 +42,7 @@ export default class NewClass extends UIComponent {
      * 点击释放
      */
     private onClickRelease():void {
-        G.UIMgr.openView(ViewDefine.Test1);
+        G.UIMgr.openView(ViewDefine.Test1, null, null,null, ViewStyleDefine.FADE);
     }
 
 }
