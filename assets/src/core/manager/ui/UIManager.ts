@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-05 17:10:01
+ * @LastEditTime : 2020-09-06 01:33:47
  * @FilePath     : \client242\assets\src\core\manager\ui\UIManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
@@ -26,11 +26,11 @@ export default class UIManager extends Manager implements ManagerInterface {
 
     private static g_instance: UIManager = null;
 
-    // 常驻节点
+    // 常驻节点 Map
     private m_persistNodeMap: Map<PersistNodeType, cc.Node> = null;
-    // 视图节点
+    // 视图节点 Map
     private m_viewNodeMap: Map<ViewDefineType, cc.Node> = null;
-    // 视图每层最高层级
+    // 视图每层最高层级 Map
     private m_viewTopOrderMap: Map<ViewOrderDefine, number> = null;
 
     public static getInstance(): UIManager {

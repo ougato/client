@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-05 01:12:42
+ * @LastEditTime : 2020-09-06 18:21:29
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
@@ -108,7 +108,7 @@ export default class BootScene extends UIComponent {
         return new Promise((resolve: (value?: boolean) => void, reject: (reason?: any) => void) => {
             let isUpdate: boolean = false;
             if (cc.sys.isNative) {
-                isUpdate = true;
+                isUpdate = false;
             }
             resolve(isUpdate);
         })

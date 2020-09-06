@@ -2,14 +2,14 @@
  * @Author       : ougato
  * @Date         : 2020-08-10 15:59:46
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-30 23:27:09
+ * @LastEditTime : 2020-09-06 15:05:03
  * @FilePath     : \client242\assets\src\define\EventDefine.ts
  * @Description  : 事件定义
  */
 
 // 系统事件定义 范围从 0-10000
 export enum SystemEventDefine {
-
+    
 }
 
 // 游戏事件定义 范围从 10001~ 开始

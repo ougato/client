@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-01 23:20:29
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-05 02:05:40
+ * @LastEditTime : 2020-09-06 18:27:04
  * @FilePath     : \client242\assets\src\test\Test2.ts
  * @Description  : 
  */
@@ -10,6 +10,8 @@
 import UIComponent from "../ui/UIComponent";
 import ViewDefine from "../define/ViewDefine";
 import ViewStyleDefine from "../define/ViewStyleDefine";
+import { AudioDefine } from "../define/AudioDefine";
+import Loader from "../core/machine/Loader";
 
 const { ccclass, property } = cc._decorator;
 
@@ -41,15 +43,22 @@ export default class Test2 extends UIComponent implements UIInterface<string> {
     }
 
     private onClick(): void {
-        G.UIMgr.openView(ViewDefine.Test1, "Test1 call", () => {
-            console.log("完成Test1");
-        }, null, ViewStyleDefine.FADE);
+        // G.UIMgr.openView(ViewDefine.Test1, "Test1 call", () => {
+        //     console.log("完成Test1");
+        // }, null, ViewStyleDefine.FADE);
+        G.AudioMgr.playEffect(AudioDefine.EFFECT3);
     }
 
     private onClickClose(): void {
-        G.UIMgr.closeView(ViewDefine.Test2, false, () => {
-            console.log("关闭Test2");
-        }, ViewStyleDefine.FADE);
+        G.AudioMgr.pauseEffect(AudioDefine.EFFECT3);
+        // let a: cc.Asset = G.Loader.getCache(AudioDefine.EFFECT3);
+        // let b: cc.Asset = G.Loader.getCache("123456");
+        // console.log(a);
+        // console.log(b);
+        // G.AudioMgr.pauseEffect(AudioDefine.EFFECT1);
+        // G.UIMgr.closeView(ViewDefine.Test2, false, () => {
+        //     console.log("关闭Test2");
+        // }, ViewStyleDefine.FADE);
     }
 
     // update (dt) {}

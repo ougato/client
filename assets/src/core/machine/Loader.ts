@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-13 02:00:18
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-05 17:22:10
+ * @LastEditTime : 2020-09-06 18:24:30
  * @FilePath     : \client242\assets\src\core\machine\Loader.ts
  * @Description  : 加载器 封装资源加载类
  */
@@ -79,6 +79,15 @@ export default class Loader {
     }
 
     /**
+     * 获取缓存资源
+     * @param path {AssetsPathDefineType} 动态资源路径
+     * @return {cc.Asset}
+     */
+    public getCache(path: AssetsPathDefineType): cc.Asset | undefined {
+        return this.m_cacheAssets.get(path);
+    }
+
+    /**
      * 预加载动态资源
      * @param path  {AssetsPathDefineType} 动态资源路径
      * @param onComplete {(items: cc.AssetManager.RequestItem[]) => void} 预加载完成回调
@@ -128,7 +137,7 @@ export default class Loader {
         }
 
         cc.resources.load(path, (finish: number, total: number, item: cc.AssetManager.RequestItem) => {
-            let percent: number = Math.floor((finish / total * 100) * 100) / 100;
+            let percent: number = Util.toFixed(finish / total * 100);
             if (onProgress) {
                 onProgress(percent);
             }
@@ -202,7 +211,7 @@ export default class Loader {
     /**
      * 销毁
      */
-    private destroy(): void {
+    public destroy(): void {
         if (this.m_cacheAssets && this.m_cacheAssets.size > 0) {
             this.m_cacheAssets.forEach((value: cc.Asset, key: any, map: Map<any, cc.Asset>) => {
                 value.decRef();
