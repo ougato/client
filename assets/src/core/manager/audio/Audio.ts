@@ -2,12 +2,12 @@
  * @Author       : ougato
  * @Date         : 2020-09-06 13:24:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-06 22:04:16
+ * @LastEditTime : 2020-09-08 03:17:39
  * @FilePath     : \client242\assets\src\core\manager\audio\Audio.ts
- * @Description  : 声音类
+ * @Description  : 重写 cc.AudioSource 声音类
  */
 
-export default class Audio extends cc.AudioSource {
+export default class Audio extends cc.AudioSource implements PoolItemInterface {
 
     // 结束时间（单位：毫秒）
     private m_endTime: number = null;
@@ -16,15 +16,25 @@ export default class Audio extends cc.AudioSource {
     // 声音结束回调方法
     private m_endCallback: Function = null;
 
-    constructor(clip: cc.AudioClip) {
+    constructor() {
         super();
-
-        this.clip = clip; // 父类音频成员
-        this.m_endTime = clip.duration;
     }
 
-    public set endCallback(callback: Function) {
+    /**
+     * 注册播放完成回调
+     * @param callback {Function} 回调
+     */
+    public regCallback(callback: Function) {
         this.m_endCallback = callback;
+    }
+
+    /**
+     * 设置声音资源
+     * @param clip {cc.AudioClip} 声音资源
+     */
+    public setClip(clip: cc.AudioClip) {
+        this.clip = clip;
+        this.m_endTime = clip.duration;
     }
 
     /**
@@ -34,7 +44,6 @@ export default class Audio extends cc.AudioSource {
         if (this.m_endCallback) {
             this.m_endCallback();
         }
-        this.clear();
     }
 
     /**
@@ -96,17 +105,29 @@ export default class Audio extends cc.AudioSource {
      * 重写 rewind 方法
      */
     public rewind(): void {
-        
+        this.stopTimer();
+        this.m_endTime = this.clip.duration;
         super.rewind();
+        this.startTimer();
     }
 
     /**
      * 清理
      */
-    private clear(): void {
+    public clear():void {
         this.m_endTime = null;
-        this.m_endTimer = null;
+        this.stopTimer();
         this.m_endCallback = null;
+    }
+
+    /**
+     * 释放
+     */
+    public release(): void {
+        this.clear();
+        if(cc.isValid(this)) {
+            super.destroy();
+        }
     }
 
 }

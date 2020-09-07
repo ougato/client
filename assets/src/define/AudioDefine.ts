@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-12 11:33:40
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-04 17:45:08
+ * @LastEditTime : 2020-09-08 03:09:47
  * @FilePath     : \client242\assets\src\define\AudioDefine.ts
  * @Description  : 声音相对路径定义
  */
@@ -52,4 +52,4 @@ export enum DynamicEffectDefine {
     EFFECT25 = "audio/temp/25",
 }
 
-export const AudioDefine = { ...PreloadMusicDefine, ...PreloadEFFECTDefine, ...DynamicMusicDefine, ...DynamicEffectDefine };
+export default { ...PreloadMusicDefine, ...PreloadEFFECTDefine, ...DynamicMusicDefine, ...DynamicEffectDefine };

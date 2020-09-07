@@ -2,20 +2,26 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:04
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-06 22:07:11
+ * @LastEditTime : 2020-09-08 03:18:05
  * @FilePath     : \client242\assets\src\core\manager\audio\AudioManager.ts
  * @Description  : 声音管理器，用于播放（背景音乐 和 游戏音效），格式：[wav、mp3、ogg]
  */
 
 import Manager from "../Manager";
-import { AudioDefine } from "../../../define/AudioDefine";
+import AudioDefine from "../../../define/AudioDefine";
 import Loader from "../../machine/Loader";
 import Audio from "./Audio";
+import Pool from "../../../utils/Pool";
+
+// 同时播放最大数量
+const MAX_SAME_TIME_PLAY_SIZE = 10;
 
 export default class AudioManager extends Manager implements ManagerInterface {
 
     private static g_instance: AudioManager = null;
 
+    // 音效对象池
+    private m_effectPool: Pool<Audio> = null;
     // 音效缓存
     private m_effectMap: Map<AudioDefineType, Audio> = null;
     // 音乐
@@ -38,6 +44,7 @@ export default class AudioManager extends Manager implements ManagerInterface {
     constructor() {
         super();
 
+        this.m_effectPool = new Pool<Audio>(Audio, MAX_SAME_TIME_PLAY_SIZE);
         this.m_effectMap = new Map();
     }
 
@@ -77,11 +84,16 @@ export default class AudioManager extends Manager implements ManagerInterface {
      */
     public playEffect(path: AudioDefineType, isCache: boolean = true, isBreak: boolean = false): void {
         Loader.getInstance().load(path, (clip: cc.AudioClip) => {
-            let audio: Audio = new Audio(clip);
+            let audio: Audio = this.m_effectPool.get();
             this.m_effectMap.set(path, audio);
-            audio.endCallback = () => {
-                console.log(`完成 ${path} 播放`);
-            }
+            audio.setClip(clip);
+            audio.regCallback(() => {
+                if (this.m_effectMap.has(path)) {
+                    this.m_effectMap.delete(path);
+                }
+                audio.clear();
+                this.m_effectPool.put(audio);
+            });
             audio.play();
         });
     }
@@ -91,7 +103,10 @@ export default class AudioManager extends Manager implements ManagerInterface {
      * @param path 
      */
     public pauseEffect(path: AudioDefineType): void {
-        let clip: cc.AudioClip = Loader.getInstance().getCache(path) as cc.AudioClip;
+        console.log(`对象池大小 ${this.m_effectPool.size}`);
+
+
+        // let clip: cc.AudioClip = Loader.getInstance().getCache(path) as cc.AudioClip;
 
         // let audio: Audio = new Audio(clip);
         // this.m_effectMap.set(path, audio);

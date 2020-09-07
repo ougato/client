@@ -2,16 +2,13 @@
  * @Author       : ougato
  * @Date         : 2020-09-01 23:20:29
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-06 18:27:04
+ * @LastEditTime : 2020-09-08 03:12:58
  * @FilePath     : \client242\assets\src\test\Test2.ts
  * @Description  : 
  */
 
 import UIComponent from "../ui/UIComponent";
-import ViewDefine from "../define/ViewDefine";
-import ViewStyleDefine from "../define/ViewStyleDefine";
-import { AudioDefine } from "../define/AudioDefine";
-import Loader from "../core/machine/Loader";
+import AudioDefine from "../define/AudioDefine";
 
 const { ccclass, property } = cc._decorator;
 
@@ -46,7 +43,7 @@ export default class Test2 extends UIComponent implements UIInterface<string> {
         // G.UIMgr.openView(ViewDefine.Test1, "Test1 call", () => {
         //     console.log("完成Test1");
         // }, null, ViewStyleDefine.FADE);
-        G.AudioMgr.playEffect(AudioDefine.EFFECT3);
+        G.AudioMgr.playEffect(AudioDefine.EFFECT2);
     }
 
     private onClickClose(): void {
