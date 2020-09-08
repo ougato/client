@@ -2,24 +2,14 @@
  * @Author       : ougato
  * @Date         : 2020-08-12 11:33:40
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-08 03:09:47
+ * @LastEditTime : 2020-09-09 02:18:48
  * @FilePath     : \client242\assets\src\define\AudioDefine.ts
  * @Description  : 声音相对路径定义
  */
 
-// 预加载音乐文件名定义（Key 一定不要重复）重要的事情说一次
-export enum PreloadMusicDefine {
-
-}
-
-// 预加载音效文件名定义（Key 一定不要重复）重要的事情说两次
-export enum PreloadEFFECTDefine {
-
-}
-
 // 动态加载音乐文件名定义（Key 一定不要重复）重要的事情说三次
 export enum DynamicMusicDefine {
-
+    MUSIC13 = "audio/temp/13",
 }
 
 // 动态加载音效文件名定义（Key 一定不要重复）重要的事情说四次
@@ -52,4 +42,4 @@ export enum DynamicEffectDefine {
     EFFECT25 = "audio/temp/25",
 }
 
-export default { ...PreloadMusicDefine, ...PreloadEFFECTDefine, ...DynamicMusicDefine, ...DynamicEffectDefine };
+export default { ...DynamicMusicDefine, ...DynamicEffectDefine };

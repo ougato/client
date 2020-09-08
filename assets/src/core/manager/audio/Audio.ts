@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-06 13:24:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-08 03:17:39
+ * @LastEditTime : 2020-09-09 02:46:28
  * @FilePath     : \client242\assets\src\core\manager\audio\Audio.ts
  * @Description  : 重写 cc.AudioSource 声音类
  */
@@ -15,6 +15,8 @@ export default class Audio extends cc.AudioSource implements PoolItemInterface {
     private m_endTimer: number = null;
     // 声音结束回调方法
     private m_endCallback: Function = null;
+    // 资源路径
+    private m_assetsPath: AudioDefineType = null;
 
     constructor() {
         super();
@@ -24,7 +26,7 @@ export default class Audio extends cc.AudioSource implements PoolItemInterface {
      * 注册播放完成回调
      * @param callback {Function} 回调
      */
-    public regCallback(callback: Function) {
+    public regCallback(callback: Function): void {
         this.m_endCallback = callback;
     }
 
@@ -32,15 +34,31 @@ export default class Audio extends cc.AudioSource implements PoolItemInterface {
      * 设置声音资源
      * @param clip {cc.AudioClip} 声音资源
      */
-    public setClip(clip: cc.AudioClip) {
+    public setClip(clip: cc.AudioClip): void {
         this.clip = clip;
         this.m_endTime = clip.duration;
     }
 
     /**
+     * 设置动态加载资源路径
+     * @param path {AudioDefineType} 资源路径
+     */
+    public setPath(path: AudioDefineType): void {
+        this.m_assetsPath = path;
+    }
+
+    /**
+     * 获取动态加载资源路径
+     * @return {AudioDefineType} 资源路径
+     */
+    public getPath(): AudioDefineType {
+        return this.m_assetsPath;
+    }
+
+    /**
      * 调用播放完成
      */
-    private callFinish():void {
+    private callFinish(): void {
         if (this.m_endCallback) {
             this.m_endCallback();
         }
@@ -114,10 +132,11 @@ export default class Audio extends cc.AudioSource implements PoolItemInterface {
     /**
      * 清理
      */
-    public clear():void {
+    public clear(): void {
         this.m_endTime = null;
         this.stopTimer();
         this.m_endCallback = null;
+        this.m_assetsPath = null;
     }
 
     /**
@@ -125,7 +144,7 @@ export default class Audio extends cc.AudioSource implements PoolItemInterface {
      */
     public release(): void {
         this.clear();
-        if(cc.isValid(this)) {
+        if (cc.isValid(this)) {
             super.destroy();
         }
     }

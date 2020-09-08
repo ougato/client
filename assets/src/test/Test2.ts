@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-01 23:20:29
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-08 03:12:58
+ * @LastEditTime : 2020-09-09 02:18:20
  * @FilePath     : \client242\assets\src\test\Test2.ts
  * @Description  : 
  */
@@ -47,7 +47,7 @@ export default class Test2 extends UIComponent implements UIInterface<string> {
     }
 
     private onClickClose(): void {
-        G.AudioMgr.pauseEffect(AudioDefine.EFFECT3);
+        G.AudioMgr.playMusic(AudioDefine.MUSIC13);
         // let a: cc.Asset = G.Loader.getCache(AudioDefine.EFFECT3);
         // let b: cc.Asset = G.Loader.getCache("123456");
         // console.log(a);

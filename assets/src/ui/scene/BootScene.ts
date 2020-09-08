@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-06 18:21:29
+ * @LastEditTime : 2020-09-09 02:56:16
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
@@ -132,7 +132,7 @@ export default class BootScene extends UIComponent {
      * 进入游戏
      */
     private intoGame(): void {
-        let arr: string[] = [];
+        let arr: AssetsPathDefineType = [];
         for (let value in DynamicEffectDefine) {
             arr.push(DynamicEffectDefine[value]);
         }

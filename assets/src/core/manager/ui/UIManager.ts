@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-06 01:33:47
+ * @LastEditTime : 2020-09-09 03:11:46
  * @FilePath     : \client242\assets\src\core\manager\ui\UIManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
@@ -13,7 +13,7 @@ import PersistNodeDefine from "../../../define/PersistNodeDefine";
 import ProgressNode from "../../../ui/view/persist/ProgressNode";
 import ViewOrderDefine from "../../../define/ViewOrderDefine";
 import { ORDER_INTERVAL } from "../../../define/ViewOrderDefine";
-import AnimationUtil from "../../../utils/AnimationUtil";
+import AnimationEffectUtil from "../../../utils/AnimationEffectUtil";
 import Loader from "../../machine/Loader";
 import Util from "../../../utils/Util";
 
@@ -467,14 +467,14 @@ export default class UIManager extends Manager implements ManagerInterface {
             this.m_viewNodeMap.delete(path);
 
             if (releaseRef) {
-                Loader.getInstance().release(path);
+                Loader.getInstance().unload(path);
             }
             this.closeLockTouch();
         }
 
         if (view) {
             if (style !== null && style !== undefined) {
-                AnimationUtil.playClose(view, style, () => {
+                AnimationEffectUtil.playClose(view, style, () => {
                     done();
                 });
             } else {
@@ -598,7 +598,7 @@ export default class UIManager extends Manager implements ManagerInterface {
 
         if (style !== null && style !== undefined) {
             view.active = false;
-            AnimationUtil.playOpen(view, style, () => {
+            AnimationEffectUtil.playOpen(view, style, () => {
                 done();
             });
         } else {
@@ -656,7 +656,7 @@ export default class UIManager extends Manager implements ManagerInterface {
             scene.getChildByName("Canvas").addChild(node, order);
             // 动画播放
             if (style !== null && style !== undefined) {
-                AnimationUtil.playOpen(node, style, () => {
+                AnimationEffectUtil.playOpen(node, style, () => {
                     done();
                 })
             } else {
