@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-09 23:39:55
+ * @LastEditTime : 2020-09-10 00:56:02
  * @FilePath     : \client242\assets\src\core\manager\ui\UIManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
@@ -373,6 +373,15 @@ export default class UIManager extends Manager implements ManagerInterface {
             this.openProgress();
         }, PRELOAD_SCENE_WAITIMG_TIME * 1000);
 
+        let preloadTotal: number = 0;
+        if (preload !== null && preload !== undefined) {
+            if (preload instanceof Array) {
+                preloadTotal = preload.length;
+            } else {
+                preloadTotal = 1;
+            }
+        }
+
         let done: Function = (error: Error, scene: cc.Scene) => {
             if (preloadTimer !== null && preloadTimer !== undefined) {
                 clearTimeout(preloadTimer);
@@ -380,47 +389,49 @@ export default class UIManager extends Manager implements ManagerInterface {
                 this.closeProgress();
             }
 
-            Loader.getInstance().releaseAll();
-
             if (completeCallback) {
                 completeCallback(error, scene);
             }
             this.closeLockTouch();
         }
 
-        if (preload !== null && preload !== undefined) {
-            const APPEND_TOTAL: number = 1;
-            let firstHalfPercent: number = 0;
-            let lastHalfPercent: number = 0;
-            Loader.getInstance().preload(preload, (items: cc.AssetManager.RequestItem[]) => {
+        // 先释放之前加载的所有资源
+        Loader.getInstance().releaseAll(() => {
+            if (preloadTotal > 0) {
+                let firstHalfPercent: number = 0;
+                let lastHalfPercent: number = 0;
+                Loader.getInstance().preload(preload, (items: cc.AssetManager.RequestItem[]) => {
+                    this._replaceScene(name, data, (error: Error, scene: cc.Scene) => {
+                        done(error, scene);
+                    }, (percent: number) => {
+                        // 后半段百分比
+                        lastHalfPercent = Util.toFixed(firstHalfPercent + ((percent / 100) * (100 - firstHalfPercent)));
+                        console.log(`后半段：${lastHalfPercent}`);
+                        this.setProgress(lastHalfPercent);
+                        if (progressCallback) {
+                            progressCallback(lastHalfPercent);
+                        }
+                    });
+                }, (percent: number) => {
+                    // 前半段百分比
+                    firstHalfPercent = Util.toFixed((100 / (preloadTotal + 1) * preloadTotal) * percent / 100);
+                    console.log(`前半段：${firstHalfPercent}`);
+                    this.setProgress(firstHalfPercent);
+                    if (progressCallback) {
+                        progressCallback(firstHalfPercent);
+                    }
+                });
+            } else {
                 this._replaceScene(name, data, (error: Error, scene: cc.Scene) => {
                     done(error, scene);
                 }, (percent: number) => {
-                    // 后半段百分比
-                    lastHalfPercent = firstHalfPercent + Util.toFixed((percent / 100) * (100 - firstHalfPercent));
-                    this.setProgress(lastHalfPercent);
+                    this.setProgress(percent);
                     if (progressCallback) {
-                        progressCallback(lastHalfPercent);
+                        progressCallback(percent);
                     }
                 });
-            }, (percent: number) => {
-                // 前半段百分比
-                firstHalfPercent = percent;
-                this.setProgress(firstHalfPercent);
-                if (progressCallback) {
-                    progressCallback(firstHalfPercent);
-                }
-            }, APPEND_TOTAL);
-        } else {
-            this._replaceScene(name, data, (error: Error, scene: cc.Scene) => {
-                done(error, scene);
-            }, (percent: number) => {
-                this.setProgress(percent);
-                if (progressCallback) {
-                    progressCallback(percent);
-                }
-            });
-        }
+            }
+        })
     }
 
     /**

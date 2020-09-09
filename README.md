@@ -273,6 +273,203 @@ EventManager.destroy();
 
 ### 资源加载器
 
+> 资源加载器 维护已加载的资源管理
+
+#### 方法
+
+`getCache`
+
+> 获取已加载后并缓存过的资源
+
+|参数|类型|描述|
+|:--:|:--:|:--:|
+|path|[AssetsPathDefineType](global.ts.d)|资源路径|
+|返回值|类型|描述|
+||cc.Asset\|undefined|如果资源已经加载过返回加载后的 cc.Asset，如果未加载或者已释放返回 undefined|
+
+* 例子
+
+```typescript
+let asset: cc.Asset | undefined = G.Loader.getCache(EventDefine.XXX);
+```
+
+---
+
+`preload`
+
+> 预加载动态资源
+
+|参数|类型|描述|
+|:--:|:--:|:--:|
+|path|[AssetsPathDefineType](global.ts.d)|资源路径|
+|onComplete|(items: cc.AssetManager.RequestItem[]) => void|预加载完成回调|
+|onProgress|(percent: number) => void|预加载过程中的百分比（0-100）|
+
+* 例子
+
+```typescript
+// example 1
+let audioPath: AudioDefineType = AudioDefine.CLICK;
+G.Loader.preload(audioPath, (items: cc.AssetManager.RequestItem[]) => {
+    // 完成后的回调
+}, (percent: number) => {
+    // 加载进度回调
+});
+
+// example 2
+let viewPaths: ViewDefineType[] = [];
+viewPaths.push(ViewDefine.Test1);
+viewPaths.push(ViewDefine.Test2);
+G.Loader.preload(audioPath, (items: cc.AssetManager.RequestItem[]) => {
+    // 完成后的回调
+}, (percent: number) => {
+    // 百分比回调
+});
+```
+
+---
+
+`load`
+
+> 加载动态资源（完成后对资源的引用计数加 1）
+
+|参数|类型|描述|
+|:--:|:--:|:--:|
+|path|[AssetsPathDefineType](global.ts.d)|资源路径|
+|onComplete|(items: cc.Asset | cc.Asset[] | null) => void|加载完成回调|
+|onProgress|(percent: number) => void|加载过程中的百分比（0-100）|
+
+* 例子
+
+```typescript
+// example 1
+let audioPath: AudioDefineType = AudioDefine.CLICK;
+G.Loader.load(audioPath, (items: cc.Asset | cc.Asset[] | null) => {
+    // 完成后的回调
+}, (percent: number) => {
+    // 百分比回调
+});
+
+// example 2
+let viewPaths: ViewDefineType[] = [];
+viewPaths.push(ViewDefine.Test1);
+viewPaths.push(ViewDefine.Test2);
+G.Loader.load(audioPath, (items: cc.Asset | cc.Asset[] | null) => {
+    // 完成后的回调
+}, (percent: number) => {
+    // 百分比回调
+});
+```
+
+---
+
+`unload`
+
+> 卸载动态资源（完成后对资源的引用计数减 1）
+
+|参数|类型|描述|
+|:--:|:--:|:--:|
+|path|[AssetsPathDefineType](global.ts.d)|资源路径|
+|onComplete|Function|卸载完成回调|
+|onProgress|(percent: number) => void|卸载过程中的百分比（0-100）|
+
+* 例子
+
+```typescript
+// example 1
+let audioPath: AudioDefineType = AudioDefine.CLICK;
+G.Loader.unload(audioPath, () => {
+    // 完成后的回调
+}, (percent: number) => {
+    // 百分比回调
+});
+
+// example 2
+let viewPaths: ViewDefineType[] = [];
+viewPaths.push(ViewDefine.Test1);
+viewPaths.push(ViewDefine.Test2);
+G.Loader.unload(audioPath, () => {
+    // 完成后的回调
+}, (percent: number) => {
+    // 百分比回调
+});
+```
+
+---
+
+`release`
+
+> 释放已动态加载过的资源（把资源引用计数减到 0，达到释放资源目的）
+
+|参数|类型|描述|
+|:--:|:--:|:--:|
+|path|[AssetsPathDefineType](global.ts.d)|资源路径|
+|onComplete|Function|释放完成回调|
+|onProgress|(percent: number) => void|释放过程中的百分比（0-100）|
+
+* 例子
+
+```typescript
+// example 1
+let audioPath: AudioDefineType = AudioDefine.CLICK;
+G.Loader.release(audioPath, () => {
+    // 完成后的回调
+}, (percent: number) => {
+    // 百分比回调
+});
+
+// example 2
+let viewPaths: ViewDefineType[] = [];
+viewPaths.push(ViewDefine.Test1);
+viewPaths.push(ViewDefine.Test2);
+G.Loader.release(audioPath, () => {
+    // 完成后的回调
+}, (percent: number) => {
+    // 百分比回调
+});
+```
+
+---
+
+`releaseAll`
+
+> 释放所有已动态加载过的资源（把所有加载过的资源引用计数归 0）
+
+|参数|类型|描述|
+|:--:|:--:|:--:|
+|onComplete|Function|释放所有完成回调|
+|onProgress|(percent: number) => void|释放过程中的百分比（0-100）|
+
+* 例子
+
+```typescript
+// example 1
+G.Loader.releaseAll(() => {
+    // 完成后的回调
+}, (percent: number) => {
+    // 百分比回调
+});
+
+// example 2
+G.Loader.releaseAll(() => {
+    // 完成后的回调
+}, (percent: number) => {
+    // 百分比回调
+});
+```
+
+---
+
+`destroy`
+
+> 销毁 清理已经加载缓存的资源并置空（只允许通过 单例静态销毁调用，不允许使用成员方法进行 destroy）
+
+* 例子
+
+```typescript
+Loader.destroy();
+```
+
 ## 命名规范
 
 ### 节点命名

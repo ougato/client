@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-01 23:20:29
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-09 22:51:09
+ * @LastEditTime : 2020-09-10 01:01:22
  * @FilePath     : \client242\assets\src\test\Test2.ts
  * @Description  : 
  */
@@ -11,6 +11,7 @@ import UIComponent from "../ui/UIComponent";
 import AudioDefine, { DynamicEffectDefine, DynamicMusicDefine } from "../define/AudioDefine";
 import Loader from "../core/machine/Loader";
 import AudioManager from "../core/manager/audio/AudioManager";
+import ViewDefine from "../define/ViewDefine";
 
 const { ccclass, property } = cc._decorator;
 
@@ -64,6 +65,22 @@ export default class Test2 extends UIComponent implements UIInterface<string> {
 
     private onClickPlayEffect(): void {
         G.AudioMgr.playEffect(this.m_effect, true);
+
+        let audioPath: AudioDefineType = AudioDefine.CLICK;
+        G.Loader.preload(audioPath, (items: cc.AssetManager.RequestItem[]) => {
+            // 完成后的回调
+        }, (percent: number) => {
+            // 百分比回调
+        });
+
+        let viewPaths: ViewDefineType[] = [];
+        viewPaths.push(ViewDefine.Test1);
+        viewPaths.push(ViewDefine.Test1);
+        G.Loader.preload(audioPath, (items: cc.AssetManager.RequestItem[]) => {
+            // 完成后的回调
+        }, (percent: number) => {
+            // 百分比回调
+        });
     }
 
     private onClickStopEffect(): void {
@@ -94,11 +111,11 @@ export default class Test2 extends UIComponent implements UIInterface<string> {
         G.AudioMgr.resumeMusic();
     }
 
-    private onClickPrint():void {
+    private onClickPrint(): void {
         Loader.getInstance().print();
     }
 
-    private onClickDestroy():void{
+    private onClickDestroy(): void {
         AudioManager.destroy();
     }
 

@@ -2,9 +2,9 @@
  * @Author       : ougato
  * @Date         : 2020-08-13 02:00:18
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-09 23:35:17
+ * @LastEditTime : 2020-09-10 01:19:08
  * @FilePath     : \client242\assets\src\core\machine\Loader.ts
- * @Description  : 加载器 封装资源加载类
+ * @Description  : 资源加载器 维护已加载的资源管理
  */
 
 import Logger from "./Logger";
@@ -41,7 +41,7 @@ export default class Loader {
 
     /**
      * 检测路径是否合法
-     * @param path {AssetsPathDefineType} 动态资源路径
+     * @param path {AssetsPathDefineType} 资源路径
      * @return {boolean}
      */
     private _checkLegal(path: AssetsPathDefineType): boolean {
@@ -58,7 +58,7 @@ export default class Loader {
 
     /**
      * 添加动态加载资源到表缓存 增加引用计数
-     * @param path {AssetsPathDefineType} 动态资源路径
+     * @param path {AssetsPathDefineType} 资源路径
      * @param value {cc.Asset} 资源节点
      */
     private _addAsset(path: AssetsPathDefineType, value: cc.Asset): void {
@@ -71,7 +71,7 @@ export default class Loader {
 
     /**
      * 删除资源引用计数
-     * @param path {AssetsPathDefineType} 动态资源路径
+     * @param path {AssetsPathDefineType} 资源路径
      */
     private _decAsset(path: AssetsPathDefineType): void {
         let asset: cc.Asset = this.getCache(path);
@@ -88,9 +88,9 @@ export default class Loader {
     }
 
     /**
-     * 获取缓存资源
-     * @param path {AssetsPathDefineType} 动态资源路径
-     * @return {cc.Asset}
+     * 获取已加载后并缓存过的资源
+     * @param path {AssetsPathDefineType} 资源路径
+     * @return {cc.Asset | undefined} 如果资源已经加载过返回加载后的 cc.Asset，如果未加载或者已释放返回 undefined
      */
     public getCache(path: AssetsPathDefineType): cc.Asset | undefined {
         return this.m_cacheAssets.get(path);
@@ -98,12 +98,11 @@ export default class Loader {
 
     /**
      * 预加载动态资源
-     * @param path  {AssetsPathDefineType} 动态资源路径
+     * @param path {AssetsPathDefineType} 资源路径
      * @param onComplete {(items: cc.AssetManager.RequestItem[]) => void} 预加载完成回调
      * @param onProgress {(percent: number) => void} 预加载过程中的百分比（0-100）
-     * @param appendNum {number} 追加百分比计算数量
      */
-    public preload(path: AssetsPathDefineType, onComplete?: (items: cc.AssetManager.RequestItem[]) => void, onProgress?: (percent: number) => void, appendTotal?: number): void {
+    public preload(path: AssetsPathDefineType, onComplete?: (items: cc.AssetManager.RequestItem[]) => void, onProgress?: (percent: number) => void): void {
         if (!this._checkLegal(path)) {
             if (onComplete) {
                 onComplete(null);
@@ -111,12 +110,8 @@ export default class Loader {
             return;
         }
 
-        if (appendTotal === null || appendTotal === undefined) {
-            appendTotal = 0;
-        }
-
         cc.resources.preload(path, (finish: number, total: number, item: cc.AssetManager.RequestItem) => {
-            let percent: number = Util.toFixed(finish / (total + appendTotal) * 100);
+            let percent: number = Util.toFixed(finish / total * 100);
             if (onProgress) {
                 onProgress(percent);
             }
@@ -135,9 +130,9 @@ export default class Loader {
     }
 
     /**
-     * 加载动态资源
-     * @param path  {AssetsPathDefineType} 动态资源路径
-     * @param onComplete {(items: cc.AssetManager.RequestItem[]) => void} 加载完成回调
+     * 加载动态资源（完成后对资源的引用计数加 1）
+     * @param path {AssetsPathDefineType} 资源路径
+     * @param onComplete {(items: cc.AssetManager.RequestItem[] | null) => void} 加载完成回调
      * @param onProgress {(percent: number) => void} 加载过程中的百分比（0-100）
      */
     public load(path: AssetsPathDefineType, onComplete?: (items: cc.Asset | cc.Asset[] | null) => void, onProgress?: (percent: number) => void): void {
@@ -176,11 +171,17 @@ export default class Loader {
         });
     }
 
+    /**
+     * 卸载动态资源（完成后对资源的引用计数减 1）
+     * @param path {AssetsPathDefineType} 资源路径
+     * @param onComplete {Function} 卸载完成回调
+     * @param onProgress {(percent: number) => void} 卸载过程中的百分比（0-100）
+     */
     public unload(path: AssetsPathDefineType, onComplete?: Function, onProgress?: (percent: number) => void): void {
         if (!this._checkLegal(path)) {
             Logger.getInstance().warn(`卸载非法路径 ${path}`);
             if (onComplete) {
-                onComplete(null);
+                onComplete();
             }
             return;
         }
@@ -203,8 +204,8 @@ export default class Loader {
     }
 
     /**
-     * 释放已动态加载过的资源
-     * @param path {AssetsPathDefineType} 动态资源路径
+     * 释放已动态加载过的资源（把资源引用计数归 0，达到释放资源目的）
+     * @param path {AssetsPathDefineType} 资源路径
      * @param onComplete {(items: cc.AssetManager.RequestItem[]) => void} 释放完成回调
      * @param onProgress {(percent: number) => void} 释放过程中的百分比（0-100）
      */
@@ -212,7 +213,7 @@ export default class Loader {
         if (!this._checkLegal(path)) {
             Logger.getInstance().warn(`释放非法路径 ${path}`);
             if (onComplete) {
-                onComplete(null);
+                onComplete();
             }
             return;
         }
@@ -245,8 +246,8 @@ export default class Loader {
     }
 
     /**
-     * 释放所有已动态加载过的资源
-     * @param onComplete {(items: cc.AssetManager.RequestItem[]) => void} 释放所有完成回调
+     * 释放所有已动态加载过的资源（把所有加载过的资源引用计数归 0）
+     * @param onComplete {Function} 释放所有完成回调
      * @param onProgress {(percent: number) => void} 释放所有过程中的百分比（0-100）
      */
     public releaseAll(onComplete?: Function, onProgress?: (percent: number) => void): void {
@@ -261,6 +262,7 @@ export default class Loader {
                     this._decAsset(key);
                 }
             });
+            this.m_cacheAssets.clear();
         }
 
         if (onComplete) {
@@ -269,11 +271,10 @@ export default class Loader {
     }
 
     /**
-     * 销毁
+     * 销毁 清理已经加载缓存的资源并置空（只允许通过 单例静态销毁调用，不允许使用成员方法进行 destroy）
      */
     public destroy(): void {
         this.releaseAll(() => {
-            this.m_cacheAssets.clear();
             this.m_cacheAssets = null;
         });
     }
