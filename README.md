@@ -14,6 +14,7 @@
 #### 方法
 
 `playMusic`
+
 > 播放音乐 用于背景音乐，循环播放方式，切换音乐时会有转场效果
 
 |参数|类型|描述|
@@ -21,92 +22,180 @@
 |path|[AudioDefineType](global.ts.d)|加载路径|
 |isGradually|boolean|是否渐变转场效果，默认 true|
 
+* 例子
+
+```typescript
+G.AudioMgr.playMusic(AudioDefine.XXX, false);
+```
+---
+
 `pauseMusic`
+
 > 暂停当前播放中的音乐，如果当前没有正在播放的音乐，会有个警告提示
+
+* 例子
+
+```typescript
+G.AudioMgr.pauseMusic();
+```
+
+---
+
+`stopMusic`
+
+> 停止当前播放中的音乐，如果当前没有正在播放的音乐，会有个警告提示
+
+|参数|类型|描述|
+|:--:|:--:|:--:|
+|isGradually|boolean|是否转场效果|
+
+* 例子
+
+```typescript
+G.AudioMgr.stopMusic(false);
+```
+
+---
+
+`resumeMusic`
+
+> 恢复当前被暂停的音乐，如果当前没有正在播放的音乐，会有个警告提示
+
+* 例子
+
+```typescript
+G.AudioMgr.resumeMusic();
+```
+
+---
+
+`playEffect`
+
+> 播放音效 播放一次游戏内的短暂声音
+
+|参数|类型|描述|
+|:--:|:--:|:--:|
+|path|[AudioDefineType](global.ts.d)|音效路径|
+|isBreak|boolean|true 代表之前播放相同路径的资源会被停止后，播放新的路径音效，false 代表之前播放相同路径的资源会自然的播放完成，不会被主动停止|
+|isCache|boolean|true 代表之前播放过的资源，在当前场景中缓存并不会被销毁，false 代表播放完成后立刻释放缓存资源|
+
+* 例子
+
+```typescript
+G.AudioMgr.playEffect(AudioDefine.XXX, true, false);
+```
+
+---
+
+`pauseEffect`
+
+> 暂停音效（不销毁缓存）
+
+|参数|类型|描述|
+|:--:|:--:|:--:|
+|path|[AudioDefineType](global.ts.d)|音效路径|
+
+* 例子
+
+```typescript
+G.AudioMgr.pauseEffect(AudioDefine.XXX);
+```
+
+---
+
+`pauseAllEffect`
+
+> 暂停所有音效
+
+* 例子
+
+```typescript
+G.AudioMgr.pauseAllEffect();
+```
+
+---
+
+`stopEffect`
+
+> 停止音效
+
+|参数|类型|描述|
+|:--:|:--:|:--:|
+|path|[AudioDefineType](global.ts.d)|音效路径|
+
+* 例子
+
+```typescript
+G.AudioMgr.stopEffect(AudioDefine.XXX);
+```
+
+---
+
+`stopAllEffect`
+
+> 停止所有音效
+
+* 例子
+
+```typescript
+G.AudioMgr.stopAllEffect();
+```
+
+---
+
+`resumeEffect`
+
+> 恢复暂停后的音效
+
+|参数|类型|描述|
+|:--:|:--:|:--:|
+|path|[AudioDefineType](global.ts.d)|音效路径|
+
+* 例子
+
+```typescript
+G.AudioMgr.resumeEffect(AudioDefine.XXX);
+```
+
+---
+
+`resumeAllEffect`
+
+> 恢复所有暂停后的音效
+
+* 例子
+
+```typescript
+G.AudioMgr.resumeAllEffect();
+```
+
+---
+
+`playClick`
+
+> 播放按钮点击音效
+
+* 例子
+
+```typescript
+G.AudioMgr.playClick();
+```
+
+---
+
+`destroy`
+
+> 销毁 清理并停止所有正在播放声音
+
+* 例子
+
+```typescript
+G.AudioMgr.destroy();
+```
 
 ### 事件管理器 （[EventManager](assets/src/core/manager/event/EventManager.ts)）
 
 > 使用侦察者模式设计，用于整个游戏中的消息事件注册、接收、发送工作，各模块之间交互和解耦
-
-* 继承于 Manager
-* 接口 ManagerInterface
-
-#### 成员
-
-**`m_eventMap`**
-
-|meta|desc|
-|:--:|:--:|
-|类型|Map<EventDefine, Map<any, Function[]>>|
-
-#### 方法
-
-**`on`**
-
-> 注册事件函数，不可在当前模块内重复注册相同事件。
-
-|参数|类型|描述|
-|:--:|:--:|:--:|
-|event|EventDefine|事件ID|
-|caller|T|注册者的 this 对象|
-|callback|Function|监听回调函数|
-
-例子
-
-```typescript
-    private onListener(num: number, str: string, bool: boolean): void {
-        // ...
-    }
-
-    C.EventMgr.on(EventDefine.XXX, this, this.onListener);
-```
-
----
-
-**`off`**
-
-> 释放一个已注册过的事件和回调方法。
-
-|参数|类型|描述|
-|:--:|:--:|:--:|
-|event|EventDefine|事件ID|
-|caller|T|释放者的 this 对象|
-|callback|Function|监听回调函数|
-
-例子
-
-```typescript
-    C.EventMgr.off(EventDefine.XXX, this, this.onListener);
-```
-
----
-
-**`emit`**
-
-> 发送事件，包括可以发送多个参数给监听者。
-
-|参数|类型|描述|
-|:--:|:--:|:--:|
-|event|EventDefine|事件ID|
-|data|...any[]|多个参数的数据|
-
-例子
-
-```typescript
-    C.EventMgr.emit(EventDefine.XXX, 100, "200", true);
-```
-
----
-
-**`destroy`**
-
-> 手动销毁注册过的事件回调和 Map 对象
-
-例子
-
-```typescript
-    C.EventMgr.destroy();
-```
 
 ### 日志管理器
 

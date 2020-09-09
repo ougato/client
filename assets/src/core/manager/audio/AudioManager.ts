@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:04
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-09 18:03:26
+ * @LastEditTime : 2020-09-09 18:50:40
  * @FilePath     : \client242\assets\src\core\manager\audio\AudioManager.ts
  * @Description  : 用于整个游戏场景中，需要播放声音的模块，调用全局接口，达到播放声音的效果，开发者无需考虑声音播放缓存问题，音效可自定义是否缓存
  */
@@ -157,7 +157,7 @@ export default class AudioManager extends Manager implements ManagerInterface {
     }
 
     /**
-     * 停止音乐
+     * 停止当前播放中的音乐，如果当前没有正在播放的音乐，会有个警告提示
      * @param isGradually {boolean} 是否转场效果
      */
     public stopMusic(isGradually: boolean = true): void {
@@ -177,7 +177,7 @@ export default class AudioManager extends Manager implements ManagerInterface {
     }
 
     /**
-     * 恢复音乐
+     * 恢复当前被暂停的音乐，如果当前没有正在播放的音乐，会有个警告提示
      */
     public resumeMusic(): void {
         if (!this.m_music.getPath()) {
@@ -189,10 +189,10 @@ export default class AudioManager extends Manager implements ManagerInterface {
     }
 
     /**
-     * 播放音效 用于播放游戏内所有一次性播方的声音
+     * 播放音效 播放一次游戏内的短暂声音
      * @param path {AudioDefineType} 音效路径
-     * @param isBreak {boolean} 是否打断重复播放的音效
-     * @param isCache {boolean} 是否资源缓存
+     * @param isBreak {boolean} true 代表之前播放相同路径的资源会被停止后，播放新的路径音效，false 代表之前播放相同路径的资源会自然的播放完成，不会被主动停止
+     * @param isCache {boolean} true 代表之前播放过的资源，在当前场景中缓存并不会被销毁，false 代表播放完成后立刻释放缓存资源
      */
     public playEffect(path: AudioDefineType, isBreak: boolean = false, isCache: boolean = true): void {
         if(isBreak) {
@@ -261,7 +261,7 @@ export default class AudioManager extends Manager implements ManagerInterface {
     }
 
     /**
-     * 停止音效（销毁缓存）
+     * 停止音效
      * @param path {AudioDefineType} 音效路径
      */
     public stopEffect(path: AudioDefineType): void {
@@ -334,7 +334,7 @@ export default class AudioManager extends Manager implements ManagerInterface {
     }
 
     /**
-     * 销毁
+     * 销毁 清理并停止所有正在播放声音
      */
     public destroy(): void {
         this.destroyEffect();
