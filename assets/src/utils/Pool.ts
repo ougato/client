@@ -3,7 +3,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-08 00:11:52
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-09 01:31:23
+ * @LastEditTime : 2020-09-09 13:21:52
  * @FilePath     : \client242\assets\src\utils\Pool.ts
  * @Description  : 对象池
  */
@@ -43,14 +43,14 @@ export default class Pool<T extends PoolItemInterface> implements PoolInterface<
      * @return {T} 空闲对象
      */
     public get(): T {
-        let isNew:boolean = false;
+        let isNew: boolean = false;
         if (this.m_poolList.length <= 0) {
             this.m_poolList.push(Factory.create(this.type));
             isNew = true;
         }
         let item: T = this.m_poolList.shift();
-        
-        if(!isNew) {
+
+        if (!isNew) {
             item.clear();
         }
         return item;
@@ -89,5 +89,14 @@ export default class Pool<T extends PoolItemInterface> implements PoolInterface<
             item.release();
         }
         this.m_poolList.length = 0;
+    }
+
+    /**
+     * 销毁
+     */
+    public destroy(): void {
+        this.clearAll();
+        this.m_maxSize = null;
+        this.m_poolList = null;
     }
 }

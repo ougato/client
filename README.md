@@ -4,7 +4,12 @@
 
 ### 动画管理器
 
-### 声音管理器
+### 声音管理器（[AudioManager](assets/src/core/manager/audio/AudioManager.ts)）
+
+> 用于整个游戏场景中，需要播放声音的模块，调用全局接口，达到播放声音的效果，开发者无需考虑声音播放缓存问题，音效可自定义是否缓存。
+
+* 继承 `Manager`
+* 接口 `ManagerInterface`
 
 ### 事件管理器 （EventManager）
 

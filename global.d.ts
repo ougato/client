@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:03:24
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-09 03:05:37
+ * @LastEditTime : 2020-09-09 15:57:21
  * @FilePath     : \client242\global.d.ts
  * @Description  : 全局变量定义
  */

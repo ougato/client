@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-13 02:00:18
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-09 02:32:27
+ * @LastEditTime : 2020-09-09 16:46:43
  * @FilePath     : \client242\assets\src\core\machine\Loader.ts
  * @Description  : 加载器 封装资源加载类
  */
@@ -33,6 +33,10 @@ export default class Loader {
 
     constructor() {
         this.m_cacheAssets = new Map();
+    }
+
+    public print(): void {
+        console.log(this.m_cacheAssets);
     }
 
     /**
@@ -268,7 +272,7 @@ export default class Loader {
      * 销毁
      */
     public destroy(): void {
-        this.releaseAll(()=>{
+        this.releaseAll(() => {
             this.m_cacheAssets.clear();
             this.m_cacheAssets = null;
         });

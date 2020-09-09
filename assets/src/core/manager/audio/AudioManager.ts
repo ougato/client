@@ -2,21 +2,23 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:04
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-09 03:25:02
+ * @LastEditTime : 2020-09-09 17:38:38
  * @FilePath     : \client242\assets\src\core\manager\audio\AudioManager.ts
- * @Description  : 声音管理器，用于播放（背景音乐 和 游戏音效），格式：[wav、mp3、ogg]
+ * @Description  : 用于整个游戏场景中，需要播放声音的模块，调用全局接口，达到播放声音的效果，开发者无需考虑声音播放缓存问题，音效可自定义是否缓存
  */
 
 import Manager from "../Manager";
-import AudioDefine, { DynamicMusicDefine, DynamicEffectDefine } from "../../../define/AudioDefine";
+import AudioDefine from "../../../define/AudioDefine";
 import Loader from "../../machine/Loader";
 import Audio from "./Audio";
 import Pool from "../../../utils/Pool";
 import Logger from "../../machine/Logger";
 import AudioEffectUtil from "../../../utils/AudioEffectUtil";
 
-// 同时播放最大数量
+// 音效同时播放最大数量
 const MAX_SAME_TIME_PLAY_SIZE = 10;
+// 音乐转场过渡时间
+const GRADUALLY_TIME = 1;
 
 export default class AudioManager extends Manager implements ManagerInterface {
 
@@ -100,31 +102,45 @@ export default class AudioManager extends Manager implements ManagerInterface {
 
     /**
      * 播放音乐 用于背景音乐，循环播放方式，切换音乐时会有转场效果
-     * @param path {DynamicMusicDefine} 动态加载声音路径
-     * @param isFade {boolean} 是否渐变转场效果
+     * @param path {AudioDefineType} 动态加载声音路径
+     * @param isGradually {boolean} 是否渐变转场效果
      */
-    public playMusic(path: DynamicMusicDefine, isFade: boolean = true): void {
+    public playMusic(path: AudioDefineType, isGradually: boolean = true): void {
         Loader.getInstance().load(path, (clip: cc.AudioClip) => {
             if (clip === null) {
                 return;
             }
 
-            let preMusicPath: DynamicMusicDefine = this.m_music.getPath() as DynamicMusicDefine;
-            if (preMusicPath !== null) {
-                AudioEffectUtil.closeGradually(this.m_music, () => {
-                    this.m_music.stop();
+            let playCallBack: Function = () => {
+                this.m_music.clear();
+                this.m_music.setClip(clip);
+                this.m_music.setPath(path);
+                this.m_music.regCallback(() => {
+                    Loader.getInstance().unload(path);
                 });
-            } else {
-                
+                if (isGradually) {
+                    AudioEffectUtil.openGradually(this.m_music);
+                } else {
+                    this.m_music.play();
+                }
+
+                this.m_music.loop = true;
             }
 
-            this.m_music.setClip(clip);
-            this.m_music.setPath(path);
-            this.m_music.loop = true;
-            this.m_music.regCallback(()=>{
-                Loader.getInstance().unload(path);
-            });
-            this.m_music.play();
+            let preMusicPath: AudioDefineType = this.m_music.getPath() as AudioDefineType;
+            if (preMusicPath !== null) {
+                if (isGradually) {
+                    AudioEffectUtil.closeGradually(this.m_music, 0, GRADUALLY_TIME, () => {
+                        Loader.getInstance().unload(path);
+                        playCallBack();
+                    })
+                } else {
+                    Loader.getInstance().unload(path);
+                    playCallBack();
+                }
+            } else {
+                playCallBack();
+            }
         });
     }
 
@@ -132,7 +148,7 @@ export default class AudioManager extends Manager implements ManagerInterface {
      * 暂停音乐
      */
     public pauseMusic(): void {
-        if (!this.m_music) {
+        if (!this.m_music.getPath()) {
             Logger.getInstance().warn("无法找到需要暂停的音乐");
             return;
         }
@@ -142,21 +158,29 @@ export default class AudioManager extends Manager implements ManagerInterface {
 
     /**
      * 停止音乐
+     * @param isGradually {boolean} 是否转场效果
      */
-    public stopMusic(): void {
-        if (!this.m_music) {
+    public stopMusic(isGradually: boolean = true): void {
+        if (!this.m_music.getPath()) {
             Logger.getInstance().warn("无法找到需要停止的音乐");
             return;
         }
 
-        this.m_music.stop();
+        if (isGradually) {
+            AudioEffectUtil.closeGradually(this.m_music, 0, GRADUALLY_TIME, () => {
+                this.m_music.stop();
+            })
+        } else {
+            this.m_music.stop();
+        }
+
     }
 
     /**
      * 恢复音乐
      */
     public resumeMusic(): void {
-        if (!this.m_music) {
+        if (!this.m_music.getPath()) {
             Logger.getInstance().warn("无法找到需要恢复的音乐");
             return;
         }
@@ -166,10 +190,18 @@ export default class AudioManager extends Manager implements ManagerInterface {
 
     /**
      * 播放音效 用于播放游戏内所有一次性播方的声音
-     * @param path {DynamicEffectDefine} 音效路径
+     * @param path {AudioDefineType} 音效路径
      * @param isBreak {boolean} 是否打断重复播放的音效
+     * @param isCache {boolean} 是否资源缓存
      */
-    public playEffect(path: DynamicEffectDefine, isBreak: boolean = false): void {
+    public playEffect(path: AudioDefineType, isBreak: boolean = false, isCache: boolean = true): void {
+        if(isBreak) {
+            let audio:Audio = this.m_effectMap.get(path);
+            if(audio !== null && audio !== undefined) {
+                audio.stop();
+            }
+        }
+
         Loader.getInstance().load(path, (clip: cc.AudioClip) => {
             if (clip === null) {
                 return;
@@ -182,10 +214,13 @@ export default class AudioManager extends Manager implements ManagerInterface {
             audio.setClip(clip);
             audio.setPath(path);
             audio.regCallback(() => {
-                // 减小音效引用
-                let refCount: number = this.decRefCount(path);
-                // 减小资源引用
-                Loader.getInstance().unload(path);
+                let refCount: number = this.m_effectPlayRefMap.get(path);
+                if (!isCache || refCount > 1) {
+                    // 减小音效引用
+                    refCount = this.decRefCount(path);
+                    // 减小资源引用
+                    Loader.getInstance().unload(path);
+                }
                 // 放入缓存池
                 audio.clear();
                 this.m_effectPool.put(audio);
@@ -196,14 +231,15 @@ export default class AudioManager extends Manager implements ManagerInterface {
             });
             // 播放
             audio.play();
+            audio.loop = false;
         });
     }
 
     /**
      * 暂停音效（不销毁缓存）
-     * @param path {DynamicEffectDefine} 音效路径
+     * @param path {AudioDefineType} 音效路径
      */
-    public pauseEffect(path: DynamicEffectDefine): void {
+    public pauseEffect(path: AudioDefineType): void {
         if (this.checkLegal(path)) {
             Logger.getInstance().warn(`无法暂停不存在的音效 ${path}`);
             return;
@@ -226,9 +262,9 @@ export default class AudioManager extends Manager implements ManagerInterface {
 
     /**
      * 停止音效（销毁缓存）
-     * @param path {DynamicEffectDefine} 音效路径
+     * @param path {AudioDefineType} 音效路径
      */
-    public stopEffect(path: DynamicEffectDefine): void {
+    public stopEffect(path: AudioDefineType): void {
         if (this.checkLegal(path)) {
             Logger.getInstance().warn(`无法停止不存在的音效 ${path}`);
             return;
@@ -250,9 +286,9 @@ export default class AudioManager extends Manager implements ManagerInterface {
 
     /**
      * 恢复暂停后的音效
-     * @param path {DynamicEffectDefine} 音效路径
+     * @param path {AudioDefineType} 音效路径
      */
-    public resumeEffect(path: DynamicEffectDefine): void {
+    public resumeEffect(path: AudioDefineType): void {
         if (this.checkLegal(path)) {
             Logger.getInstance().warn(`无法恢复不存在的音效 ${path}`);
             return;
@@ -279,11 +315,30 @@ export default class AudioManager extends Manager implements ManagerInterface {
         this.playEffect(AudioDefine.CLICK, false);
     }
 
+    private destroyEffect(): void {
+        this.m_effectPool.destroy();
+        this.m_effectPlayRefMap.clear();
+        this.m_effectMap.forEach((value: Audio) => {
+            value.stop();
+            value.release();
+        });
+        this.m_effectPool = null;
+        this.m_effectPlayRefMap = null;
+        this.m_effectMap = null;
+    }
+
+    private destroyMusic(): void {
+        this.m_music.stop();
+        this.m_music.release();
+        this.m_music = null;
+    }
+
     /**
      * 销毁
      */
     public destroy(): void {
-
+        this.destroyEffect();
+        this.destroyMusic();
     }
 
 }

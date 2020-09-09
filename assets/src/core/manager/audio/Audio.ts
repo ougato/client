@@ -2,9 +2,9 @@
  * @Author       : ougato
  * @Date         : 2020-09-06 13:24:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-09 02:46:28
+ * @LastEditTime : 2020-09-09 17:37:01
  * @FilePath     : \client242\assets\src\core\manager\audio\Audio.ts
- * @Description  : 重写 cc.AudioSource 声音类
+ * @Description  : 重写 cc.AudioSource 声音类（用于播放音乐/音效过程中，存储一些外部数据，控制声音大小，设置参数 等等...）
  */
 
 export default class Audio extends cc.AudioSource implements PoolItemInterface {
@@ -70,7 +70,9 @@ export default class Audio extends cc.AudioSource implements PoolItemInterface {
     private startTimer(): void {
         if (this.m_endTimer === undefined || this.m_endTimer === null) {
             this.m_endTimer = setTimeout(() => {
-                this.callFinish();
+                if(!this.loop) {
+                    this.callFinish();
+                }
             }, this.m_endTime * 1000);
         }
     }
@@ -144,9 +146,6 @@ export default class Audio extends cc.AudioSource implements PoolItemInterface {
      */
     public release(): void {
         this.clear();
-        if (cc.isValid(this)) {
-            super.destroy();
-        }
     }
 
 }
