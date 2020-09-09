@@ -4,7 +4,7 @@
 
 ### 动画管理器
 
-### 声音管理器（[AudioManager](assets/src/core/manager/audio/AudioManager.ts)#90）
+### 声音管理器（[AudioManager](assets/src/core/manager/audio/AudioManager.ts)）
 
 > 用于整个游戏场景中，需要播放声音的模块，调用全局接口，达到播放声音的效果，开发者无需考虑声音播放缓存问题，音效可自定义是否缓存。
 
@@ -185,23 +185,93 @@ G.AudioMgr.playClick();
 
 `destroy`
 
-> 销毁 清理并停止所有正在播放声音
+> 销毁 清理并停止所有正在播放声音（只允许通过 单例静态销毁调用，不允许使用成员方法进行 destroy）
 
 * 例子
 
 ```typescript
-G.AudioMgr.destroy();
+AudioManager.destroy();
 ```
 
 ### 事件管理器 （[EventManager](assets/src/core/manager/event/EventManager.ts)）
 
-> 使用侦察者模式设计，用于整个游戏中的消息事件注册、接收、发送工作，各模块之间交互和解耦
+> 事件管理器，侦察者模式，用于整个游戏中的消息事件注册、接收、发送工作，各模块之间交互和解耦
 
-### 日志管理器
+* 继承 `Manager`
+* 接口 `ManagerInterface`
+
+#### 方法
+
+`on`
+
+> 注册事件
+
+|参数|类型|描述|
+|:--:|:--:|:--:|
+|event|[EventDefineType](global.ts.d)|事件ID|
+|caller|T|注册者的 this 对象|
+|callback|Function|监听回调函数|
+
+* 例子
+
+```typescript
+G.EventMgr.on(EventDefine.XXX, this, this.onCallback);
+```
+
+---
+
+`off`
+
+> 释放事件
+
+|参数|类型|描述|
+|:--:|:--:|:--:|
+|event|[EventDefineType](global.ts.d)|事件ID|
+|caller|T|注册者的 this 对象|
+|callback|Function|监听回调函数|
+
+* 例子
+
+```typescript
+G.EventMgr.off(EventDefine.XXX, this, this.onCallback);
+```
+
+--
+
+`emit`
+
+> 发送事件（异步）
+
+|参数|类型|描述|
+|:--:|:--:|:--:|
+|event|[EventDefineType](global.ts.d)|事件ID|
+|data|...any[]|多个任意数据|
+
+* 例子
+
+```typescript
+G.EventMgr.emit(EventDefine.XXX, data);
+```
+
+---
+
+`destroy`
+
+> 销毁 清理所有注册过的事件（只允许通过 单例静态销毁调用，不允许使用成员方法进行 destroy）
+
+* 例子
+
+```typescript
+EventManager.destroy();
+```
 
 ### 网络管理器
 
 ### 视图管理器
+
+### 日志记录器
+
+### 资源加载器
 
 ## 命名规范
 

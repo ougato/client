@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-09 03:11:46
+ * @LastEditTime : 2020-09-09 23:39:55
  * @FilePath     : \client242\assets\src\core\manager\ui\UIManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
@@ -50,13 +50,6 @@ export default class UIManager extends Manager implements ManagerInterface {
     constructor() {
         super();
 
-        this.initData();
-    }
-
-    /**
-     * 初始化数据
-     */
-    private initData(): void {
         this.m_persistNodeMap = new Map<PersistNodeType, cc.Node>();
         this.m_viewNodeMap = new Map<ViewDefineType, cc.Node>();
         this.m_viewTopOrderMap = new Map<ViewOrderDefine, number>();
@@ -73,7 +66,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param nodeName {PersistNodeType} 常驻节点名
      * @param node {cc.Node} 常驻节点
      */
-    private initPersistNode(nodeName: PersistNodeType, node: cc.Node): void {
+    private _initPersistNode(nodeName: PersistNodeType, node: cc.Node): void {
         if (node && !this.m_persistNodeMap.has(nodeName)) {
             node.active = false;
             cc.game.addPersistRootNode(node);
@@ -86,7 +79,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param node {cc.Node} 视图节点
      */
     public initLoading(node: cc.Node): void {
-        this.initPersistNode(PersistNodeDefine.LoadingNode, node);
+        this._initPersistNode(PersistNodeDefine.LoadingNode, node);
     }
 
     /**
@@ -94,7 +87,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param node {cc.Node} 视图节点
      */
     public initProgress(node: cc.Node): void {
-        this.initPersistNode(PersistNodeDefine.ProgressNode, node);
+        this._initPersistNode(PersistNodeDefine.ProgressNode, node);
     }
 
     /**
@@ -102,7 +95,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param node {cc.Node} 视图节点
      */
     public initLockTouch(node: cc.Node): void {
-        this.initPersistNode(PersistNodeDefine.LockTouchNode, node);
+        this._initPersistNode(PersistNodeDefine.LockTouchNode, node);
     }
 
     /**
@@ -110,7 +103,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param node {cc.Node} 视图节点
      */
     public initPopups(node: cc.Node): void {
-        this.initPersistNode(PersistNodeDefine.PopupsNode, node);
+        this._initPersistNode(PersistNodeDefine.PopupsNode, node);
     }
 
     /**
@@ -118,14 +111,14 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param node {cc.Node} 视图节点
      */
     public initTips(node: cc.Node): void {
-        this.initPersistNode(PersistNodeDefine.TipsNode, node);
+        this._initPersistNode(PersistNodeDefine.TipsNode, node);
     }
 
     /**
      * 统一清理常驻节点
      * @param nodeName {PersistNodeType} 常驻节点名
      */
-    private clearPersistNode(nodeName: PersistNodeType): void {
+    private _clearPersistNode(nodeName: PersistNodeType): void {
         let node: cc.Node = this.m_persistNodeMap.get(nodeName);
         if (node) {
             this.m_persistNodeMap.delete(nodeName);
@@ -138,47 +131,47 @@ export default class UIManager extends Manager implements ManagerInterface {
     /**
      * 清理加载界面
      */
-    private clearLoading(): void {
-        this.clearPersistNode(PersistNodeDefine.LoadingNode);
+    private _clearLoading(): void {
+        this._clearPersistNode(PersistNodeDefine.LoadingNode);
     }
 
     /**
      * 清理进度界面
      */
-    private clearProgress(): void {
-        this.clearPersistNode(PersistNodeDefine.ProgressNode);
+    private _clearProgress(): void {
+        this._clearPersistNode(PersistNodeDefine.ProgressNode);
     }
 
     /**
      * 清理禁止点击界面
      */
-    private clearLockTouch(): void {
-        this.clearPersistNode(PersistNodeDefine.LockTouchNode);
+    private _clearLockTouch(): void {
+        this._clearPersistNode(PersistNodeDefine.LockTouchNode);
     }
 
     /**
-     * 清理禁止点击界面
+     * 清理弹窗界面
      */
-    private clearPopups(): void {
-        this.clearPersistNode(PersistNodeDefine.PopupsNode);
+    private _clearPopups(): void {
+        this._clearPersistNode(PersistNodeDefine.PopupsNode);
     }
 
     /**
      * 清理提示界面
      */
-    private clearTips(): void {
-        this.clearPersistNode(PersistNodeDefine.TipsNode);
+    private _clearTips(): void {
+        this._clearPersistNode(PersistNodeDefine.TipsNode);
     }
 
     /**
      * 清理所有常驻界面
      */
-    private clearAllPersistNode(): void {
-        this.clearLoading();
-        this.clearProgress();
-        this.clearLockTouch();
-        this.clearPopups();
-        this.clearTips();
+    private _clearAllPersistNode(): void {
+        this._clearLoading();
+        this._clearProgress();
+        this._clearLockTouch();
+        this._clearPopups();
+        this._clearTips();
     }
 
     /**
@@ -186,14 +179,14 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param nodeName {PersistNodeType} 节点名
      * @param args {any[]} 任意多参数
      */
-    private openPersistNode(name: PersistNodeType, ...args: any[]): void {
+    private _openPersistNode(name: PersistNodeType, ...args: any[]): void {
         let node: cc.Node = this.m_persistNodeMap.get(name);
         if (node) {
             let script: PersistInterface = node.getComponent(name as string);
             if (script) {
-                let order: number = this.getLayerTopOrder(ViewOrderDefine.SYSTEM);
-                if (this.checkBounds(ViewOrderDefine.SYSTEM, order)) {
-                    order = this.resetViewOrder(ViewOrderDefine.SYSTEM);
+                let order: number = this._getLayerTopOrder(ViewOrderDefine.SYSTEM);
+                if (this._checkBounds(ViewOrderDefine.SYSTEM, order)) {
+                    order = this._resetViewOrder(ViewOrderDefine.SYSTEM);
                 }
                 this.m_viewTopOrderMap.set(ViewOrderDefine.SYSTEM, order);
                 node.zIndex = order;
@@ -211,21 +204,21 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param content {string} 内容
      */
     public openLoading(content?: string): void {
-        this.openPersistNode(PersistNodeDefine.LoadingNode, content);
+        this._openPersistNode(PersistNodeDefine.LoadingNode, content);
     }
 
     /**
      * 打开进度界面
      */
     public openProgress(): void {
-        this.openPersistNode(PersistNodeDefine.ProgressNode);
+        this._openPersistNode(PersistNodeDefine.ProgressNode);
     }
 
     /**
      * 打开禁止点击界面（在最顶部覆盖一层防止点击）
      */
     public openLockTouch(): void {
-        this.openPersistNode(PersistNodeDefine.LockTouchNode);
+        this._openPersistNode(PersistNodeDefine.LockTouchNode);
     }
 
     /**
@@ -236,7 +229,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param cancelCallback {Function} 取消回调方法
      */
     public openPopups(content: string, title?: string, confirmCallback?: Function, cancelCallback?: Function): void {
-        this.openPersistNode(PersistNodeDefine.PopupsNode, content, title, confirmCallback, cancelCallback);
+        this._openPersistNode(PersistNodeDefine.PopupsNode, content, title, confirmCallback, cancelCallback);
     }
 
     /**
@@ -244,7 +237,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param content {string} 内容
      */
     public openTips(content: string): void {
-        this.openPersistNode(PersistNodeDefine.TipsNode, content);
+        this._openPersistNode(PersistNodeDefine.TipsNode, content);
     }
 
     /**
@@ -266,7 +259,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * 统一关闭常驻节点
      * @param name {PersistNodeType} 常驻节点名
      */
-    private closePersistNode(name: PersistNodeType): void {
+    private _closePersistNode(name: PersistNodeType): void {
         let node: cc.Node = this.m_persistNodeMap.get(name);
         if (node) {
             let script: PersistInterface = node.getComponent(name as string);
@@ -284,46 +277,46 @@ export default class UIManager extends Manager implements ManagerInterface {
      * 关闭加载界面
      */
     public closeLoading(): void {
-        this.closePersistNode(PersistNodeDefine.LoadingNode);
+        this._closePersistNode(PersistNodeDefine.LoadingNode);
     }
 
     /**
      * 关闭进度界面
      */
     public closeProgress(): void {
-        this.closePersistNode(PersistNodeDefine.ProgressNode);
+        this._closePersistNode(PersistNodeDefine.ProgressNode);
     }
 
     /**
      * 关闭禁止点击界面
      */
     public closeLockTouch(): void {
-        this.closePersistNode(PersistNodeDefine.LockTouchNode);
+        this._closePersistNode(PersistNodeDefine.LockTouchNode);
     }
 
     /**
      * 手动关闭弹窗界面
      */
-    private closePopups(): void {
-        this.closePersistNode(PersistNodeDefine.PopupsNode);
+    private _closePopups(): void {
+        this._closePersistNode(PersistNodeDefine.PopupsNode);
     }
 
     /**
      * 关闭提示界面
      */
-    private closeTips(): void {
-        this.closePersistNode(PersistNodeDefine.TipsNode);
+    private _closeTips(): void {
+        this._closePersistNode(PersistNodeDefine.TipsNode);
     }
 
     /**
      * 关闭所有常驻界面，为了场景切换后的新场景干净
      */
-    private closeAllPersistNode(): void {
+    private _closeAllPersistNode(): void {
         this.closeLoading();
         this.closeProgress();
         this.closeLockTouch();
-        this.closePopups();
-        this.closeTips();
+        this._closePopups();
+        this._closeTips();
     }
 
     /**
@@ -332,7 +325,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param completeCallback {(scene: cc.Scene) => void} 完成后的场景
      * @param progressCallback {(percent: number) => void} 场景预加载进度（保留 2 位小数）
      */
-    private replaceScene<T>(name: SceneDefineType, data: T, completeCallback?: (error: Error, scene: cc.Scene) => void, progressCallback?: (percent: number) => void): void {
+    private _replaceScene<T>(name: SceneDefineType, data: T, completeCallback?: (error: Error, scene: cc.Scene) => void, progressCallback?: (percent: number) => void): void {
 
         cc.director.preloadScene(name, (completedCount: number, totalCount: number, item: any) => {
             if (progressCallback) {
@@ -400,7 +393,7 @@ export default class UIManager extends Manager implements ManagerInterface {
             let firstHalfPercent: number = 0;
             let lastHalfPercent: number = 0;
             Loader.getInstance().preload(preload, (items: cc.AssetManager.RequestItem[]) => {
-                this.replaceScene(name, data, (error: Error, scene: cc.Scene) => {
+                this._replaceScene(name, data, (error: Error, scene: cc.Scene) => {
                     done(error, scene);
                 }, (percent: number) => {
                     // 后半段百分比
@@ -419,7 +412,7 @@ export default class UIManager extends Manager implements ManagerInterface {
                 }
             }, APPEND_TOTAL);
         } else {
-            this.replaceScene(name, data, (error: Error, scene: cc.Scene) => {
+            this._replaceScene(name, data, (error: Error, scene: cc.Scene) => {
                 done(error, scene);
             }, (percent: number) => {
                 this.setProgress(percent);
@@ -441,9 +434,9 @@ export default class UIManager extends Manager implements ManagerInterface {
     public openView<T>(path: ViewDefineType, data?: T, completeCallback?: (node: cc.Node) => void, layer?: ViewOrderDefine, style?: ViewStyleType): void {
         let view: cc.Node = this.m_viewNodeMap.get(path)
         if (view) {
-            this.directShow(view, data, completeCallback, layer, style);
+            this._directShow(view, data, completeCallback, layer, style);
         } else {
-            this.loadShow(path, data, completeCallback, layer, style);
+            this._loadShow(path, data, completeCallback, layer, style);
         }
     }
 
@@ -488,7 +481,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param layer {ViewOrderDefine} 层
      * @returns {cc.Node[]}
      */
-    private getLayerViewChild(layer: ViewOrderDefine): cc.Node[] {
+    private _getLayerViewChild(layer: ViewOrderDefine): cc.Node[] {
         let views: cc.Node[] = [];
 
         // 找出同一个层的视图
@@ -517,9 +510,9 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param layer {ViewOrderDefine} 层
      * @return {number}
      */
-    private getLayerTopOrder(layer: ViewOrderDefine): number {
+    private _getLayerTopOrder(layer: ViewOrderDefine): number {
         let order: number = layer;
-        let views: cc.Node[] = this.getLayerViewChild(layer);
+        let views: cc.Node[] = this._getLayerViewChild(layer);
         let size: number = views.length;
         if (size <= 0) {
             return order;
@@ -535,9 +528,9 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param layer {ViewOrderDefine} 层
      * @return {number}
      */
-    private resetViewOrder(layer: ViewOrderDefine): number {
+    private _resetViewOrder(layer: ViewOrderDefine): number {
         let order: number = layer;
-        let views: cc.Node[] = this.getLayerViewChild(layer);
+        let views: cc.Node[] = this._getLayerViewChild(layer);
 
         if (views.length <= 0) {
             return order;
@@ -559,7 +552,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param order {number} 层级
      * @return {boolean}
      */
-    private checkBounds(layer: ViewOrderDefine, order: number): boolean {
+    private _checkBounds(layer: ViewOrderDefine, order: number): boolean {
         return (order - layer) >= ORDER_INTERVAL;
     }
 
@@ -572,7 +565,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param layer {ViewOrderDefine} 层
      * @param style {ViewStyleType} 显示时动画风格
      */
-    private directShow<T>(view: cc.Node, data?: T, completeCallback?: (node: cc.Node) => void, layer?: ViewOrderDefine, style?: ViewStyleType): void {
+    private _directShow<T>(view: cc.Node, data?: T, completeCallback?: (node: cc.Node) => void, layer?: ViewOrderDefine, style?: ViewStyleType): void {
         this.openLockTouch();
         if (data !== null && data !== undefined) {
             let script: UIInterface<T> = view.getComponent(view.name);
@@ -582,9 +575,9 @@ export default class UIManager extends Manager implements ManagerInterface {
         if (layer === null || layer === undefined) {
             layer = DEFAULT_VIEW_LAYER;
         }
-        let order: number = this.getLayerTopOrder(layer)
-        if (this.checkBounds(layer, order)) {
-            order = this.resetViewOrder(layer);
+        let order: number = this._getLayerTopOrder(layer)
+        if (this._checkBounds(layer, order)) {
+            order = this._resetViewOrder(layer);
         }
         console.log(order);
         view.zIndex = order;
@@ -616,7 +609,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param layer {ViewOrderDefine} 层
      * @param style {ViewStyleType} 显示时动画风格
      */
-    private loadShow<T>(path: ViewDefineType, data?: T, completeCallback?: (node: cc.Node) => void, layer?: ViewOrderDefine, style?: ViewStyleType): void {
+    private _loadShow<T>(path: ViewDefineType, data?: T, completeCallback?: (node: cc.Node) => void, layer?: ViewOrderDefine, style?: ViewStyleType): void {
         this.openLockTouch();
         let loadTimer: number = setTimeout(() => {
             this.openProgress();
@@ -636,9 +629,9 @@ export default class UIManager extends Manager implements ManagerInterface {
                 layer = DEFAULT_VIEW_LAYER;
             }
 
-            let order: number = this.getLayerTopOrder(layer)
-            if (this.checkBounds(layer, order)) {
-                order = this.resetViewOrder(layer);
+            let order: number = this._getLayerTopOrder(layer)
+            if (this._checkBounds(layer, order)) {
+                order = this._resetViewOrder(layer);
             }
 
             // 数据赋值
@@ -674,7 +667,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * 销毁
      */
     public destroy(): void {
-        this.clearAllPersistNode();
+        this._clearAllPersistNode();
         this.m_persistNodeMap.clear();
         this.m_persistNodeMap = null;
     }

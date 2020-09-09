@@ -2,9 +2,9 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:41:52
  * @LastEditors  : ougato
- * @LastEditTime : 2020-08-31 01:44:39
+ * @LastEditTime : 2020-09-09 23:32:47
  * @FilePath     : \client242\assets\src\core\manager\event\EventManager.ts
- * @Description  : 事件管理器，使用侦察者模式设计，用于整个游戏中的消息事件注册、接收、发送工作，各模块之间交互和解耦
+ * @Description  : 事件管理器，侦察者模式，用于整个游戏中的消息事件注册、接收、发送工作，各模块之间交互和解耦
  */
 
 import Manager from "../Manager";
@@ -158,7 +158,7 @@ export default class EventManager extends Manager implements ManagerInterface {
     }
 
     /**
-     * 销毁
+     * 销毁 清理所有注册过的事件（只允许通过 单例静态销毁调用，不允许使用成员方法进行 destroy）
      */
     public destroy(): void {
         this._clearListenMap();

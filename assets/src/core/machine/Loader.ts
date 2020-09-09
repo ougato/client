@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-13 02:00:18
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-09 16:46:43
+ * @LastEditTime : 2020-09-09 23:35:17
  * @FilePath     : \client242\assets\src\core\machine\Loader.ts
  * @Description  : 加载器 封装资源加载类
  */
@@ -44,7 +44,7 @@ export default class Loader {
      * @param path {AssetsPathDefineType} 动态资源路径
      * @return {boolean}
      */
-    private checkLegal(path: AssetsPathDefineType): boolean {
+    private _checkLegal(path: AssetsPathDefineType): boolean {
         let isLegal: boolean = true;
         if (path === null || path === undefined) {
             isLegal = false;
@@ -61,7 +61,7 @@ export default class Loader {
      * @param path {AssetsPathDefineType} 动态资源路径
      * @param value {cc.Asset} 资源节点
      */
-    private addAsset(path: AssetsPathDefineType, value: cc.Asset): void {
+    private _addAsset(path: AssetsPathDefineType, value: cc.Asset): void {
         let asset: cc.Asset = this.getCache(path);
         if (asset === null || asset === undefined) {
             this.m_cacheAssets.set(path, value);
@@ -73,7 +73,7 @@ export default class Loader {
      * 删除资源引用计数
      * @param path {AssetsPathDefineType} 动态资源路径
      */
-    private decAsset(path: AssetsPathDefineType): void {
+    private _decAsset(path: AssetsPathDefineType): void {
         let asset: cc.Asset = this.getCache(path);
         if (asset !== null && asset !== undefined) {
             asset.decRef();
@@ -104,7 +104,7 @@ export default class Loader {
      * @param appendNum {number} 追加百分比计算数量
      */
     public preload(path: AssetsPathDefineType, onComplete?: (items: cc.AssetManager.RequestItem[]) => void, onProgress?: (percent: number) => void, appendTotal?: number): void {
-        if (!this.checkLegal(path)) {
+        if (!this._checkLegal(path)) {
             if (onComplete) {
                 onComplete(null);
             }
@@ -141,7 +141,7 @@ export default class Loader {
      * @param onProgress {(percent: number) => void} 加载过程中的百分比（0-100）
      */
     public load(path: AssetsPathDefineType, onComplete?: (items: cc.Asset | cc.Asset[] | null) => void, onProgress?: (percent: number) => void): void {
-        if (!this.checkLegal(path)) {
+        if (!this._checkLegal(path)) {
             Logger.getInstance().warn(`加载非法路径 ${path}`);
             if (onComplete) {
                 onComplete(null);
@@ -163,10 +163,10 @@ export default class Loader {
             } else {
                 if (assets instanceof Array) {
                     for (let i: number = 0; i < assets.length; ++i) {
-                        this.addAsset(path[i] as AssetsPathDefineType, assets[i]);
+                        this._addAsset(path[i] as AssetsPathDefineType, assets[i]);
                     }
                 } else {
-                    this.addAsset(path, assets);
+                    this._addAsset(path, assets);
                 }
 
                 if (onComplete) {
@@ -177,7 +177,7 @@ export default class Loader {
     }
 
     public unload(path: AssetsPathDefineType, onComplete?: Function, onProgress?: (percent: number) => void): void {
-        if (!this.checkLegal(path)) {
+        if (!this._checkLegal(path)) {
             Logger.getInstance().warn(`卸载非法路径 ${path}`);
             if (onComplete) {
                 onComplete(null);
@@ -191,10 +191,10 @@ export default class Loader {
                 if (onProgress) {
                     onProgress(Util.toFixed((i + 1) / releaseSize * 100));
                 }
-                this.decAsset(path[i]);
+                this._decAsset(path[i]);
             }
         } else {
-            this.decAsset(path);
+            this._decAsset(path);
         }
 
         if (onComplete) {
@@ -209,7 +209,7 @@ export default class Loader {
      * @param onProgress {(percent: number) => void} 释放过程中的百分比（0-100）
      */
     public release(path: AssetsPathDefineType, onComplete?: Function, onProgress?: (percent: number) => void): void {
-        if (!this.checkLegal(path)) {
+        if (!this._checkLegal(path)) {
             Logger.getInstance().warn(`释放非法路径 ${path}`);
             if (onComplete) {
                 onComplete(null);
@@ -226,7 +226,7 @@ export default class Loader {
                 let asset: cc.Asset = this.getCache(path[i]);
                 if (asset !== null && asset !== undefined) {
                     for (let j: number = 0; j < asset.refCount; ++j) {
-                        this.decAsset(path[i]);
+                        this._decAsset(path[i]);
                     }
                 }
             }
@@ -234,7 +234,7 @@ export default class Loader {
             let asset: cc.Asset = this.getCache(path);
             if (asset !== null && asset !== undefined) {
                 for (let i: number = 0; i < asset.refCount; ++i) {
-                    this.decAsset(path);
+                    this._decAsset(path);
                 }
             }
         }
@@ -258,7 +258,7 @@ export default class Loader {
                     onProgress(Util.toFixed((++index / size) * 100));
                 }
                 for (let i: number = 0; i < value.refCount; ++i) {
-                    this.decAsset(key);
+                    this._decAsset(key);
                 }
             });
         }

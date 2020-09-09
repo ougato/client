@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-01 23:20:29
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-09 17:13:48
+ * @LastEditTime : 2020-09-09 22:51:09
  * @FilePath     : \client242\assets\src\test\Test2.ts
  * @Description  : 
  */
@@ -10,13 +10,14 @@
 import UIComponent from "../ui/UIComponent";
 import AudioDefine, { DynamicEffectDefine, DynamicMusicDefine } from "../define/AudioDefine";
 import Loader from "../core/machine/Loader";
+import AudioManager from "../core/manager/audio/AudioManager";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class Test2 extends UIComponent implements UIInterface<string> {
 
-    private m_effect: DynamicEffectDefine = AudioDefine.EFFECT14;
+    private m_effect: DynamicEffectDefine = AudioDefine.EFFECT3;
     private m_music: DynamicMusicDefine = AudioDefine.MUSIC13;
     public data: string = null;
 
@@ -62,7 +63,7 @@ export default class Test2 extends UIComponent implements UIInterface<string> {
     // }
 
     private onClickPlayEffect(): void {
-        G.AudioMgr.playEffect(this.m_effect, true, false);
+        G.AudioMgr.playEffect(this.m_effect, true);
     }
 
     private onClickStopEffect(): void {
@@ -98,7 +99,7 @@ export default class Test2 extends UIComponent implements UIInterface<string> {
     }
 
     private onClickDestroy():void{
-        G.AudioMgr.destroy();
+        AudioManager.destroy();
     }
 
     // update (dt) {}
