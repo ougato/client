@@ -4,14 +4,27 @@
 
 ### 动画管理器
 
-### 声音管理器（[AudioManager](assets/src/core/manager/audio/AudioManager.ts)）
+### 声音管理器（[AudioManager](assets/src/core/manager/audio/AudioManager.ts)#90）
 
 > 用于整个游戏场景中，需要播放声音的模块，调用全局接口，达到播放声音的效果，开发者无需考虑声音播放缓存问题，音效可自定义是否缓存。
 
 * 继承 `Manager`
 * 接口 `ManagerInterface`
 
-### 事件管理器 （EventManager）
+#### 方法
+
+`playMusic`
+> 播放音乐 用于背景音乐，循环播放方式，切换音乐时会有转场效果
+
+|参数|类型|描述|
+|:--:|:--:|:--:|
+|path|[AudioDefineType](global.ts.d)|加载路径|
+|isGradually|boolean|是否渐变转场效果，默认 true|
+
+`pauseMusic`
+> 暂停当前播放中的音乐，如果当前没有正在播放的音乐，会有个警告提示
+
+### 事件管理器 （[EventManager](assets/src/core/manager/event/EventManager.ts)）
 
 > 使用侦察者模式设计，用于整个游戏中的消息事件注册、接收、发送工作，各模块之间交互和解耦
 

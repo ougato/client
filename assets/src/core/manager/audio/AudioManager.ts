@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:04
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-09 17:38:38
+ * @LastEditTime : 2020-09-09 18:03:26
  * @FilePath     : \client242\assets\src\core\manager\audio\AudioManager.ts
  * @Description  : 用于整个游戏场景中，需要播放声音的模块，调用全局接口，达到播放声音的效果，开发者无需考虑声音播放缓存问题，音效可自定义是否缓存
  */
@@ -103,7 +103,7 @@ export default class AudioManager extends Manager implements ManagerInterface {
     /**
      * 播放音乐 用于背景音乐，循环播放方式，切换音乐时会有转场效果
      * @param path {AudioDefineType} 动态加载声音路径
-     * @param isGradually {boolean} 是否渐变转场效果
+     * @param isGradually {boolean} 是否渐变转场效果，默认 true
      */
     public playMusic(path: AudioDefineType, isGradually: boolean = true): void {
         Loader.getInstance().load(path, (clip: cc.AudioClip) => {
@@ -145,7 +145,7 @@ export default class AudioManager extends Manager implements ManagerInterface {
     }
 
     /**
-     * 暂停音乐
+     * 暂停当前播放中的音乐，如果当前没有音乐，会有个警告提示
      */
     public pauseMusic(): void {
         if (!this.m_music.getPath()) {
