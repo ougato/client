@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:04
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-09 23:34:32
+ * @LastEditTime : 2020-09-10 18:42:18
  * @FilePath     : \client242\assets\src\core\manager\audio\AudioManager.ts
  * @Description  : 用于整个游戏场景中，需要播放声音的模块，调用全局接口，达到播放声音的效果，开发者无需考虑声音播放缓存问题，音效可自定义是否缓存
  */
@@ -54,6 +54,7 @@ export default class AudioManager extends Manager implements ManagerInterface {
         this.m_effectMap = new Map();
         this.m_effectPlayRefMap = new Map();
         this.m_music = new Audio();
+        
     }
 
     /**
@@ -196,9 +197,9 @@ export default class AudioManager extends Manager implements ManagerInterface {
      * @param isCache {boolean} true 代表之前播放过的资源，在当前场景中缓存并不会被销毁，false 代表播放完成后立刻释放缓存资源
      */
     public playEffect(path: AudioDefineType, isBreak: boolean = false, isCache: boolean = true): void {
-        if(isBreak) {
-            let audio:Audio = this.m_effectMap.get(path);
-            if(audio !== null && audio !== undefined) {
+        if (isBreak) {
+            let audio: Audio = this.m_effectMap.get(path);
+            if (audio !== null && audio !== undefined) {
                 audio.stop();
             }
         }
@@ -316,30 +317,38 @@ export default class AudioManager extends Manager implements ManagerInterface {
         this.playEffect(AudioDefine.CLICK, false);
     }
 
-    private _destroyEffect(): void {
-        this.m_effectPool.destroy();
+
+    /**
+     * 清理播放中的音效
+     */
+    private _clearEffect(): void {
         this.m_effectPlayRefMap.clear();
         this.m_effectMap.forEach((value: Audio) => {
             value.stop();
             value.release();
         });
-        this.m_effectPool = null;
-        this.m_effectPlayRefMap = null;
-        this.m_effectMap = null;
+        this.m_effectMap.clear();
     }
 
-    private _destroyMusic(): void {
+    /**
+     * 清理播放中的音乐
+     */
+    private _clearMusic(): void {
         this.m_music.stop();
         this.m_music.release();
-        this.m_music = null;
     }
 
     /**
      * 销毁 清理并停止所有正在播放声音（只允许通过 单例静态销毁调用，不允许使用成员方法进行 destroy）
      */
     public destroy(): void {
-        this._destroyEffect();
-        this._destroyMusic();
+        this._clearEffect();
+        this._clearMusic();
+        this.m_effectPool.destroy();
+        this.m_effectPool = null;
+        this.m_effectPlayRefMap = null;
+        this.m_effectMap = null;
+        this.m_music = null;
     }
 
 }

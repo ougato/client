@@ -2,7 +2,7 @@
 
 ## 管理器
 
-### 动画管理器
+### 动画管理器（[AnimationManager](assets/src/core/manager/animation/AnimationManager.ts)）
 
 ### 声音管理器（[AudioManager](assets/src/core/manager/audio/AudioManager.ts)）
 
@@ -13,7 +13,7 @@
 
 #### 方法
 
-`playMusic`
+##### `playMusic`
 
 > 播放音乐 用于背景音乐，循环播放方式，切换音乐时会有转场效果
 
@@ -29,7 +29,7 @@ G.AudioMgr.playMusic(AudioDefine.XXX, false);
 ```
 ---
 
-`pauseMusic`
+##### `pauseMusic`
 
 > 暂停当前播放中的音乐，如果当前没有正在播放的音乐，会有个警告提示
 
@@ -41,7 +41,7 @@ G.AudioMgr.pauseMusic();
 
 ---
 
-`stopMusic`
+##### `stopMusic`
 
 > 停止当前播放中的音乐，如果当前没有正在播放的音乐，会有个警告提示
 
@@ -57,7 +57,7 @@ G.AudioMgr.stopMusic(false);
 
 ---
 
-`resumeMusic`
+##### `resumeMusic`
 
 > 恢复当前被暂停的音乐，如果当前没有正在播放的音乐，会有个警告提示
 
@@ -69,7 +69,7 @@ G.AudioMgr.resumeMusic();
 
 ---
 
-`playEffect`
+##### `playEffect`
 
 > 播放音效 播放一次游戏内的短暂声音
 
@@ -87,7 +87,7 @@ G.AudioMgr.playEffect(AudioDefine.XXX, true, false);
 
 ---
 
-`pauseEffect`
+##### `pauseEffect`
 
 > 暂停音效（不销毁缓存）
 
@@ -103,7 +103,7 @@ G.AudioMgr.pauseEffect(AudioDefine.XXX);
 
 ---
 
-`pauseAllEffect`
+##### `pauseAllEffect`
 
 > 暂停所有音效
 
@@ -115,7 +115,7 @@ G.AudioMgr.pauseAllEffect();
 
 ---
 
-`stopEffect`
+##### `stopEffect`
 
 > 停止音效
 
@@ -131,7 +131,7 @@ G.AudioMgr.stopEffect(AudioDefine.XXX);
 
 ---
 
-`stopAllEffect`
+##### `stopAllEffect`
 
 > 停止所有音效
 
@@ -143,7 +143,7 @@ G.AudioMgr.stopAllEffect();
 
 ---
 
-`resumeEffect`
+##### `resumeEffect`
 
 > 恢复暂停后的音效
 
@@ -159,7 +159,7 @@ G.AudioMgr.resumeEffect(AudioDefine.XXX);
 
 ---
 
-`resumeAllEffect`
+##### `resumeAllEffect`
 
 > 恢复所有暂停后的音效
 
@@ -171,7 +171,7 @@ G.AudioMgr.resumeAllEffect();
 
 ---
 
-`playClick`
+##### `playClick`
 
 > 播放按钮点击音效
 
@@ -183,7 +183,7 @@ G.AudioMgr.playClick();
 
 ---
 
-`destroy`
+##### `destroy`
 
 > 销毁 清理并停止所有正在播放声音（只允许通过 单例静态销毁调用，不允许使用成员方法进行 destroy）
 
@@ -202,7 +202,7 @@ AudioManager.destroy();
 
 #### 方法
 
-`on`
+##### `on`
 
 > 注册事件
 
@@ -220,7 +220,7 @@ G.EventMgr.on(EventDefine.XXX, this, this.onCallback);
 
 ---
 
-`off`
+##### `off`
 
 > 释放事件
 
@@ -238,7 +238,7 @@ G.EventMgr.off(EventDefine.XXX, this, this.onCallback);
 
 --
 
-`emit`
+##### `emit`
 
 > 发送事件（异步）
 
@@ -255,7 +255,7 @@ G.EventMgr.emit(EventDefine.XXX, data);
 
 ---
 
-`destroy`
+##### `destroy`
 
 > 销毁 清理所有注册过的事件（只允许通过 单例静态销毁调用，不允许使用成员方法进行 destroy）
 
@@ -265,19 +265,19 @@ G.EventMgr.emit(EventDefine.XXX, data);
 EventManager.destroy();
 ```
 
-### 网络管理器
+### 网络管理器（[NetworkManager](assets/src/core/manager/network/NetworkManager.ts)）
 
-### 视图管理器
+### 视图管理器（[UIManager](assets/src/core/manager/ui/UIManager.ts)）
 
-### 日志记录器
+### 日志记录器（[Logger](assets/src/core/machine/Logger.ts)）
 
-### 资源加载器
+### 资源加载器（[Loader](assets/src/core/machine/Loader.ts)）
 
 > 资源加载器 维护已加载的资源管理
 
 #### 方法
 
-`getCache`
+##### `getCache`
 
 > 获取已加载后并缓存过的资源
 
@@ -295,7 +295,7 @@ let asset: cc.Asset | undefined = G.Loader.getCache(EventDefine.XXX);
 
 ---
 
-`preload`
+##### `preload`
 
 > 预加载动态资源
 
@@ -329,7 +329,7 @@ G.Loader.preload(audioPath, (items: cc.AssetManager.RequestItem[]) => {
 
 ---
 
-`load`
+##### `load`
 
 > 加载动态资源（完成后对资源的引用计数加 1）
 
@@ -363,7 +363,7 @@ G.Loader.load(audioPath, (items: cc.Asset | cc.Asset[] | null) => {
 
 ---
 
-`unload`
+##### `unload`
 
 > 卸载动态资源（完成后对资源的引用计数减 1）
 
@@ -397,7 +397,7 @@ G.Loader.unload(audioPath, () => {
 
 ---
 
-`release`
+##### `release`
 
 > 释放已动态加载过的资源（把资源引用计数减到 0，达到释放资源目的）
 
@@ -431,7 +431,7 @@ G.Loader.release(audioPath, () => {
 
 ---
 
-`releaseAll`
+##### `releaseAll`
 
 > 释放所有已动态加载过的资源（把所有加载过的资源引用计数归 0）
 
@@ -460,7 +460,7 @@ G.Loader.releaseAll(() => {
 
 ---
 
-`destroy`
+##### `destroy`
 
 > 销毁 清理已经加载缓存的资源并置空（只允许通过 单例静态销毁调用，不允许使用成员方法进行 destroy）
 

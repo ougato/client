@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-10 00:56:02
+ * @LastEditTime : 2020-09-10 15:18:32
  * @FilePath     : \client242\assets\src\core\manager\ui\UIManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
@@ -186,7 +186,7 @@ export default class UIManager extends Manager implements ManagerInterface {
             if (script) {
                 let order: number = this._getLayerTopOrder(ViewOrderDefine.SYSTEM);
                 if (this._checkBounds(ViewOrderDefine.SYSTEM, order)) {
-                    order = this._resetViewOrder(ViewOrderDefine.SYSTEM);
+                    order = this._resetLayerOrder(ViewOrderDefine.SYSTEM);
                 }
                 this.m_viewTopOrderMap.set(ViewOrderDefine.SYSTEM, order);
                 node.zIndex = order;
@@ -397,6 +397,8 @@ export default class UIManager extends Manager implements ManagerInterface {
 
         // 先释放之前加载的所有资源
         Loader.getInstance().releaseAll(() => {
+            this._clearAllView();
+            this._clearViewOrder();
             if (preloadTotal > 0) {
                 let firstHalfPercent: number = 0;
                 let lastHalfPercent: number = 0;
@@ -406,7 +408,6 @@ export default class UIManager extends Manager implements ManagerInterface {
                     }, (percent: number) => {
                         // 后半段百分比
                         lastHalfPercent = Util.toFixed(firstHalfPercent + ((percent / 100) * (100 - firstHalfPercent)));
-                        console.log(`后半段：${lastHalfPercent}`);
                         this.setProgress(lastHalfPercent);
                         if (progressCallback) {
                             progressCallback(lastHalfPercent);
@@ -415,7 +416,6 @@ export default class UIManager extends Manager implements ManagerInterface {
                 }, (percent: number) => {
                     // 前半段百分比
                     firstHalfPercent = Util.toFixed((100 / (preloadTotal + 1) * preloadTotal) * percent / 100);
-                    console.log(`前半段：${firstHalfPercent}`);
                     this.setProgress(firstHalfPercent);
                     if (progressCallback) {
                         progressCallback(firstHalfPercent);
@@ -492,7 +492,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param layer {ViewOrderDefine} 层
      * @returns {cc.Node[]}
      */
-    private _getLayerViewChild(layer: ViewOrderDefine): cc.Node[] {
+    private _getLayerChild(layer: ViewOrderDefine): cc.Node[] {
         let views: cc.Node[] = [];
 
         // 找出同一个层的视图
@@ -523,7 +523,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      */
     private _getLayerTopOrder(layer: ViewOrderDefine): number {
         let order: number = layer;
-        let views: cc.Node[] = this._getLayerViewChild(layer);
+        let views: cc.Node[] = this._getLayerChild(layer);
         let size: number = views.length;
         if (size <= 0) {
             return order;
@@ -539,9 +539,9 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param layer {ViewOrderDefine} 层
      * @return {number}
      */
-    private _resetViewOrder(layer: ViewOrderDefine): number {
+    private _resetLayerOrder(layer: ViewOrderDefine): number {
         let order: number = layer;
-        let views: cc.Node[] = this._getLayerViewChild(layer);
+        let views: cc.Node[] = this._getLayerChild(layer);
 
         if (views.length <= 0) {
             return order;
@@ -588,7 +588,7 @@ export default class UIManager extends Manager implements ManagerInterface {
         }
         let order: number = this._getLayerTopOrder(layer)
         if (this._checkBounds(layer, order)) {
-            order = this._resetViewOrder(layer);
+            order = this._resetLayerOrder(layer);
         }
         console.log(order);
         view.zIndex = order;
@@ -642,7 +642,7 @@ export default class UIManager extends Manager implements ManagerInterface {
 
             let order: number = this._getLayerTopOrder(layer)
             if (this._checkBounds(layer, order)) {
-                order = this._resetViewOrder(layer);
+                order = this._resetLayerOrder(layer);
             }
 
             // 数据赋值
@@ -672,6 +672,14 @@ export default class UIManager extends Manager implements ManagerInterface {
             this.setProgress(percent);
         });
 
+    }
+
+    private _clearAllView(): void {
+
+    }
+
+    private _clearViewOrder(): void {
+        
     }
 
     /**
