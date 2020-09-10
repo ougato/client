@@ -19,7 +19,7 @@
 
 |参数|类型|描述|
 |:--:|:--:|:--:|
-|path|[AudioDefineType](global.ts.d)|加载路径|
+|path|[AudioDefineType](global.d.ts)|加载路径|
 |isGradually|boolean|是否渐变转场效果，默认 true|
 
 * 例子
@@ -75,7 +75,7 @@ G.AudioMgr.resumeMusic();
 
 |参数|类型|描述|
 |:--:|:--:|:--:|
-|path|[AudioDefineType](global.ts.d)|音效路径|
+|path|[AudioDefineType](global.d.ts)|音效路径|
 |isBreak|boolean|true 代表之前播放相同路径的资源会被停止后，播放新的路径音效，false 代表之前播放相同路径的资源会自然的播放完成，不会被主动停止|
 |isCache|boolean|true 代表之前播放过的资源，在当前场景中缓存并不会被销毁，false 代表播放完成后立刻释放缓存资源|
 
@@ -93,7 +93,7 @@ G.AudioMgr.playEffect(AudioDefine.XXX, true, false);
 
 |参数|类型|描述|
 |:--:|:--:|:--:|
-|path|[AudioDefineType](global.ts.d)|音效路径|
+|path|[AudioDefineType](global.d.ts)|音效路径|
 
 * 例子
 
@@ -121,7 +121,7 @@ G.AudioMgr.pauseAllEffect();
 
 |参数|类型|描述|
 |:--:|:--:|:--:|
-|path|[AudioDefineType](global.ts.d)|音效路径|
+|path|[AudioDefineType](global.d.ts)|音效路径|
 
 * 例子
 
@@ -149,7 +149,7 @@ G.AudioMgr.stopAllEffect();
 
 |参数|类型|描述|
 |:--:|:--:|:--:|
-|path|[AudioDefineType](global.ts.d)|音效路径|
+|path|[AudioDefineType](global.d.ts)|音效路径|
 
 * 例子
 
@@ -208,7 +208,7 @@ AudioManager.destroy();
 
 |参数|类型|描述|
 |:--:|:--:|:--:|
-|event|[EventDefineType](global.ts.d)|事件ID|
+|event|[EventDefineType](global.d.ts)|事件ID|
 |caller|T|注册者的 this 对象|
 |callback|Function|监听回调函数|
 
@@ -226,7 +226,7 @@ G.EventMgr.on(EventDefine.XXX, this, this.onCallback);
 
 |参数|类型|描述|
 |:--:|:--:|:--:|
-|event|[EventDefineType](global.ts.d)|事件ID|
+|event|[EventDefineType](global.d.ts)|事件ID|
 |caller|T|注册者的 this 对象|
 |callback|Function|监听回调函数|
 
@@ -244,7 +244,7 @@ G.EventMgr.off(EventDefine.XXX, this, this.onCallback);
 
 |参数|类型|描述|
 |:--:|:--:|:--:|
-|event|[EventDefineType](global.ts.d)|事件ID|
+|event|[EventDefineType](global.d.ts)|事件ID|
 |data|...any[]|多个任意数据|
 
 * 例子
@@ -283,7 +283,7 @@ EventManager.destroy();
 
 |参数|类型|描述|
 |:--:|:--:|:--:|
-|path|[AssetsPathDefineType](global.ts.d)|资源路径|
+|path|[AssetsPathDefineType](global.d.ts)|资源路径|
 |返回值|类型|描述|
 ||cc.Asset\|undefined|如果资源已经加载过返回加载后的 cc.Asset，如果未加载或者已释放返回 undefined|
 
@@ -301,7 +301,7 @@ let asset: cc.Asset | undefined = G.Loader.getCache(EventDefine.XXX);
 
 |参数|类型|描述|
 |:--:|:--:|:--:|
-|path|[AssetsPathDefineType](global.ts.d)|资源路径|
+|path|[AssetsPathDefineType](global.d.ts)|资源路径|
 |onComplete|(items: cc.AssetManager.RequestItem[]) => void|预加载完成回调|
 |onProgress|(percent: number) => void|预加载过程中的百分比（0-100）|
 
@@ -335,7 +335,7 @@ G.Loader.preload(audioPath, (items: cc.AssetManager.RequestItem[]) => {
 
 |参数|类型|描述|
 |:--:|:--:|:--:|
-|path|[AssetsPathDefineType](global.ts.d)|资源路径|
+|path|[AssetsPathDefineType](global.d.ts)|资源路径|
 |onComplete|(items: cc.Asset | cc.Asset[] | null) => void|加载完成回调|
 |onProgress|(percent: number) => void|加载过程中的百分比（0-100）|
 
@@ -369,7 +369,7 @@ G.Loader.load(audioPath, (items: cc.Asset | cc.Asset[] | null) => {
 
 |参数|类型|描述|
 |:--:|:--:|:--:|
-|path|[AssetsPathDefineType](global.ts.d)|资源路径|
+|path|[AssetsPathDefineType](global.d.ts)|资源路径|
 |onComplete|Function|卸载完成回调|
 |onProgress|(percent: number) => void|卸载过程中的百分比（0-100）|
 
@@ -403,7 +403,7 @@ G.Loader.unload(audioPath, () => {
 
 |参数|类型|描述|
 |:--:|:--:|:--:|
-|path|[AssetsPathDefineType](global.ts.d)|资源路径|
+|path|[AssetsPathDefineType](global.d.ts)|资源路径|
 |onComplete|Function|释放完成回调|
 |onProgress|(percent: number) => void|释放过程中的百分比（0-100）|
 
