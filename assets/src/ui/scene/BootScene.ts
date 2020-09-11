@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-09 02:56:16
+ * @LastEditTime : 2020-09-11 01:39:51
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
@@ -18,39 +18,30 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class BootScene extends UIComponent {
 
-    @property({ type: cc.Node, tooltip: "加载节点" })
-    private loadingNode: cc.Node = null;
-
-    @property({ type: cc.Node, tooltip: "进度节点" })
-    private progressNode: cc.Node = null;
-
-    @property({ type: cc.Node, tooltip: "禁止点击节点" })
-    private lockTouchNode: cc.Node = null;
-
-    @property({ type: cc.Node, tooltip: "弹窗节点" })
-    private popupsNode: cc.Node = null;
-
-    @property({ type: cc.Node, tooltip: "向上飘动提示节点" })
-    private tipsNode: cc.Node = null;
-
-
     constructor() {
         super();
-        // 初始化全局变量
-        this.initGlobal();
 
     }
 
     protected onLoad(): void {
-
-    }
-
-    protected start() {
         this.register();
         this.initData();
         this.initView();
+    }
 
-        this.asyncLaunchDepend();
+    protected start() {
+
+
+        // this.asyncLaunchDepend();
+    }
+
+    /**
+     * 初始化
+     */
+    private async _init(): Promise<void> {
+        this._initGlobal();
+        this._initPersist();
+        this._initSDK();
     }
 
     /**
@@ -71,11 +62,7 @@ export default class BootScene extends UIComponent {
      * 初始化视图
      */
     private initView(): void {
-        G.UIMgr.initLoading(this.loadingNode);
-        G.UIMgr.initProgress(this.progressNode);
-        G.UIMgr.initLockTouch(this.lockTouchNode);
-        G.UIMgr.initPopups(this.popupsNode);
-        G.UIMgr.initTips(this.tipsNode);
+
     }
 
     /**
@@ -139,7 +126,7 @@ export default class BootScene extends UIComponent {
         for (let value in CustomViewDefine) {
             arr.push(CustomViewDefine[value]);
         }
-        G.UIMgr.openScene(SceneDefine.AccountScene, 4141, null, null, arr);
+        // G.UIMgr.openScene(SceneDefine.AccountScene, 4141, null, null, arr);
     }
 
 }
