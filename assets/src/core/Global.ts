@@ -2,9 +2,9 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-11 01:44:35
+ * @LastEditTime : 2020-09-11 11:46:40
  * @FilePath     : \client242\assets\src\core\Global.ts
- * @Description  : 框架初始化类
+ * @Description  : 全局类，用于管理器的全局使用
  */
 
 import EventManager from "./manager/event/EventManager";
@@ -14,24 +14,9 @@ import AnimationManager from "./manager/animation/AnimationManager";
 import NetworkManager from "./manager/network/NetworkManager";
 import Loader from "./machine/Loader";
 import Logger from "./machine/Logger";
+import Game from "./Game";
 
 export default class Global {
-
-    // private static g_instance: Global = null;
-
-    // public static getInstance(): Global {
-    //     if (this.g_instance === null) {
-    //         this.g_instance = new Global();
-    //     }
-    //     return this.g_instance;
-    // }
-
-    // public static destroy(): void {
-    //     if (this.g_instance !== null) {
-    //         this.g_instance.destroy();
-    //     }
-    //     this.g_instance = null;
-    // }
 
     constructor() {
 
@@ -94,15 +79,10 @@ export default class Global {
     }
 
     /**
-     * 销毁
+     * 游戏访问器
+     * @return {Game} 游戏
      */
-    public static destroy(): void {
-        EventManager.destroy();
-        AudioManager.destroy();
-        UIManager.destroy();
-        AnimationManager.destroy();
-        NetworkManager.destroy();
-        Loader.destroy();
-        Logger.destroy();
+    public static Game(): Game {
+        return Game.getInstance();
     }
 }

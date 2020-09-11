@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-11 01:39:51
+ * @LastEditTime : 2020-09-11 15:55:49
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
@@ -12,15 +12,20 @@ import SceneDefine from "../../define/SceneDefine";
 import UIComponent from "../UIComponent";
 import { DynamicEffectDefine } from "../../define/AudioDefine";
 import { CustomViewDefine } from "../../define/ViewDefine";
+import Game from "../../core/Game";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class BootScene extends UIComponent {
 
+    @property({ type: cc.Label, tooltip: "初始化提示" })
+    private labTips: cc.Label = null;
+
     constructor() {
         super();
 
+        window.G = Global;
     }
 
     protected onLoad(): void {
@@ -30,18 +35,7 @@ export default class BootScene extends UIComponent {
     }
 
     protected start() {
-
-
-        // this.asyncLaunchDepend();
-    }
-
-    /**
-     * 初始化
-     */
-    private async _init(): Promise<void> {
-        this._initGlobal();
-        this._initPersist();
-        this._initSDK();
+        this.asyncInitDepend();
     }
 
     /**
@@ -62,20 +56,22 @@ export default class BootScene extends UIComponent {
      * 初始化视图
      */
     private initView(): void {
-
+        
     }
 
     /**
      * 初始化启动依赖
      */
-    private async asyncLaunchDepend(): Promise<void> {
-        await this.asyncLoadSDK();
-        if (await this.asyncCheckUpdate()) {
-            // G.UIMgr.openPopups()
-            this.intoUpdate();
-        } else {
-            this.intoGame();
-        }
+    private async asyncInitDepend(): Promise<void> {
+        Game.getInstance().init();
+
+        // await this.asyncLoadSDK();
+        // if (await this.asyncCheckUpdate()) {
+        //     // G.UIMgr.openPopups()
+        //     this.intoUpdate();
+        // } else {
+        //     this.intoGame();
+        // }
     }
 
     /**
