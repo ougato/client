@@ -31,5 +31,6 @@
       "enable": false
     }
   },
-  "preview-port": 7456
+  "preview-port": 7456,
+  "start-scene": "92e50c88-4179-4552-ba25-cd44cfd283a1"
 }

@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:41:52
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-09 23:32:47
+ * @LastEditTime : 2020-09-14 01:39:29
  * @FilePath     : \client242\assets\src\core\manager\event\EventManager.ts
  * @Description  : 事件管理器，侦察者模式，用于整个游戏中的消息事件注册、接收、发送工作，各模块之间交互和解耦
  */
@@ -141,14 +141,14 @@ export default class EventManager extends Manager implements ManagerInterface {
     /**
      * 手动清理事件 Map
      */
-    private _clearEventMap(): void {
+    private clearEventMap(): void {
         this.m_eventMap.clear();
     }
 
     /**
      * 手动清理监听 Map
      */
-    private _clearListenMap(): void {
+    private clearListenMap(): void {
         this.m_eventMap.forEach((eventValue: Map<any, Function[]>, eventKey: EventDefineType, eventMap: Map<EventDefineType, Map<any, Function[]>>) => {
             eventValue.forEach((listenValue: Function[], listenKey: any, listenMap: Map<any, Function[]>) => {
                 listenValue.length = 0
@@ -161,8 +161,8 @@ export default class EventManager extends Manager implements ManagerInterface {
      * 销毁 清理所有注册过的事件（只允许通过 单例静态销毁调用，不允许使用成员方法进行 destroy）
      */
     public destroy(): void {
-        this._clearListenMap();
-        this._clearEventMap();
+        this.clearListenMap();
+        this.clearEventMap();
         this.m_eventMap = null;
     }
 

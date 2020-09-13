@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-13 02:00:18
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-10 01:19:08
+ * @LastEditTime : 2020-09-13 18:12:45
  * @FilePath     : \client242\assets\src\core\machine\Loader.ts
  * @Description  : 资源加载器 维护已加载的资源管理
  */
@@ -132,7 +132,7 @@ export default class Loader {
     /**
      * 加载动态资源（完成后对资源的引用计数加 1）
      * @param path {AssetsPathDefineType} 资源路径
-     * @param onComplete {(items: cc.AssetManager.RequestItem[] | null) => void} 加载完成回调
+     * @param onComplete {(items: cc.AssetManager.RequestItem[] | null) => void} 加载完成回调，失败 items = null
      * @param onProgress {(percent: number) => void} 加载过程中的百分比（0-100）
      */
     public load(path: AssetsPathDefineType, onComplete?: (items: cc.Asset | cc.Asset[] | null) => void, onProgress?: (percent: number) => void): void {

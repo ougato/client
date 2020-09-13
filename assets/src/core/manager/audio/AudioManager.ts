@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:04
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-10 18:42:18
+ * @LastEditTime : 2020-09-14 01:38:11
  * @FilePath     : \client242\assets\src\core\manager\audio\AudioManager.ts
  * @Description  : 用于整个游戏场景中，需要播放声音的模块，调用全局接口，达到播放声音的效果，开发者无需考虑声音播放缓存问题，音效可自定义是否缓存
  */
@@ -28,8 +28,6 @@ export default class AudioManager extends Manager implements ManagerInterface {
     private m_effectPool: Pool<Audio> = null;
     // 音效缓存
     private m_effectMap: Map<AudioDefineType, Audio> = null;
-    // 音效播放引用计数（用于置空音效缓存里的数据）
-    private m_effectPlayRefMap: Map<AudioDefineType, number> = null;
     // 音乐
     private m_music: Audio = null;
 
@@ -52,9 +50,7 @@ export default class AudioManager extends Manager implements ManagerInterface {
 
         this.m_effectPool = new Pool<Audio>(Audio, MAX_SAME_TIME_PLAY_SIZE);
         this.m_effectMap = new Map();
-        this.m_effectPlayRefMap = new Map();
         this.m_music = new Audio();
-        
     }
 
     /**
@@ -62,7 +58,7 @@ export default class AudioManager extends Manager implements ManagerInterface {
      * @param path {AudioDefineType} 动态路径
      * @return {boolean}
      */
-    private _checkLegal(path: AudioDefineType): boolean {
+    private checkLegal(path: AudioDefineType): boolean {
         let legal: boolean = true;
         if (path === null || path === undefined) {
             legal = false;
@@ -72,33 +68,6 @@ export default class AudioManager extends Manager implements ManagerInterface {
             }
         }
         return legal;
-    }
-
-    /**
-     * 增加引用计数
-     * @param path {AudioDefineType} 动态路径
-     * @return {number | undefined} 当前引用计数
-     */
-    private _addRefCount(path: AudioDefineType): number | undefined {
-        let refCount: number | undefined = this.m_effectPlayRefMap.get(path);
-        if (refCount === undefined) {
-            refCount = 0;
-        }
-        this.m_effectPlayRefMap.set(path, ++refCount);
-        return refCount;
-    }
-
-    /**
-     * 减小引用计数
-     * @param path {AudioDefineType} 动态路径
-     * @return {number | undefined} 当前引用计数
-     */
-    private _decRefCount(path: AudioDefineType): number | undefined {
-        let refCount: number | undefined = this.m_effectPlayRefMap.get(path);
-        if (refCount !== undefined && refCount > 0) {
-            this.m_effectPlayRefMap.set(path, --refCount);
-        }
-        return refCount;
     }
 
     /**
@@ -208,26 +177,20 @@ export default class AudioManager extends Manager implements ManagerInterface {
             if (clip === null) {
                 return;
             }
-            // 增加音效引用
-            this._addRefCount(path);
             // 设置资源准备播放
             let audio: Audio = this.m_effectPool.get();
             this.m_effectMap.set(path, audio);
             audio.setClip(clip);
             audio.setPath(path);
             audio.regCallback(() => {
-                let refCount: number = this.m_effectPlayRefMap.get(path);
-                if (!isCache || refCount > 1) {
-                    // 减小音效引用
-                    refCount = this._decRefCount(path);
+                let asset: cc.Asset = Loader.getInstance().getCache(path);
+                if (!isCache || asset.refCount > 1) {
                     // 减小资源引用
                     Loader.getInstance().unload(path);
                 }
-                // 放入缓存池
-                audio.clear();
                 this.m_effectPool.put(audio);
                 // 删除当前记录
-                if (refCount <= 0) {
+                if (asset.refCount <= 0) {
                     this.m_effectMap.delete(path);
                 }
             });
@@ -242,7 +205,7 @@ export default class AudioManager extends Manager implements ManagerInterface {
      * @param path {AudioDefineType} 音效路径
      */
     public pauseEffect(path: AudioDefineType): void {
-        if (this._checkLegal(path)) {
+        if (this.checkLegal(path)) {
             Logger.getInstance().warn(`无法暂停不存在的音效 ${path}`);
             return;
         }
@@ -267,7 +230,7 @@ export default class AudioManager extends Manager implements ManagerInterface {
      * @param path {AudioDefineType} 音效路径
      */
     public stopEffect(path: AudioDefineType): void {
-        if (this._checkLegal(path)) {
+        if (this.checkLegal(path)) {
             Logger.getInstance().warn(`无法停止不存在的音效 ${path}`);
             return;
         }
@@ -291,7 +254,7 @@ export default class AudioManager extends Manager implements ManagerInterface {
      * @param path {AudioDefineType} 音效路径
      */
     public resumeEffect(path: AudioDefineType): void {
-        if (this._checkLegal(path)) {
+        if (this.checkLegal(path)) {
             Logger.getInstance().warn(`无法恢复不存在的音效 ${path}`);
             return;
         }
@@ -321,8 +284,7 @@ export default class AudioManager extends Manager implements ManagerInterface {
     /**
      * 清理播放中的音效
      */
-    private _clearEffect(): void {
-        this.m_effectPlayRefMap.clear();
+    private clearEffect(): void {
         this.m_effectMap.forEach((value: Audio) => {
             value.stop();
             value.release();
@@ -333,7 +295,7 @@ export default class AudioManager extends Manager implements ManagerInterface {
     /**
      * 清理播放中的音乐
      */
-    private _clearMusic(): void {
+    private clearMusic(): void {
         this.m_music.stop();
         this.m_music.release();
     }
@@ -342,11 +304,10 @@ export default class AudioManager extends Manager implements ManagerInterface {
      * 销毁 清理并停止所有正在播放声音（只允许通过 单例静态销毁调用，不允许使用成员方法进行 destroy）
      */
     public destroy(): void {
-        this._clearEffect();
-        this._clearMusic();
+        this.clearEffect();
+        this.clearMusic();
         this.m_effectPool.destroy();
         this.m_effectPool = null;
-        this.m_effectPlayRefMap = null;
         this.m_effectMap = null;
         this.m_music = null;
     }

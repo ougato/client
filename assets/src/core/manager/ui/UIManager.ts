@@ -2,20 +2,20 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-10 15:18:32
+ * @LastEditTime : 2020-09-14 01:41:15
  * @FilePath     : \client242\assets\src\core\manager\ui\UIManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
 
 import Manager from "../Manager";
 import Logger from "../../machine/Logger";
-import PersistNodeDefine from "../../../define/PersistNodeDefine";
-import ProgressNode from "../../../ui/view/persist/ProgressNode";
+import { CommonViewDefine, PersistViewDefine } from "../../../define/ViewDefine";
 import ViewOrderDefine from "../../../define/ViewOrderDefine";
 import { ORDER_INTERVAL } from "../../../define/ViewOrderDefine";
 import AnimationEffectUtil from "../../../utils/AnimationEffectUtil";
 import Loader from "../../machine/Loader";
 import Util from "../../../utils/Util";
+import PopupsView from "../../../ui/view/common/PopupsView"
 
 // 预加载场景等待多少秒未完成，就显示进度条界面
 const PRELOAD_SCENE_WAITIMG_TIME: number = 1;
@@ -27,7 +27,7 @@ export default class UIManager extends Manager implements ManagerInterface {
     private static g_instance: UIManager = null;
 
     // 常驻节点 Map
-    private m_persistNodeMap: Map<PersistNodeType, cc.Node> = null;
+    private m_persistNodeMap: Map<PersistViewDefine, cc.Node> = null;
     // 视图节点 Map
     private m_viewNodeMap: Map<ViewDefineType, cc.Node> = null;
     // 视图每层最高层级 Map
@@ -50,7 +50,7 @@ export default class UIManager extends Manager implements ManagerInterface {
     constructor() {
         super();
 
-        this.m_persistNodeMap = new Map<PersistNodeType, cc.Node>();
+        this.m_persistNodeMap = new Map<PersistViewDefine, cc.Node>();
         this.m_viewNodeMap = new Map<ViewDefineType, cc.Node>();
         this.m_viewTopOrderMap = new Map<ViewOrderDefine, number>();
         for (let order in ViewOrderDefine) {
@@ -63,10 +63,10 @@ export default class UIManager extends Manager implements ManagerInterface {
 
     /**
      * 统一初始化常驻节点
-     * @param nodeName {PersistNodeType} 常驻节点名
+     * @param nodeName {PersistViewDefine} 常驻节点名
      * @param node {cc.Node} 常驻节点
      */
-    private _initPersistNode(nodeName: PersistNodeType, node: cc.Node): void {
+    private _initPersistNode(nodeName: PersistViewDefine, node: cc.Node): void {
         if (node && !this.m_persistNodeMap.has(nodeName)) {
             node.active = false;
             cc.game.addPersistRootNode(node);
@@ -79,7 +79,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param node {cc.Node} 视图节点
      */
     public initLoading(node: cc.Node): void {
-        this._initPersistNode(PersistNodeDefine.LoadingNode, node);
+        this._initPersistNode(PersistViewDefine.LoadingView, node);
     }
 
     /**
@@ -87,7 +87,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param node {cc.Node} 视图节点
      */
     public initProgress(node: cc.Node): void {
-        this._initPersistNode(PersistNodeDefine.ProgressNode, node);
+        this._initPersistNode(PersistViewDefine.ProgressView, node);
     }
 
     /**
@@ -95,7 +95,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param node {cc.Node} 视图节点
      */
     public initLockTouch(node: cc.Node): void {
-        this._initPersistNode(PersistNodeDefine.LockTouchNode, node);
+        this._initPersistNode(PersistViewDefine.LockTouchView, node);
     }
 
     /**
@@ -103,7 +103,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param node {cc.Node} 视图节点
      */
     public initPopups(node: cc.Node): void {
-        this._initPersistNode(PersistNodeDefine.PopupsNode, node);
+        // this._initPersistNode(PersistViewDefine.PopupsNode, node);
     }
 
     /**
@@ -111,14 +111,14 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param node {cc.Node} 视图节点
      */
     public initTips(node: cc.Node): void {
-        this._initPersistNode(PersistNodeDefine.TipsNode, node);
+        // this._initPersistNode(PersistViewDefine.TipsNode, node);
     }
 
     /**
      * 统一清理常驻节点
-     * @param nodeName {PersistNodeType} 常驻节点名
+     * @param nodeName {PersistViewDefine} 常驻节点名
      */
-    private _clearPersistNode(nodeName: PersistNodeType): void {
+    private _clearPersistNode(nodeName: PersistViewDefine): void {
         let node: cc.Node = this.m_persistNodeMap.get(nodeName);
         if (node) {
             this.m_persistNodeMap.delete(nodeName);
@@ -132,35 +132,35 @@ export default class UIManager extends Manager implements ManagerInterface {
      * 清理加载界面
      */
     private _clearLoading(): void {
-        this._clearPersistNode(PersistNodeDefine.LoadingNode);
+        this._clearPersistNode(PersistViewDefine.LoadingView);
     }
 
     /**
      * 清理进度界面
      */
     private _clearProgress(): void {
-        this._clearPersistNode(PersistNodeDefine.ProgressNode);
+        this._clearPersistNode(PersistViewDefine.ProgressView);
     }
 
     /**
      * 清理禁止点击界面
      */
     private _clearLockTouch(): void {
-        this._clearPersistNode(PersistNodeDefine.LockTouchNode);
+        this._clearPersistNode(PersistViewDefine.LockTouchView);
     }
 
     /**
      * 清理弹窗界面
      */
     private _clearPopups(): void {
-        this._clearPersistNode(PersistNodeDefine.PopupsNode);
+        // this._clearPersistNode(PersistViewDefine.PopupsNode);
     }
 
     /**
      * 清理提示界面
      */
     private _clearTips(): void {
-        this._clearPersistNode(PersistNodeDefine.TipsNode);
+        // this._clearPersistNode(PersistViewDefine.TipsNode);
     }
 
     /**
@@ -176,10 +176,10 @@ export default class UIManager extends Manager implements ManagerInterface {
 
     /**
      * 统一打开常驻节点
-     * @param nodeName {PersistNodeType} 节点名
+     * @param nodeName {PersistViewDefine} 节点名
      * @param args {any[]} 任意多参数
      */
-    private _openPersistNode(name: PersistNodeType, ...args: any[]): void {
+    private _openPersistNode(name: PersistViewDefine, ...args: any[]): void {
         let node: cc.Node = this.m_persistNodeMap.get(name);
         if (node) {
             let script: PersistInterface = node.getComponent(name as string);
@@ -204,21 +204,21 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param content {string} 内容
      */
     public openLoading(content?: string): void {
-        this._openPersistNode(PersistNodeDefine.LoadingNode, content);
+        this._openPersistNode(PersistViewDefine.LoadingView, content);
     }
 
     /**
      * 打开进度界面
      */
     public openProgress(): void {
-        this._openPersistNode(PersistNodeDefine.ProgressNode);
+        this._openPersistNode(PersistViewDefine.ProgressView);
     }
 
     /**
      * 打开禁止点击界面（在最顶部覆盖一层防止点击）
      */
     public openLockTouch(): void {
-        this._openPersistNode(PersistNodeDefine.LockTouchNode);
+        this._openPersistNode(PersistViewDefine.LockTouchView);
     }
 
     /**
@@ -228,8 +228,26 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param confirmCallback {Function} 确定回调方法
      * @param cancelCallback {Function} 取消回调方法
      */
-    public openPopups(content: string, title?: string, confirmCallback?: Function, cancelCallback?: Function): void {
-        this._openPersistNode(PersistNodeDefine.PopupsNode, content, title, confirmCallback, cancelCallback);
+    public openPopups(content: string, title?: string, order?: ViewOrderDefine, confirmCallback?: Function, cancelCallback?: Function): void {
+        Loader.getInstance().load(CommonViewDefine.PopupsView, (prefab: cc.Prefab) => {
+            if (prefab === null) {
+                Logger.getInstance().error("打开弹窗界面失败");
+            } else {
+                if (order === undefined || order === null) {
+                    order = ViewOrderDefine.POPUP;
+                }
+                let parent: cc.Node = cc.director.getScene();
+                if (order !== ViewOrderDefine.SYSTEM) {
+                    parent = parent.getChildByName("Canvas");
+                }
+                let node: cc.Node = cc.instantiate(prefab);
+                node.zIndex = this._getLayerTopOrder(order);
+                node.parent = parent;
+                node.active = false;
+                let script: PopupsView = node.getComponent("PopupsView");
+                script.open(content, title, confirmCallback, cancelCallback);
+            }
+        });
     }
 
     /**
@@ -237,7 +255,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param content {string} 内容
      */
     public openTips(content: string): void {
-        this._openPersistNode(PersistNodeDefine.TipsNode, content);
+        // this._openPersistNode(PersistViewDefine.TipsNode, content);
     }
 
     /**
@@ -246,9 +264,9 @@ export default class UIManager extends Manager implements ManagerInterface {
      */
 
     public setProgress(percent: number): void {
-        let node: cc.Node = this.m_persistNodeMap.get(PersistNodeDefine.ProgressNode);
+        let node: cc.Node = this.m_persistNodeMap.get(PersistViewDefine.ProgressView);
         if (node) {
-            let script: ProgressNode = node.getComponent(PersistNodeDefine.ProgressNode);
+            let script: ProgressView = node.getComponent(PersistViewDefine.ProgressView);
             if (script) {
                 script.setPercent(percent);
             }
@@ -257,9 +275,9 @@ export default class UIManager extends Manager implements ManagerInterface {
 
     /**
      * 统一关闭常驻节点
-     * @param name {PersistNodeType} 常驻节点名
+     * @param name {PersistViewDefine} 常驻节点名
      */
-    private _closePersistNode(name: PersistNodeType): void {
+    private _closePersistNode(name: PersistViewDefine): void {
         let node: cc.Node = this.m_persistNodeMap.get(name);
         if (node) {
             let script: PersistInterface = node.getComponent(name as string);
@@ -277,35 +295,35 @@ export default class UIManager extends Manager implements ManagerInterface {
      * 关闭加载界面
      */
     public closeLoading(): void {
-        this._closePersistNode(PersistNodeDefine.LoadingNode);
+        this._closePersistNode(PersistViewDefine.LoadingView);
     }
 
     /**
      * 关闭进度界面
      */
     public closeProgress(): void {
-        this._closePersistNode(PersistNodeDefine.ProgressNode);
+        this._closePersistNode(PersistViewDefine.ProgressView);
     }
 
     /**
      * 关闭禁止点击界面
      */
     public closeLockTouch(): void {
-        this._closePersistNode(PersistNodeDefine.LockTouchNode);
+        this._closePersistNode(PersistViewDefine.LockTouchView);
     }
 
     /**
      * 手动关闭弹窗界面
      */
     private _closePopups(): void {
-        this._closePersistNode(PersistNodeDefine.PopupsNode);
+        // this._closePersistNode(PersistViewDefine.PopupsNode);
     }
 
     /**
      * 关闭提示界面
      */
     private _closeTips(): void {
-        this._closePersistNode(PersistNodeDefine.TipsNode);
+        // this._closePersistNode(PersistViewDefine.TipsNode);
     }
 
     /**
@@ -393,6 +411,8 @@ export default class UIManager extends Manager implements ManagerInterface {
                 completeCallback(error, scene);
             }
             this.closeLockTouch();
+
+            Logger.getInstance().log(`场景 ${name} 切换成功`)
         }
 
         // 先释放之前加载的所有资源
@@ -679,7 +699,7 @@ export default class UIManager extends Manager implements ManagerInterface {
     }
 
     private _clearViewOrder(): void {
-        
+
     }
 
     /**

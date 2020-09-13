@@ -2,8 +2,8 @@
  * @Author       : ougato
  * @Date         : 2020-08-28 11:38:37
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-04 00:05:55
- * @FilePath     : \client242\assets\src\ui\view\persist\PopupsNode.ts
+ * @LastEditTime : 2020-09-13 23:43:32
+ * @FilePath     : \client242\assets\src\ui\view\common\PopupsView.ts
  * @Description  : 通用用户交互弹窗
  */
 
@@ -12,7 +12,7 @@ import UIComponent from "../../UIComponent";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class PopupsNode extends UIComponent implements PersistInterface {
+export default class PopupsView extends UIComponent {
 
     @property({ type: cc.Label, tooltip: "标题" })
     labTitle: cc.Label = null;

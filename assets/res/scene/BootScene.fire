@@ -81,13 +81,13 @@
     "_active": true,
     "_components": [
       {
-        "__id__": 10
-      },
-      {
         "__id__": 11
       },
       {
         "__id__": 12
+      },
+      {
+        "__id__": 13
       }
     ],
     "_prefab": null,
@@ -177,7 +177,7 @@
       "array": [
         0,
         0,
-        358.5345171667576,
+        360.2665679743265,
         0,
         0,
         0,
@@ -244,7 +244,7 @@
       "__id__": 2
     },
     "_children": [],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 6
@@ -372,6 +372,9 @@
     "_components": [
       {
         "__id__": 9
+      },
+      {
+        "__id__": 10
       }
     ],
     "_prefab": null,
@@ -385,20 +388,20 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 233.34,
-      "height": 50.4
+      "width": 138.73,
+      "height": 40.32
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
-      "x": 0.5,
+      "x": 0,
       "y": 0.5
     },
     "_trs": {
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        0,
-        -542.16,
+        -69.365,
+        -566.84,
         0,
         0,
         0,
@@ -438,10 +441,10 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "游戏初始化...",
-    "_N$string": "游戏初始化...",
-    "_fontSize": 40,
-    "_lineHeight": 40,
+    "_string": "initializing",
+    "_N$string": "initializing",
+    "_fontSize": 32,
+    "_lineHeight": 0,
     "_enableWrapText": true,
     "_N$file": null,
     "_isSystemFontUsed": true,
@@ -455,6 +458,33 @@
     "_N$overflow": 0,
     "_N$cacheMode": 0,
     "_id": "20jTlH3QJH9blwGtnEBFjt"
+  },
+  {
+    "__type__": "cc.Widget",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 8
+    },
+    "_enabled": true,
+    "alignMode": 1,
+    "_target": null,
+    "_alignFlags": 20,
+    "_left": 20,
+    "_right": 30,
+    "_top": 0,
+    "_bottom": 80,
+    "_verticalCenter": 0,
+    "_horizontalCenter": 0,
+    "_isAbsLeft": true,
+    "_isAbsRight": true,
+    "_isAbsTop": true,
+    "_isAbsBottom": true,
+    "_isAbsHorizontalCenter": true,
+    "_isAbsVerticalCenter": true,
+    "_originalWidth": 0,
+    "_originalHeight": 0,
+    "_id": "68nINHYCpMG72XkQZpjDY9"
   },
   {
     "__type__": "cc.Canvas",
