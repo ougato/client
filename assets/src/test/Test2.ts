@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-01 23:20:29
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-10 01:01:22
+ * @LastEditTime : 2020-09-15 02:37:24
  * @FilePath     : \client242\assets\src\test\Test2.ts
  * @Description  : 
  */
@@ -37,6 +37,10 @@ export default class Test2 extends UIComponent implements UIInterface<string> {
         if (this.data !== null && this.data !== undefined) {
             this.label.string = this.data;
         }
+    }
+
+    public onLanguage(): void {
+
     }
 
     public refresh(data: string): void {

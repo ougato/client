@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-04 23:07:17
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-05 16:41:32
+ * @LastEditTime : 2020-09-15 02:36:08
  * @FilePath     : \client242\assets\src\ui\scene\AccountScene.ts
  * @Description  : 
  */
@@ -42,7 +42,7 @@ export default class NewClass extends UIComponent {
      * 点击释放
      */
     private onClickRelease():void {
-        G.UIMgr.openView(ViewDefine.Test1, null, null,null, ViewStyleDefine.FADE);
+        G.UIMgr.openView(ViewDefine.Test1);
     }
 
 }

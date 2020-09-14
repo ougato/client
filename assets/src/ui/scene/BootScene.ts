@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-14 01:12:38
+ * @LastEditTime : 2020-09-15 00:40:08
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
@@ -11,11 +11,12 @@ import SceneDefine from "../../define/SceneDefine";
 import UIComponent from "../UIComponent";
 import LocalizationDefine from "../../define/LocalizationDefine";
 import Loader from "../../core/machine/Loader";
-import ViewOrderDefine from "../../define/ViewOrderDefine";
+import ViewLayerDefine from "../../define/ViewLayerDefine";
 import Logger from "../../core/machine/Logger";
 import LanguagePathDefine from "../../define/LanguagePathDefine";
 import { PersistViewDefine } from "../../define/ViewDefine";
 import * as GameConfig from "../../config/GameConfig";
+import UIManager from "../../core/manager/ui/UIManager";
 
 
 const { ccclass, property } = cc._decorator;
@@ -100,12 +101,12 @@ export default class BootScene extends UIComponent implements UIInterface<void> 
         if (this.m_initializingTimer !== null && this.m_initializingTimer !== undefined) {
             clearInterval(this.m_initializingTimer);
             this.m_initializingTimer = null;
-            this.labTips.string = "";
         }
     }
 
 
     private async launch() {
+        await this.loadLanguage();
         await this.loadDepend();
         await this.checkUpdate();
         this.intoGame();
@@ -126,12 +127,13 @@ export default class BootScene extends UIComponent implements UIInterface<void> 
                     Logger.getInstance().error("常驻视图加载失败");
                     reject();
                 } else {
-                    prefabs.map((prefab: cc.Prefab) => {
+                    prefabs.map((prefab: cc.Prefab, index: number) => {
                         let node: cc.Node = cc.instantiate(prefab);
-                        node.zIndex = ViewOrderDefine.SYSTEM;
+                        node.zIndex = ViewLayerDefine.SYSTEM;
                         cc.game.addPersistRootNode(node);
                         node.parent = cc.director.getScene();
                         node.active = false;
+                        UIManager.getInstance().setPersistView(res[index], node);
                     });
                     resolve();
                 }
@@ -180,7 +182,7 @@ export default class BootScene extends UIComponent implements UIInterface<void> 
      */
     private async loadDepend(): Promise<void> {
         return new Promise((resolve: () => void, reject: () => void) => {
-            Promise.all([this.loadPersist(), this.loadLanguage(), this.loadSDK()]).then(() => {
+            Promise.all([this.loadPersist(), this.loadSDK()]).then(() => {
                 resolve();
             }).catch(() => {
                 G.UIMgr.openPopups("error", null, null, () => {

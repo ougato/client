@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-01 23:20:29
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-08 02:54:02
+ * @LastEditTime : 2020-09-15 02:37:38
  * @FilePath     : \client242\assets\src\test\Test1.ts
  * @Description  : 
  */
@@ -33,6 +33,10 @@ export default class Test1 extends UIComponent implements UIInterface<string> {
     }
 
     start() {
+
+    }
+
+    public onLanguage(): void {
 
     }
 

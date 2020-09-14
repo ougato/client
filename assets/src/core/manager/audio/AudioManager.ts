@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:04
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-14 01:38:11
+ * @LastEditTime : 2020-09-15 02:56:51
  * @FilePath     : \client242\assets\src\core\manager\audio\AudioManager.ts
  * @Description  : 用于整个游戏场景中，需要播放声音的模块，调用全局接口，达到播放声音的效果，开发者无需考虑声音播放缓存问题，音效可自定义是否缓存
  */
@@ -62,10 +62,6 @@ export default class AudioManager extends Manager implements ManagerInterface {
         let legal: boolean = true;
         if (path === null || path === undefined) {
             legal = false;
-        } else {
-            if (this.m_effectMap.has(path)) {
-                legal = false;
-            }
         }
         return legal;
     }
@@ -119,8 +115,8 @@ export default class AudioManager extends Manager implements ManagerInterface {
      * 暂停当前播放中的音乐，如果当前没有音乐，会有个警告提示
      */
     public pauseMusic(): void {
-        if (!this.m_music.getPath()) {
-            Logger.getInstance().warn("无法找到需要暂停的音乐");
+        if (!this.m_music.getPath() || !this.m_music.isPlaying) {
+            Logger.getInstance().warn(`无法找到需要暂停的音乐 ${this.m_music.getPath()}`);
             return;
         }
 
@@ -132,8 +128,8 @@ export default class AudioManager extends Manager implements ManagerInterface {
      * @param isGradually {boolean} 是否转场效果
      */
     public stopMusic(isGradually: boolean = true): void {
-        if (!this.m_music.getPath()) {
-            Logger.getInstance().warn("无法找到需要停止的音乐");
+        if (!this.m_music.getPath() || !this.m_music.isPlaying) {
+            Logger.getInstance().warn(`无法找到需要停止的音乐 ${this.m_music.getPath()}`);
             return;
         }
 
@@ -151,8 +147,8 @@ export default class AudioManager extends Manager implements ManagerInterface {
      * 恢复当前被暂停的音乐，如果当前没有正在播放的音乐，会有个警告提示
      */
     public resumeMusic(): void {
-        if (!this.m_music.getPath()) {
-            Logger.getInstance().warn("无法找到需要恢复的音乐");
+        if (!this.m_music.getPath() || this.m_music.isPlaying) {
+            Logger.getInstance().warn(`无法找到需要恢复的音乐 ${this.m_music.getPath()}`);
             return;
         }
 
@@ -205,12 +201,23 @@ export default class AudioManager extends Manager implements ManagerInterface {
      * @param path {AudioDefineType} 音效路径
      */
     public pauseEffect(path: AudioDefineType): void {
-        if (this.checkLegal(path)) {
+        if (!this.checkLegal(path)) {
+            Logger.getInstance().warn(`暂停音效路径错误 ${path}`);
+            return;
+        }
+
+        let audio: Audio = this.m_effectMap.get(path);
+        if(audio === null || audio === undefined) {
             Logger.getInstance().warn(`无法暂停不存在的音效 ${path}`);
             return;
         }
 
-        this.m_effectMap.get(path).pause();
+        if(!audio.isPlaying) {
+            Logger.getInstance().warn(`无法暂停未播放的音效 ${path}`);
+            return;
+        }
+
+        audio.pause();
     }
 
     /**
@@ -230,11 +237,23 @@ export default class AudioManager extends Manager implements ManagerInterface {
      * @param path {AudioDefineType} 音效路径
      */
     public stopEffect(path: AudioDefineType): void {
-        if (this.checkLegal(path)) {
+        if (!this.checkLegal(path)) {
+            Logger.getInstance().warn(`停止音效路径错误 ${path}`);
+            return;
+        }
+
+        let audio: Audio = this.m_effectMap.get(path);
+        if(audio === null || audio === undefined) {
             Logger.getInstance().warn(`无法停止不存在的音效 ${path}`);
             return;
         }
-        this.m_effectMap.get(path).stop();
+
+        if(!audio.isPlaying) {
+            Logger.getInstance().warn(`无法停止未播放的音效 ${path}`);
+            return;
+        }
+
+        audio.stop();
     }
 
     /**
@@ -254,11 +273,23 @@ export default class AudioManager extends Manager implements ManagerInterface {
      * @param path {AudioDefineType} 音效路径
      */
     public resumeEffect(path: AudioDefineType): void {
-        if (this.checkLegal(path)) {
+        if (!this.checkLegal(path)) {
+            Logger.getInstance().warn(`恢复音效路径错误 ${path}`);
+            return;
+        }
+
+        let audio: Audio = this.m_effectMap.get(path);
+        if(audio === null || audio === undefined) {
             Logger.getInstance().warn(`无法恢复不存在的音效 ${path}`);
             return;
         }
-        this.m_effectMap.get(path).resume();
+
+        if(audio.isPlaying) {
+            Logger.getInstance().warn(`无法恢复未暂停的音效 ${path}`);
+            return;
+        }
+
+        audio.resume();
     }
 
     /**

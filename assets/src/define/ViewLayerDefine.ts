@@ -3,7 +3,7 @@
  * @Date         : 2020-08-31 02:06:47
  * @LastEditors  : ougato
  * @LastEditTime : 2020-09-02 00:49:33
- * @FilePath     : \client242\assets\src\define\ViewOrderDefine.ts
+ * @FilePath     : \client242\assets\src\define\ViewLayerDefine.ts
  * @Description  : 视图层级定义
  */
 
@@ -11,7 +11,7 @@
 export const ORDER_INTERVAL: number = 10;
 
 // 层级定义
-enum ViewOrderDefine {
+enum ViewLayerDefine {
     BOTTOM = 0,
     UI = 1 * ORDER_INTERVAL,
     POPUP = 2 * ORDER_INTERVAL,
@@ -19,4 +19,4 @@ enum ViewOrderDefine {
     SYSTEM = 4 * ORDER_INTERVAL,
 }
 
-export default ViewOrderDefine;
+export default ViewLayerDefine;

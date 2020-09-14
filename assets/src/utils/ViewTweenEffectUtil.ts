@@ -3,7 +3,7 @@
  * @Date         : 2020-09-01 18:11:11
  * @LastEditors  : ougato
  * @LastEditTime : 2020-09-09 15:11:23
- * @FilePath     : \client242\assets\src\utils\AnimationEffectUtil.ts
+ * @FilePath     : \client242\assets\src\utils\ViewTweenEffectUtil.ts
  * @Description  : 动画效果工具
  */
 
@@ -13,7 +13,7 @@ import Logger from "../core/machine/Logger";
 // 渐显渐隐时间（单位：秒）
 const FACE_TIME = 0.2;
 
-export default class AnimationEffectUtil {
+export default class ViewTweenEffectUtil {
 
     /**
      * 缩放打开动画
