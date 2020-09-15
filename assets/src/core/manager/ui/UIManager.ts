@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:35
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-15 02:59:43
+ * @LastEditTime : 2020-09-15 23:50:29
  * @FilePath     : \client242\assets\src\core\manager\ui\UIManager.ts
  * @Description  : 视图管理器，用于游戏中所有视图模块的打开和关闭
  */
@@ -51,7 +51,7 @@ export default class UIManager extends Manager implements ManagerInterface {
 
         this.m_viewMap = new Map();
     }
-    
+
     /**
      * 获取层级上的所有视图并排序返回
      * @param layer {ViewLayerDefine} 层
@@ -284,7 +284,6 @@ export default class UIManager extends Manager implements ManagerInterface {
      * 设置进度界面百分比
      * @param percent {number} 百分比 0-100
      */
-
     public setProgress(percent: number): void {
         let progressView: cc.Node = this.m_viewMap.get(PersistViewDefine.ProgressView);
         if (progressView) {
@@ -525,7 +524,7 @@ export default class UIManager extends Manager implements ManagerInterface {
      * @param completeCallback {Function} 完成后的回调
      * @param style {ViewStyleType} 显示时动画风格
      */
-    public closeView(path: ViewDefineType, releaseRef: boolean = true, completeCallback?: Function, style?: ViewStyleType): void {
+    public closeView(path: ViewDefineType, completeCallback?: Function, style?: ViewStyleType): void {
         this.openLockTouch();
         let view: cc.Node = this.m_viewMap.get(path);
 
@@ -537,9 +536,8 @@ export default class UIManager extends Manager implements ManagerInterface {
             }
             this.m_viewMap.delete(path);
 
-            if (releaseRef) {
-                Loader.getInstance().unload(path);
-            }
+            // Loader.getInstance().unload(path);
+
             this.closeLockTouch();
         }
 
