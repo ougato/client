@@ -12,23 +12,23 @@ import Util from "../../utils/Util";
 
 export default class Loader {
 
-    private static g_instance: Loader = null;
+    private static s_instance: Loader = null;
 
     // 加载后的缓存资源
     private m_cacheAssets: Map<AssetsPathDefineType, cc.Asset>;
 
     public static getInstance(): Loader {
-        if (this.g_instance === null) {
-            this.g_instance = new Loader();
+        if (this.s_instance === null) {
+            this.s_instance = new Loader();
         }
-        return this.g_instance;
+        return this.s_instance;
     }
 
     public static destroy(): void {
-        if (this.g_instance !== null) {
-            this.g_instance.destroy();
+        if (this.s_instance !== null) {
+            this.s_instance.destroy();
         }
-        this.g_instance = null;
+        this.s_instance = null;
     }
 
     constructor() {

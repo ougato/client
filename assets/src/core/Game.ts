@@ -14,7 +14,7 @@ import Logger from "./machine/Logger";
 
 export default class Game {
 
-    private static g_instance: Game = new Game();
+    private static s_instance: Game = new Game();
 
     // 语言
     private m_language: LanguageDefineType = null;
@@ -26,17 +26,17 @@ export default class Game {
     private m_vesrion: string = null;
 
     public static getInstance(): Game {
-        if (this.g_instance === null) {
-            this.g_instance = new Game();
+        if (this.s_instance === null) {
+            this.s_instance = new Game();
         }
-        return this.g_instance;
+        return this.s_instance;
     }
 
     public static destroy(): void {
-        if (this.g_instance !== null) {
-            this.g_instance.destroy();
+        if (this.s_instance !== null) {
+            this.s_instance.destroy();
         }
-        this.g_instance = null;
+        this.s_instance = null;
     }
 
     constructor() {

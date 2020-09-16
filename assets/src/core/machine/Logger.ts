@@ -11,20 +11,20 @@
 
 export default class Logger {
 
-    private static g_instance: Logger = null;
+    private static s_instance: Logger = null;
     
     public static getInstance(): Logger {
-        if (this.g_instance === null) {
-            this.g_instance = new Logger();
+        if (this.s_instance === null) {
+            this.s_instance = new Logger();
         }
-        return this.g_instance;
+        return this.s_instance;
     }
 
     public static destroy(): void {
-        if (this.g_instance !== null) {
-            this.g_instance.destroy();
+        if (this.s_instance !== null) {
+            this.s_instance.destroy();
         }
-        this.g_instance = null;
+        this.s_instance = null;
     }
 
     constructor() {

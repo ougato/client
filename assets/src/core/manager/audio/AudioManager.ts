@@ -22,7 +22,7 @@ const GRADUALLY_TIME = 1;
 
 export default class AudioManager extends Manager implements ManagerInterface {
 
-    private static g_instance: AudioManager = null;
+    private static s_instance: AudioManager = null;
 
     // 音效对象池
     private m_effectPool: Pool<Audio> = null;
@@ -32,17 +32,17 @@ export default class AudioManager extends Manager implements ManagerInterface {
     private m_music: Audio = null;
 
     public static getInstance(): AudioManager {
-        if (this.g_instance === null) {
-            this.g_instance = new AudioManager();
+        if (this.s_instance === null) {
+            this.s_instance = new AudioManager();
         }
-        return this.g_instance;
+        return this.s_instance;
     }
 
     public static destroy(): void {
-        if (this.g_instance !== null) {
-            this.g_instance.destroy();
+        if (this.s_instance !== null) {
+            this.s_instance.destroy();
         }
-        this.g_instance = null;
+        this.s_instance = null;
     }
 
     constructor() {

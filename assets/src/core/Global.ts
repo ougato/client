@@ -19,20 +19,20 @@ import Localization from "../i18n/Localization";
 
 export default class Global {
 
-    private static g_instance: Global = new Global();
+    private static s_instance: Global = new Global();
 
     public static getInstance(): Global {
-        if (this.g_instance === null) {
-            this.g_instance = new Global();
+        if (this.s_instance === null) {
+            this.s_instance = new Global();
         }
-        return this.g_instance;
+        return this.s_instance;
     }
 
     public static destroy(): void {
-        if (this.g_instance !== null) {
-            this.g_instance.destroy();
+        if (this.s_instance !== null) {
+            this.s_instance.destroy();
         }
-        this.g_instance = null;
+        this.s_instance = null;
     }
 
     constructor() {

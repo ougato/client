@@ -27,23 +27,23 @@ const DEFAULT_VIEW_LAYER = ViewLayerDefine.UI;
 
 export default class UIManager extends Manager implements ManagerInterface {
 
-    private static g_instance: UIManager = null;
+    private static s_instance: UIManager = null;
 
     // 视图节点 map
     private m_viewMap: Map<ViewDefineType, cc.Node> = null;
 
     public static getInstance(): UIManager {
-        if (this.g_instance === null) {
-            this.g_instance = new UIManager();
+        if (this.s_instance === null) {
+            this.s_instance = new UIManager();
         }
-        return this.g_instance;
+        return this.s_instance;
     }
 
     public static destroy(): void {
-        if (this.g_instance !== null) {
-            this.g_instance.destroy();
+        if (this.s_instance !== null) {
+            this.s_instance.destroy();
         }
-        this.g_instance = null;
+        this.s_instance = null;
     }
 
     constructor() {

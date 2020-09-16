@@ -9,23 +9,23 @@
 
 export default class Localization {
 
-    private static g_instance: Localization = null;
+    private static s_instance: Localization = null;
 
     // 本地话数据
     private m_localization: LocalizationDefineType = null;
 
     public static getInstance(): Localization {
-        if (this.g_instance === null) {
-            this.g_instance = new Localization();
+        if (this.s_instance === null) {
+            this.s_instance = new Localization();
         }
-        return this.g_instance;
+        return this.s_instance;
     }
 
     public static destroy(): void {
-        if (this.g_instance !== null) {
-            this.g_instance.destroy();
+        if (this.s_instance !== null) {
+            this.s_instance.destroy();
         }
-        this.g_instance = null;
+        this.s_instance = null;
     }
 
     constructor() {

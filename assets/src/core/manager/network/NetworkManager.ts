@@ -11,20 +11,20 @@ import Manager from "../Manager";
 
 export default class NetworkManager extends Manager implements ManagerInterface {
 
-    private static g_instance: NetworkManager = null;
+    private static s_instance: NetworkManager = null;
 
     public static getInstance(): NetworkManager {
-        if (this.g_instance === null) {
-            this.g_instance = new NetworkManager();
+        if (this.s_instance === null) {
+            this.s_instance = new NetworkManager();
         }
-        return this.g_instance;
+        return this.s_instance;
     }
 
     public static destroy(): void {
-        if (this.g_instance !== null) {
-            this.g_instance.destroy();
+        if (this.s_instance !== null) {
+            this.s_instance.destroy();
         }
-        this.g_instance = null;
+        this.s_instance = null;
     }
 
     constructor() {

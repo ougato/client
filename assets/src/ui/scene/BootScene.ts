@@ -2,14 +2,13 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 15:44:28
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-15 00:40:08
+ * @LastEditTime : 2020-09-16 23:38:58
  * @FilePath     : \client242\assets\src\ui\scene\BootScene.ts
  * @Description  : 程序启动入口
  */
 
 import SceneDefine from "../../define/SceneDefine";
 import UIComponent from "../UIComponent";
-import LocalizationDefine from "../../define/LocalizationDefine";
 import Loader from "../../core/machine/Loader";
 import ViewLayerDefine from "../../define/ViewLayerDefine";
 import Logger from "../../core/machine/Logger";

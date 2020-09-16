@@ -15,23 +15,23 @@ const INTERVAL_MS = 0.001;
 
 export default class EventManager extends Manager implements ManagerInterface {
 
-    private static g_instance: EventManager = null;
+    private static s_instance: EventManager = null;
 
     // 事件结构
     private m_eventMap: Map<EventDefineType, Map<any, Function[]>> = null;
 
     public static getInstance(): EventManager {
-        if (this.g_instance === null) {
-            this.g_instance = new EventManager();
+        if (this.s_instance === null) {
+            this.s_instance = new EventManager();
         }
-        return this.g_instance;
+        return this.s_instance;
     }
 
     public static destroy(): void {
-        if (this.g_instance !== null) {
-            this.g_instance.destroy();
+        if (this.s_instance !== null) {
+            this.s_instance.destroy();
         }
-        this.g_instance = null;
+        this.s_instance = null;
     }
 
     constructor() {

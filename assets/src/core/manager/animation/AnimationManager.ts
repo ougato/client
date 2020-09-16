@@ -11,20 +11,20 @@ import Manager from "../Manager";
 
 export default class AnimationManager extends Manager implements ManagerInterface {
 
-    private static g_instance: AnimationManager = null;
+    private static s_instance: AnimationManager = null;
 
     public static getInstance(): AnimationManager {
-        if (this.g_instance === null) {
-            this.g_instance = new AnimationManager();
+        if (this.s_instance === null) {
+            this.s_instance = new AnimationManager();
         }
-        return this.g_instance;
+        return this.s_instance;
     }
 
     public static destroy(): void {
-        if (this.g_instance !== null) {
-            this.g_instance.destroy();
+        if (this.s_instance !== null) {
+            this.s_instance.destroy();
         }
-        this.g_instance = null;
+        this.s_instance = null;
     }
 
     constructor() {

@@ -2,14 +2,13 @@
  * @Author       : ougato
  * @Date         : 2020-09-04 23:07:17
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-16 01:03:41
+ * @LastEditTime : 2020-09-16 23:52:44
  * @FilePath     : \client242\assets\src\ui\scene\AccountScene.ts
  * @Description  : 
  */
 import UIComponent from "../UIComponent";
 import ViewDefine from "../../define/ViewDefine";
 import ViewStyleDefine from "../../define/ViewStyleDefine";
-import WxHttp from "../../core/manager/network/WxHttp";
 
 const { ccclass, property } = cc._decorator;
 
@@ -39,11 +38,34 @@ export default class NewClass extends UIComponent {
 
     }
 
+    private async setTimeout1(): Promise<void> {
+        return new Promise((resolve, reject)=>{
+            setTimeout(()=>{
+                console.log("11111");
+                reject();
+            }, 2000);
+        });
+    }
+
+    private async setTimeout2(): Promise<void> {
+        return new Promise((resolve, reject)=>{
+            setTimeout(()=>{
+                console.log("2222");
+            }, 4000);
+        });
+    }
+
     /**
      * 点击释放
      */
     private onClickRelease():void {
-        WxHttp.post();
+        Promise.race([this.setTimeout1(), this.setTimeout2()]).then(()=>{
+            console.log("then");
+        }).catch(()=>{
+            console.log("catch");
+        });
+
+        // WxHttp.post();
         // G.UIMgr.openView(ViewDefine.Test1);
     }
 
