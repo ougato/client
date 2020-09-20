@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-11 11:45:00
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-14 01:21:36
+ * @LastEditTime : 2020-09-21 02:45:12
  * @FilePath     : \client242\assets\src\core\Game.ts
  * @Description  : 游戏类
  */
@@ -47,16 +47,16 @@ export default class Game {
      * 初始化
      */
     public init(): void {
-        this._initLanguage();
-        this._initMusicVolume();
-        this._initSoundEffectVolume();
-        this._initVersion();
+        this.initLanguage();
+        this.initMusicVolume();
+        this.initSoundEffectVolume();
+        this.initVersion();
     }
 
     /**
      * 初始化语言，先读取本地存储是否有语言数据，如果有就使用，没有就去获取手机系统语言 cc.sys.language，如果手机系统语言未知，就取系统默认语言
      */
-    private _initLanguage(): void {
+    private initLanguage(): void {
         this.m_language = LanguageUtil.transCocos(cc.sys.language);
         let language: LanguageDefineType = cc.sys.localStorage.getItem(LocalStorageDefine.LOCAL_LANGUAGE);
         if (language !== null && language !== undefined && LanguageDefine[language] !== undefined) {
@@ -69,7 +69,7 @@ export default class Game {
     /**
      * 初始化音乐音量，先读取本地存储是否有音量数据，如果有就使用，没有就使用 GameConfig 默认的 DEFAULT_MUSIC_VOLUME 数据
      */
-    private _initMusicVolume(): void {
+    private initMusicVolume(): void {
         this.m_musicVolume = GameConfig.DEFAULT_MUSIC_VOLUME;
         let volume: string = cc.sys.localStorage.getItem(LocalStorageDefine.LOCAL_MUSIC_VOLUME);
         if (volume !== null && volume !== undefined && !isNaN(Number(volume)) && Number(volume) >= 0 && Number(volume) <= 1) {
@@ -82,7 +82,7 @@ export default class Game {
     /**
      * 初始化音效音量，先读取本地存储是否有音量数据，如果有就使用，没有就使用 GameConfig 默认的 DEFAULT_SOUND_EFFECT_VOLUME 数据
      */
-    private _initSoundEffectVolume(): void {
+    private initSoundEffectVolume(): void {
         this.m_soundEffectVolume = GameConfig.DEFAULT_SOUND_EFFECT_VOLUME;
         let volume: string = cc.sys.localStorage.getItem(LocalStorageDefine.LOCAL_SOUND_EFFECT_VOLUME);
         if (volume !== null && volume !== undefined && !isNaN(Number(volume)) && Number(volume) >= 0 && Number(volume) <= 1) {
@@ -96,7 +96,7 @@ export default class Game {
     /**
      * 初始化资源版本号，先读取本地存储是否有资源版本数据，如果有就使用，没有就使用 GameConfig 默认的 VERSION 数据
      */
-    private _initVersion(): void {
+    private initVersion(): void {
         this.m_vesrion = GameConfig.VERSION;
         let version: string = cc.sys.localStorage.getItem(LocalStorageDefine.LOCAL_VERSION);
         if (version !== null && version !== undefined) {

@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-16 23:56:17
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-17 01:19:45
+ * @LastEditTime : 2020-09-21 02:02:18
  * @FilePath     : \client242\assets\src\interface\HttpInterface.ts
  * @Description  : Http 接口
  */
@@ -10,32 +10,18 @@
 import * as HttpDefine from "../define/HttpDefine";
 
 /**
- * 请求头接口
- */
-export interface RequestHeaderInterface {
-    contentType: string,
-    xRequestedWith: string,
-    token: string,
-    [propName: string]: any,
-}
-
-/**
- * 请求信息接口
- */
-export interface RequestInfoInerface<T> {
-    body?: T,
-    method?: string,
-    headers?: RequestHeaderInterface,
-    token?: string,
-    contentType?: string,
-}
-
-/**
  * 响应数据接口
  */
-export interface ResponseDataInterface {
+export interface ResponseInfo {
     // 返回状态
     state: HttpDefine.StateType,
     // 数据
     body: BodyInit,
+}
+
+/**
+ * Http 方法约束
+ */
+export interface Method {
+    request: (url: string, method: HttpDefine.Method, body?: BodyInit) => Promise<ResponseInfo>;
 }

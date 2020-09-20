@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:14:04
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-15 02:56:51
+ * @LastEditTime : 2020-09-21 02:42:02
  * @FilePath     : \client242\assets\src\core\manager\audio\AudioManager.ts
  * @Description  : 用于整个游戏场景中，需要播放声音的模块，调用全局接口，达到播放声音的效果，开发者无需考虑声音播放缓存问题，音效可自定义是否缓存
  */
@@ -11,7 +11,7 @@ import Manager from "../Manager";
 import AudioDefine from "../../../define/AudioDefine";
 import Loader from "../../machine/Loader";
 import Audio from "./Audio";
-import Pool from "../../../utils/Pool";
+import Pool from "../../../pattern/Pool";
 import Logger from "../../machine/Logger";
 import AudioEffectUtil from "../../../utils/AudioEffectUtil";
 

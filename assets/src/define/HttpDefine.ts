@@ -2,22 +2,29 @@
  * @Author       : ougato
  * @Date         : 2020-09-16 23:53:59
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-17 00:30:59
+ * @LastEditTime : 2020-09-21 01:38:19
  * @FilePath     : \client242\assets\src\define\HttpDefine.ts
  * @Description  : Http 定义
  */
 
-export enum HttpMethod {
-    GET = 'GET',
-    POST = 'POST',
-    PUT = 'PUT',
-    PATCH = 'PATCH',
-    DELETE = 'DELETE'
+export enum Method {
+    GET = "GET",
+    POST = "POST",
+    PUT = "PUT",
+    HEAD = "HEAD",
+    PATCH = "PATCH",
+    DELETE = "DELETE",
+    OPTIONS = "OPTIONS",
+    TRACE = "TRACE",
+    CONNECT = "CONNECT",
+    LINK = "LINK",
+    UNLINE = "UNLINE",
+    
 }
 
 export enum ContentType {
-    JSON = 'application/json;charset=UTF-8',
-    FROM = 'application/x-www-form-urlencoded; charset=UTF-8'
+    JSON = "application/json;charset=UTF-8",
+    FROM = "application/x-www-form-urlencoded;charset=UTF-8",
 }
 
 export enum StateType {

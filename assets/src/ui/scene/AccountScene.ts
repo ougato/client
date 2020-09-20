@@ -2,18 +2,23 @@
  * @Author       : ougato
  * @Date         : 2020-09-04 23:07:17
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-16 23:52:44
+ * @LastEditTime : 2020-09-21 02:43:28
  * @FilePath     : \client242\assets\src\ui\scene\AccountScene.ts
  * @Description  : 
  */
 import UIComponent from "../UIComponent";
 import ViewDefine from "../../define/ViewDefine";
 import ViewStyleDefine from "../../define/ViewStyleDefine";
+import HttpRequest from "../../core/http/HttpRequest";
+import * as HttpInterface from "../../interface/HttpInterface";
+import Http from "../../core/http/Http";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class NewClass extends UIComponent {
+
+    private m_index = 0;
 
     protected onLoad(): void {
         this.initData();
@@ -39,8 +44,8 @@ export default class NewClass extends UIComponent {
     }
 
     private async setTimeout1(): Promise<void> {
-        return new Promise((resolve, reject)=>{
-            setTimeout(()=>{
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
                 console.log("11111");
                 reject();
             }, 2000);
@@ -48,8 +53,8 @@ export default class NewClass extends UIComponent {
     }
 
     private async setTimeout2(): Promise<void> {
-        return new Promise((resolve, reject)=>{
-            setTimeout(()=>{
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
                 console.log("2222");
             }, 4000);
         });
@@ -58,12 +63,10 @@ export default class NewClass extends UIComponent {
     /**
      * 点击释放
      */
-    private onClickRelease():void {
-        Promise.race([this.setTimeout1(), this.setTimeout2()]).then(()=>{
-            console.log("then");
-        }).catch(()=>{
-            console.log("catch");
-        });
+    private async onClickRelease(): Promise<void> {
+        let res: HttpInterface.ResponseInfo = await HttpRequest.get<Http>("https://www.baifuba.com/callback?cmd=1059&call1ack=phone&phone=150855513610", Http);
+        this.m_index++;
+        console.log(res, this.m_index);
 
         // WxHttp.post();
         // G.UIMgr.openView(ViewDefine.Test1);
