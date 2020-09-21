@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-04 23:07:17
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-21 02:43:28
+ * @LastEditTime : 2020-09-22 02:28:15
  * @FilePath     : \client242\assets\src\ui\scene\AccountScene.ts
  * @Description  : 
  */
@@ -64,9 +64,9 @@ export default class NewClass extends UIComponent {
      * 点击释放
      */
     private async onClickRelease(): Promise<void> {
-        let res: HttpInterface.ResponseInfo = await HttpRequest.get<Http>("https://www.baifuba.com/callback?cmd=1059&call1ack=phone&phone=150855513610", Http);
-        this.m_index++;
-        console.log(res, this.m_index);
+        // let res: HttpInterface.ResponseInfo = await HttpRequest.get<Http>("https://www.baifuba.com/callback?cmd=1059&call1ack=phone&phone=150855513610", Http);
+        // this.m_index++;
+        // console.log(res, this.m_index);
 
         // WxHttp.post();
         // G.UIMgr.openView(ViewDefine.Test1);
