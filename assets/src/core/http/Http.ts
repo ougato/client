@@ -2,13 +2,16 @@
  * @Author       : ougato
  * @Date         : 2020-09-15 23:51:40
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-21 02:35:21
- * @FilePath     : \client242\assets\src\core\manager\network\Http.ts
+ * @LastEditTime : 2020-09-23 01:30:58
+ * @FilePath     : \client242\assets\src\core\http\Http.ts
  * @Description  : Http 请求对象
  */
 
 import * as HttpDefine from "../../define/HttpDefine";
 import * as HttpInterface from "../../interface/HttpInterface";
+
+// 超时时间（单位：秒）
+const TIMEOUT : number = 10;
 
 export default class Http implements HttpInterface.Method {
 
@@ -18,8 +21,6 @@ export default class Http implements HttpInterface.Method {
     private m_requestInfo: RequestInit = null;
     // 超时定时器
     private m_timer: number = null;
-    // 超时时间（单位：秒）
-    protected m_timeout: number = 10;
 
     constructor() {
         this.m_abortController = new AbortController();
@@ -120,26 +121,22 @@ export default class Http implements HttpInterface.Method {
      * 开始定时器
      */
     private startTimer(): void {
-        if (this.m_timer !== null) {
-            return;
+        if (this.m_timer === null) {
+            this.m_timer = setTimeout(() => {
+                this.m_abortController.abort();
+                this.m_timer = null;
+            }, TIMEOUT * 1000);
         }
-
-        this.m_timer = setTimeout(() => {
-            this.m_abortController.abort();
-            this.m_timer = null;
-        }, this.m_timeout * 1000);
     }
 
     /**
      * 停止定时器
      */
     private stopTimer(): void {
-        if (this.m_timer === null) {
-            return;
+        if (this.m_timer !== null) {
+            clearTimeout(this.m_timer);
+            this.m_timer = null;
         }
-
-        clearTimeout(this.m_timer);
-        this.m_timer = null;
     }
 
 }

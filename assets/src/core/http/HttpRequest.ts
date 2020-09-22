@@ -2,13 +2,13 @@
  * @Author       : ougato
  * @Date         : 2020-09-15 23:51:40
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-21 02:32:31
- * @FilePath     : \client242\assets\src\core\manager\network\HttpRequest.ts
+ * @LastEditTime : 2020-09-23 00:15:19
+ * @FilePath     : \client242\assets\src\core\http\HttpRequest.ts
  * @Description  : Http 对外接口
  */
 
-import * as HttpInterface from "../../../interface/HttpInterface";
-import * as HttpDefine from "../../../define/HttpDefine";
+import * as HttpInterface from "../../interface/HttpInterface";
+import * as HttpDefine from "../../define/HttpDefine";
 import Http from "./Http";
 
 const controller = (new AbortController()).signal;

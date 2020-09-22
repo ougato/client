@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-08-08 18:03:24
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-13 22:24:09
+ * @LastEditTime : 2020-09-23 01:40:19
  * @FilePath     : \client242\global.d.ts
  * @Description  : 全局变量定义
  */
@@ -16,6 +16,7 @@ import LanguagePathDefine from "./assets/src/define/LanguagePathDefine";
 import LocalStorageDefine from "./assets/src/define/LocalStorageDefine";
 import LanguageDefine from "./assets/src/define/LanguageDefine";
 import LocalizationDefine from "./assets/src/define/LocalizationDefine";
+import { SystemProtocolDefine, LoobyProtocolDefine, GameProtocolDefine } from "./assets/src/define/ProtocolDefine";
 
 declare global {
 
@@ -35,4 +36,6 @@ declare global {
     type LocalStorageDefineType = LocalStorageDefine;
     type LanguageDefineType = LanguageDefine;
     type LocalizationDefineType = LocalizationDefine;
+    type ProtocolDefineType = SystemProtocolDefine | LoobyProtocolDefine | GameProtocolDefine;
+    type WebSocketProtocol = "ws" | "wss";
 }
