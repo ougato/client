@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-04 23:07:17
  * @LastEditors  : ougato
- * @LastEditTime : 2020-09-23 01:15:49
+ * @LastEditTime : 2020-09-24 02:54:26
  * @FilePath     : \client242\assets\src\ui\scene\AccountScene.ts
  * @Description  : 
  */
@@ -13,6 +13,7 @@ import HttpRequest from "../../core/http/HttpRequest";
 import * as HttpInterface from "../../interface/HttpInterface";
 import Http from "../../core/http/Http";
 import EventDefine from "../../define/EventDefine";
+import * as Login from "../../protobuf/Login";
 
 const { ccclass, property } = cc._decorator;
 
@@ -27,13 +28,16 @@ export default class AccountScene extends UIComponent {
     }
 
     protected start(): void {
-        G.EventMgr.on(EventDefine.STRAT_GAME, this, ()=>{
-            console.log("张三");
-        });
-        G.EventMgr.on(EventDefine.STRAT_GAME, this, this.onCallback);
+        let signIn = {
+            user: "ougato",
+            password: "qq123456"
+        }
+        let login = Login.C2SSignIn.create(signIn);
+        let buffer = Login.C2SSignIn.encode(login).finish();
+        console.log(buffer);
     }
 
-    private onCallback():void {
+    private onCallback(): void {
         console.log("李四");
         console.log(this.m_index);
     }

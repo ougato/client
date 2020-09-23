@@ -1,0 +1,8 @@
+syntax = "proto3";
+
+message C2SSignIn {
+    // 用户名
+    string user = 1;
+    // 密码
+    string password = 2;
+}
