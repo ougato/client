@@ -1,0 +1,55 @@
+[
+  1,
+  0,
+  0,
+  [
+    [
+      "cc.JsonAsset",
+      [
+        "_name",
+        "json"
+      ],
+      1
+    ]
+  ],
+  [
+    [
+      0,
+      0,
+      1,
+      3
+    ]
+  ],
+  [
+    [
+      0,
+      "zh_CN",
+      {
+        "INITIALIZATION_FAILED": "初始化失败，即将重启游戏",
+        "LOAD_ASSETS": "正在加载资源",
+        "CHECK_VERSION_INFO": "正在检测版本信息",
+        "UPDATING_ASSETS": "正在更新资源",
+        "DOWNING_APP": "正在下载安装包",
+        "NEED_ASSETS_UPDATE": "需要资源更新",
+        "NEED_STORE_UPDATE": "需要商店更新",
+        "UPDATE_FINISH": "更新资源完成",
+        "ERROR": "错误",
+        "UPDATE_FAILED_RETRY": "更新失败，是否重试？",
+        "NETWORK_ERROR_RETRY": "网络异常，请稍后再试",
+        "TRANFFIC_DOWNLOAD": "正在使用流量下载，更新大小：{0}",
+        "UPDATE": "更新",
+        "SOTRE_DOWNLOAD": "需要到商店下载最新 APP",
+        "CANCEL": "取消",
+        "CONFIRM": "确定",
+        "HTTP_TIMEOUT": "请求超时",
+        "HTTP_ERROR": "请求错误",
+        "REGISTER_OK": "注册成功"
+      }
+    ]
+  ],
+  0,
+  0,
+  [],
+  [],
+  []
+]

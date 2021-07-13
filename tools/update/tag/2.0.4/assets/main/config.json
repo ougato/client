@@ -1,0 +1,27 @@
+{
+    "paths": {},
+    "uuids": [
+        "28UOaBeRlMY7GA9xm6myae",
+        "8cMP+xrSJIzJSxDGbIKkja",
+        "92BH0bhLRN8I1RZb77Px0x",
+        "925QyIQXlFUrolzUTP0oOh",
+        "ecpdLyjvZBwrvm+cedCcQy"
+    ],
+    "scenes": {
+        "db://assets/res/scene/BootScene.fire": "925QyIQXlFUrolzUTP0oOh"
+    },
+    "redirect": [
+        "ecpdLyjvZBwrvm+cedCcQy",
+        0
+    ],
+    "deps": [
+        "internal"
+    ],
+    "packs": {},
+    "name": "main",
+    "importBase": "import",
+    "nativeBase": "native",
+    "debug": true,
+    "isZip": false,
+    "encrypted": false
+}
