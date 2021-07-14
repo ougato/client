@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:56:31
  * LastEditors  : ougato
- * LastEditTime : 2021-07-10 01:52:16
+ * LastEditTime : 2021-07-14 23:09:14
  * FilePath     : /client/assets/src/core/define/UIDefine.ts
  * Description  : 界面定义
  */
@@ -28,10 +28,4 @@ export enum Layer {
     TOP = 3 * LAYER_INTERVAL,
     // 系统层
     SYSTEM = 4 * LAYER_INTERVAL,
-}
-
-// 资源包
-export enum Bundle {
-    // 主包
-    RESOURCES = "resources",
 }

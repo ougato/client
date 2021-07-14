@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:21:20
  * LastEditors  : ougato
- * LastEditTime : 2021-07-08 01:34:10
+ * LastEditTime : 2021-07-15 00:47:32
  * FilePath     : /client/assets/src/core/base/BaseUI.ts
  * Description  : UI 基类、是 BaseView 和 BaseScene 的父类
  */
@@ -102,20 +102,20 @@ export default class BaseUI extends cc.Component {
      * 注册事件
      */
     protected register(): void {
-        console.log("BaseUI register");
+
     }
 
     /**
      * 初始化数据
      */
     protected initData(): void {
-        console.log("BaseUI initData");
+
     }
 
     /**
      * 初始化界面
      */
     protected initUI(): void {
-        console.log("BaseUI initUI");
+
     }
 }

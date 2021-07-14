@@ -2,12 +2,13 @@
  * Author       : ougato
  * Date         : 2021-07-08 23:37:00
  * LastEditors  : ougato
- * LastEditTime : 2021-07-13 00:32:00
+ * LastEditTime : 2021-07-15 02:09:28
  * FilePath     : /client/assets/src/core/manager/res/ResBuffer.ts
  * Description  : 资源缓存器、用于缓存加载过的资源
  */
 
 import ResCache from "./ResCache";
+import * as BundleDefine from "../../define/BundleDefine";
 
 export default class ResBuffer {
 
@@ -23,13 +24,13 @@ export default class ResBuffer {
             return;
         }
 
-        let bundleName: string = data.getBundleName();
+        let bundleName: BundleDefine.Name = data.getBundleName();
         if (bundleName) {
             this.m_cacheMap.set(bundleName, new Map([[data.url, data]]));
         }
     }
 
-    public getCache(bundleName: string, url: string): ResCache {
+    public getCache(bundleName: BundleDefine.Name, url: string): ResCache {
         let cache: ResCache = null;
 
         if (bundleName === null || bundleName === undefined || bundleName.length <= 0) {
@@ -53,7 +54,7 @@ export default class ResBuffer {
         return cache;
     }
 
-    public delCache(bundleName: string, url: string): void {
+    public delCache(bundleName: BundleDefine.Name, url: string): void {
         if (bundleName === null || bundleName === undefined || bundleName.length <= 0) {
             return;
         }

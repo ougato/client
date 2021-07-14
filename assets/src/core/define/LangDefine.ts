@@ -2,11 +2,12 @@
  * Author       : ougato
  * Date         : 2021-07-13 00:11:27
  * LastEditors  : ougato
- * LastEditTime : 2021-07-13 01:46:56
+ * LastEditTime : 2021-07-15 00:38:59
  * FilePath     : /client/assets/src/core/define/LangDefine.ts
  * Description  : 语言定义
  */
 
+// 国家语言
 export enum Lang {
     // 阿拉伯语（以色列)
     ar_IL = "ar_IL",
@@ -195,6 +196,9 @@ export enum Lang {
     // 僧加罗语（斯里兰卡)
     si_LK = "si_LK",
 }
+
+// 默认语言
+export const DEFAULT_LANG: Lang = Lang.zh_CN;
 
 // 相对路径
 export enum RelPath {

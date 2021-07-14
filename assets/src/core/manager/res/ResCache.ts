@@ -2,12 +2,13 @@
  * Author       : ougato
  * Date         : 2021-07-10 00:39:14
  * LastEditors  : ougato
- * LastEditTime : 2021-07-10 04:10:32
+ * LastEditTime : 2021-07-15 02:09:05
  * FilePath     : /client/assets/src/core/manager/res/ResCache.ts
  * Description  : 资源缓存
  */
 
 import * as ResDefine from "../../define/ResDefine";
+import * as BundleDefine from "../../define/BundleDefine";
 
 export default class ResCache {
 
@@ -34,11 +35,11 @@ export default class ResCache {
      * 获取包名称
      * @returns {string} 包名称
      */
-     public getBundleName(): string {
-        let bundleName: string = null;
+     public getBundleName(): BundleDefine.Name {
+        let bundleName: BundleDefine.Name = null;
 
         if (this.bundle) {
-            bundleName = this.bundle.name;
+            bundleName = this.bundle.name as BundleDefine.Name;
         }
 
         return bundleName;
