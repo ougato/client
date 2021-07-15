@@ -15,7 +15,7 @@ export default class ResCache {
     // 本地资源路径、远程资源链接
     public url: string = null;
     // 加载后的资源
-    public asset: cc.Asset = null;
+    public asset: cc.Asset | cc.Asset[] = null;
     // 资源类型
     public type: AssetsType = null;
     // 包对象
@@ -30,12 +30,12 @@ export default class ResCache {
     constructor() {
 
     }
-    
+
     /**
      * 获取包名称
      * @returns {string} 包名称
      */
-     public getBundleName(): BundleDefine.Name {
+    public getBundleName(): BundleDefine.Name {
         let bundleName: BundleDefine.Name = null;
 
         if (this.bundle) {

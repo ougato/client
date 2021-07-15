@@ -45,7 +45,30 @@ export default class ResManager extends BaseManager {
         this.m_loader = new ResLoader();
     }
 
-    public loadLocalRes(param: ResInterface.LoadLocalResParam): void {
+    public load(param: ResInterface.LoadLocalResParam): void {
+        if (param.bundleName === null || param.bundleName === undefined) {
+            param.bundleName = BundleDefine.Name.RESOURCES;
+        }
+
+        if (param.loadType === null || param.loadType === undefined) {
+            param.loadType = ResDefine.LoadType.ASSET;
+        }
+
+        switch (param.loadType) {
+            case ResDefine.LoadType.ASSET:
+                this.m_loader.loadLocalAsset();
+                break;
+            case ResDefine.LoadType.DIR:
+            this.m_loader.loadLocalDir();
+                break;
+            case ResDefine.LoadType.SCENE:
+            this.m_loader.loadLocalScene();
+                break;
+        }
+        this.m_loader.loadLocalRes(param);
+    }
+
+    public loadLocalRes(): void {
         let resCache: ResCache = this.m_buffer.getCache(param.bundleName, param.path);
         if (resCache) {
             switch (resCache.state) {
@@ -131,7 +154,7 @@ export default class ResManager extends BaseManager {
                 resCache.asset = asset;
                 param.onComplete(resCache);
             } else {
-                let completeCallback: Function = ((error: Error, asset: cc.Asset) => {
+                let completeCallback: Function = ((error: Error, asset: cc.Asset | cc.Asset[]) => {
                     if (error) {
                         this.m_buffer.delCache(resCache.bundle.name as BundleDefine.Name, resCache.url);
                         resCache = null;

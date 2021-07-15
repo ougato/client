@@ -23,7 +23,7 @@ export default class BootScene extends BaseScene {
 
     protected start(): void {
         super.start();
-
+        
         this.launch();
     }
 

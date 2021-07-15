@@ -22,3 +22,13 @@ export enum ResState {
     // 已经加载
     LOADED = 1,
 }
+
+// 加载类型
+export enum LoadType {
+    // 资源
+    ASSET = 0,
+    // 目录
+    DIR = 1,
+    // 场景 （ 不包含在资源类型内 ）
+    SCENE = 2,
+}
