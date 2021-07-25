@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-10 00:30:30
  * LastEditors  : ougato
- * LastEditTime : 2021-07-15 02:07:10
+ * LastEditTime : 2021-07-26 01:00:51
  * FilePath     : /client/assets/src/core/interface/ResInterface.ts
  * Description  : 资源接口
  */
@@ -21,6 +21,8 @@ export interface LoadLocalResParam {
     assetType: AssetsType;
     // 加载类型 （默认： ResDefine.LoadType.ASSET）
     loadType?: ResDefine.LoadType;
+    // 加载方式 （默认：ResDefine.LoadMode.LOCAL）
+    loadMode?: ResDefine.LoadMode;
     // 加载进度回调
     onProgress?: (finish: number, total: number, item: cc.AssetManager.RequestItem) => void;
     // 加载完成回调

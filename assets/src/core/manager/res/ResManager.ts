@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-08 23:31:28
  * LastEditors  : ougato
- * LastEditTime : 2021-07-15 02:13:28
+ * LastEditTime : 2021-07-26 01:04:40
  * FilePath     : /client/assets/src/core/manager/res/ResManager.ts
  * Description  : 资源管理器、所有游戏中用到的资源操作、由 ResManager 进行统一管理
  */
@@ -54,128 +54,30 @@ export default class ResManager extends BaseManager {
             param.loadType = ResDefine.LoadType.ASSET;
         }
 
+        if (param.loadMode === null || param.loadMode === undefined) {
+            param.loadMode = ResDefine.LoadMode.LOCAL;
+        }
+
+        if (param.loadMode === ResDefine.LoadMode.LOCAL) {
+
+        } else if(param.loadMode === ResDefine.LoadMode.REMOTE) {
+
+        } else {
+            G.LogMgr.sys(`资源管理器加载方式错误`);
+        }
+
         switch (param.loadType) {
             case ResDefine.LoadType.ASSET:
                 this.m_loader.loadLocalAsset();
                 break;
             case ResDefine.LoadType.DIR:
-            this.m_loader.loadLocalDir();
+                this.m_loader.loadLocalDir();
                 break;
             case ResDefine.LoadType.SCENE:
-            this.m_loader.loadLocalScene();
+                this.m_loader.loadLocalScene();
                 break;
         }
         this.m_loader.loadLocalRes(param);
-    }
-
-    public loadLocalRes(): void {
-        let resCache: ResCache = this.m_buffer.getCache(param.bundleName, param.path);
-        if (resCache) {
-            switch (resCache.state) {
-                case ResDefine.ResState.LOADED:
-
-                    break;
-                case ResDefine.ResState.LOADING:
-                    resCache = null;
-                    break;
-            }
-            param.onComplete(resCache);
-        } else {
-            let bundle: cc.AssetManager.Bundle = cc.assetManager.getBundle(param.bundleName);
-            if (!bundle) {
-                G.LogMgr.sys(`找不到 "${param.bundleName}" 包名、加载 bundle 失败`);
-                param.onComplete(resCache);
-                return;
-            }
-
-            resCache = new ResCache();
-            resCache.url = param.path;
-            resCache.type = param.type
-            resCache.bundle = bundle;
-            resCache.mode = ResDefine.LoadMode.LOCAL;
-            resCache.state = ResDefine.ResState.LOADING;
-            this.m_buffer.setCache(resCache);
-
-            let asset: cc.Asset = bundle.get(resCache.url, resCache.type);
-            if (asset) {
-                resCache.asset = asset;
-                param.onComplete(resCache);
-            } else {
-                let completeCallback: Function = ((error: Error, asset: cc.Asset) => {
-                    if (error) {
-                        this.m_buffer.delCache(resCache.bundle.name as BundleDefine.Name, resCache.url);
-                        resCache = null;
-                    } else {
-                        resCache.asset = asset;
-                        resCache.state = ResDefine.ResState.LOADED;
-                    }
-                    param.onComplete(resCache);
-                });
-
-                if (param.onProgress) {
-                    bundle.load(resCache.url, resCache.type, param.onProgress, completeCallback.bind(this));
-                } else if (param.onComplete) {
-                    bundle.load(resCache.url, resCache.type, completeCallback.bind(this));
-                }
-            }
-        }
-    }
-
-    public loadLocalDirRes(param: ResInterface.LoadLocalResParam): void {
-        let resCache: ResCache = this.m_buffer.getCache(param.bundleName, param.path);
-        if (resCache) {
-            switch (resCache.state) {
-                case ResDefine.ResState.LOADED:
-
-                    break;
-                case ResDefine.ResState.LOADING:
-                    resCache = null;
-                    break;
-            }
-            param.onComplete(resCache);
-        } else {
-            let bundle: cc.AssetManager.Bundle = cc.assetManager.getBundle(param.bundleName);
-            if (!bundle) {
-                G.LogMgr.sys(`找不到 "${param.bundleName}" 包名、加载 bundle 失败`);
-                param.onComplete(resCache);
-                return;
-            }
-
-            resCache = new ResCache();
-            resCache.url = param.path;
-            resCache.type = param.type
-            resCache.bundle = bundle;
-            resCache.mode = ResDefine.LoadMode.LOCAL;
-            resCache.state = ResDefine.ResState.LOADING;
-            this.m_buffer.setCache(resCache);
-
-            let asset: cc.Asset = bundle.get(resCache.url, resCache.type);
-            if (asset) {
-                resCache.asset = asset;
-                param.onComplete(resCache);
-            } else {
-                let completeCallback: Function = ((error: Error, asset: cc.Asset | cc.Asset[]) => {
-                    if (error) {
-                        this.m_buffer.delCache(resCache.bundle.name as BundleDefine.Name, resCache.url);
-                        resCache = null;
-                    } else {
-                        resCache.asset = asset;
-                        resCache.state = ResDefine.ResState.LOADED;
-                    }
-                    param.onComplete(resCache);
-                });
-
-                if (param.onProgress) {
-                    bundle.loadDir(resCache.url, resCache.type, param.onProgress, completeCallback.bind(this));
-                } else if (param.onComplete) {
-                    bundle.loadDir(resCache.url, resCache.type, completeCallback.bind(this));
-                }
-            }
-        }
-    }
-
-    public loadRemoteRes(): void {
-
     }
 
 }

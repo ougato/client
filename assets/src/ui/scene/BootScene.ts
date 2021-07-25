@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2021-07-15 00:27:21
+ * LastEditTime : 2021-07-15 23:57:44
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
@@ -31,7 +31,12 @@ export default class BootScene extends BaseScene {
      * 游戏启动
      */
     private async launch(): Promise<void> {
-        G.LangMgr.load(BundleDefine.Name.RESOURCES);
+        // G.LangMgr.load(BundleDefine.Name.RESOURCES);
+        cc.director.loadScene("Lobby");
+        setTimeout(()=>{
+            cc.director.loadScene("Mario");
+
+        }, 800)
     }
 
 }
