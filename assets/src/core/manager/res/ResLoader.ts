@@ -6,10 +6,31 @@
  * FilePath     : /client/assets/src/core/manager/res/ResLoader.ts
  * Description  : 资源加载器、用于动态加载资源
  */
+
+import * as ResInterface from "../../interface/ResInterface";
  
 export default class ResLoader {
 
     constructor() {
+
+    }
+
+    public loadLocal(param: ResInterface.LoadResParam):void {
+        switch (param.loadType) {
+            case ResDefine.LoadType.ASSET:
+                this.m_loader.loadLocalAsset();
+                break;
+            case ResDefine.LoadType.DIR:
+                this.m_loader.loadLocalDir();
+                break;
+            case ResDefine.LoadType.SCENE:
+                this.m_loader.loadLocalScene();
+                break;
+        }
+        this.m_loader.loadLocalRes(param);
+    }
+
+    public loadRemote():void {
 
     }
 
@@ -66,7 +87,7 @@ export default class ResLoader {
         }
     }
 
-    public loadLocalDirRes(param: ResInterface.LoadLocalResParam): void {
+    public loadLocalDirRes(param: ResInterface.LoadResParam): void {
         let resCache: ResCache = this.m_buffer.getCache(param.bundleName, param.path);
         if (resCache) {
             switch (resCache.state) {

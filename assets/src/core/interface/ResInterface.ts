@@ -12,7 +12,7 @@ import * as BundleDefine from "../define/BundleDefine";
 import * as ResDefine from "../define/ResDefine";
 
 // 加载本地资源接口参数
-export interface LoadLocalResParam {
+export interface LoadResParam {
     // 路径
     path: string;
     // 包名 （默认： BundleDefine.Name.RESOURCES）

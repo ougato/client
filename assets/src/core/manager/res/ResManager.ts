@@ -45,7 +45,7 @@ export default class ResManager extends BaseManager {
         this.m_loader = new ResLoader();
     }
 
-    public load(param: ResInterface.LoadLocalResParam): void {
+    public load(param: ResInterface.LoadResParam): void {
         if (param.bundleName === null || param.bundleName === undefined) {
             param.bundleName = BundleDefine.Name.RESOURCES;
         }
@@ -59,25 +59,13 @@ export default class ResManager extends BaseManager {
         }
 
         if (param.loadMode === ResDefine.LoadMode.LOCAL) {
-
+            this.m_loader.loadLocal(param);
         } else if(param.loadMode === ResDefine.LoadMode.REMOTE) {
-
+            this.m_loader.loadRemote(param);
         } else {
             G.LogMgr.sys(`资源管理器加载方式错误`);
         }
 
-        switch (param.loadType) {
-            case ResDefine.LoadType.ASSET:
-                this.m_loader.loadLocalAsset();
-                break;
-            case ResDefine.LoadType.DIR:
-                this.m_loader.loadLocalDir();
-                break;
-            case ResDefine.LoadType.SCENE:
-                this.m_loader.loadLocalScene();
-                break;
-        }
-        this.m_loader.loadLocalRes(param);
     }
 
 }
