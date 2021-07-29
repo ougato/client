@@ -12,8 +12,8 @@ import * as BundleDefine from "../../define/BundleDefine";
 
 export default class ResCache {
 
-    // 本地资源路径、远程资源链接
-    public url: string = null;
+    // 本地资源路径 / 远程资源链接
+    public base: string = null;
     // 加载后的资源
     public asset: cc.Asset | cc.Asset[] = null;
     // 资源类型

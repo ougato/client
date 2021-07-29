@@ -19,6 +19,10 @@ export default class ResBuffer {
         this.m_cacheMap = new Map();
     }
 
+    /**
+     * 设置资源缓存
+     * @param data {ResCache} 缓存数据
+     */
     public setCache(data: ResCache): void {
         if (!data) {
             return;
@@ -26,27 +30,33 @@ export default class ResBuffer {
 
         let bundleName: BundleDefine.Name = data.getBundleName();
         if (bundleName) {
-            this.m_cacheMap.set(bundleName, new Map([[data.url, data]]));
+            this.m_cacheMap.set(bundleName, new Map([[data.base, data]]));
         }
     }
 
-    public getCache(bundleName: BundleDefine.Name, url: string): ResCache {
+    /**
+     * 获取资源缓存
+     * @param bundleName {BundleDefine.Name} 包名
+     * @param base {string} 本地资源路径 / 远程资源链接
+     * @returns {ResCache} 缓存数据
+     */
+    public getCache(bundleName: BundleDefine.Name, base: string): ResCache {
         let cache: ResCache = null;
 
         if (bundleName === null || bundleName === undefined || bundleName.length <= 0) {
             return cache;
         }
 
-        if (url === null || url === undefined || url.length <= 0) {
+        if (base === null || base === undefined || base.length <= 0) {
             return cache;
         }
 
-        let urlCacheMap: Map<string, ResCache> = this.m_cacheMap.get(bundleName);
-        if (!urlCacheMap) {
+        let baseCacheMap: Map<string, ResCache> = this.m_cacheMap.get(bundleName);
+        if (!baseCacheMap) {
             return cache;
         }
 
-        let resCache: ResCache = urlCacheMap.get(url);
+        let resCache: ResCache = baseCacheMap.get(base);
         if (resCache) {
             cache = resCache;
         }
@@ -54,23 +64,28 @@ export default class ResBuffer {
         return cache;
     }
 
-    public delCache(bundleName: BundleDefine.Name, url: string): void {
+    /**
+     * 删除资源缓存
+     * @param bundleName {BundleDefine.Name} 包名
+     * @param base {string} 本地资源路径 / 远程资源链接
+     */
+    public delCache(bundleName: BundleDefine.Name, base: string): void {
         if (bundleName === null || bundleName === undefined || bundleName.length <= 0) {
             return;
         }
 
-        if (url === null || url === undefined || url.length <= 0) {
+        if (base === null || base === undefined || base.length <= 0) {
             return;
         }
 
-        let urlCacheMap: Map<string, ResCache> = this.m_cacheMap.get(bundleName);
-        if (!urlCacheMap) {
+        let baseCacheMap: Map<string, ResCache> = this.m_cacheMap.get(bundleName);
+        if (!baseCacheMap) {
             return;
         }
 
-        let resCache: ResCache = urlCacheMap.get(url);
+        let resCache: ResCache = baseCacheMap.get(base);
         if (resCache) {
-            urlCacheMap.delete(url);
+            baseCacheMap.delete(base);
         }
     }
 

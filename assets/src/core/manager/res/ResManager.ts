@@ -45,7 +45,7 @@ export default class ResManager extends BaseManager {
         this.m_loader = new ResLoader();
     }
 
-    public load(param: ResInterface.LoadResParam): void {
+    public async load(param: ResInterface.LoadResParam): Promise<void> {
         if (param.bundleName === null || param.bundleName === undefined) {
             param.bundleName = BundleDefine.Name.RESOURCES;
         }
@@ -58,14 +58,38 @@ export default class ResManager extends BaseManager {
             param.loadMode = ResDefine.LoadMode.LOCAL;
         }
 
+        let resCache: ResCache = this.m_buffer.getCache(param.bundleName, param.base);
+        if (resCache !== null) {
+            param.onComplete(resCache);
+            return;
+        }
+
         if (param.loadMode === ResDefine.LoadMode.LOCAL) {
-            this.m_loader.loadLocal(param);
-        } else if(param.loadMode === ResDefine.LoadMode.REMOTE) {
-            this.m_loader.loadRemote(param);
+            let localParam: ResInterface.LoadLocalResParam = {
+                path: param.base,
+                bundleName: param.bundleName,
+                assetType: param.assetType,
+                loadType: param.loadType,
+                onProgress: param.onProgress,
+                onComplete: param.onComplete,
+            }
+            resCache = await this.m_loader.loadLocal(localParam);
+        } else if (param.loadMode === ResDefine.LoadMode.REMOTE) {
+            let remoteParam: ResInterface.LoadRemoteResParam = {
+                url: param.base,
+                bundleName: param.bundleName,
+                assetType: param.assetType,
+                onProgress: param.onProgress,
+                onComplete: param.onComplete,
+            }
+            resCache = await this.m_loader.loadRemote(remoteParam);
         } else {
             G.LogMgr.sys(`资源管理器加载方式错误`);
         }
 
+        if (resCache) {
+            this.m_buffer.setCache(resCache);
+        }
     }
 
 }

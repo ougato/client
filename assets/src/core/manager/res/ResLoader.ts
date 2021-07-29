@@ -8,29 +8,43 @@
  */
 
 import * as ResInterface from "../../interface/ResInterface";
- 
+import * as ResDefine from "../../define/ResDefine";
+import ResCache from "./ResCache";
+
 export default class ResLoader {
 
     constructor() {
 
     }
 
-    public loadLocal(param: ResInterface.LoadResParam):void {
-        switch (param.loadType) {
-            case ResDefine.LoadType.ASSET:
-                this.m_loader.loadLocalAsset();
-                break;
-            case ResDefine.LoadType.DIR:
-                this.m_loader.loadLocalDir();
-                break;
-            case ResDefine.LoadType.SCENE:
-                this.m_loader.loadLocalScene();
-                break;
-        }
-        this.m_loader.loadLocalRes(param);
+    public async loadLocal(param: ResInterface.LoadLocalResParam): Promise<ResCache> {
+        return new Promise((resolve: (value: ResCache) => void, reject: (reason?: any) => void) => {
+            switch (param.loadType) {
+                case ResDefine.LoadType.ASSET:
+                    this.loadLocalAsset(param, resolve);
+                    break;
+                case ResDefine.LoadType.DIR:
+                    this.loadLocalDir(param);
+                    break;
+                case ResDefine.LoadType.SCENE:
+                    this.loadLocalScene(param);
+                    break;
+            }
+        });
     }
 
-    public loadRemote():void {
+    private loadLocalAsset(param: ResInterface.LoadLocalResParam, resolve: (value: ResCache) => void): void {
+        let resCache: ResCache = null;
+        let bundle: cc.AssetManager.Bundle = cc.assetManager.getBundle(param.bundleName);
+        if (!bundle) {
+            resolve(resCache);
+            return;
+        }
+
+        
+    }
+
+    public loadRemote(param: ResInterface.LoadRemoteResParam): void {
 
     }
 
