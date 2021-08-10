@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-08 23:32:24
  * LastEditors  : ougato
- * LastEditTime : 2021-07-26 00:42:11
+ * LastEditTime : 2021-08-04 03:29:46
  * FilePath     : /client/assets/src/core/manager/res/ResLoader.ts
  * Description  : 资源加载器、用于动态加载资源
  */
@@ -10,152 +10,85 @@
 import * as ResInterface from "../../interface/ResInterface";
 import * as ResDefine from "../../define/ResDefine";
 import ResCache from "./ResCache";
+import * as EventDefine from "../../define/EventDefine";
 
 export default class ResLoader {
+
+    // 加载后回调
+    public loadedCallback: (resCache: ResCache) => void = null;
 
     constructor() {
 
     }
 
-    public async loadLocal(param: ResInterface.LoadLocalResParam): Promise<ResCache> {
-        return new Promise((resolve: (value: ResCache) => void, reject: (reason?: any) => void) => {
-            switch (param.loadType) {
-                case ResDefine.LoadType.ASSET:
-                    this.loadLocalAsset(param, resolve);
-                    break;
-                case ResDefine.LoadType.DIR:
-                    this.loadLocalDir(param);
-                    break;
-                case ResDefine.LoadType.SCENE:
-                    this.loadLocalScene(param);
-                    break;
-            }
-        });
-    }
-
-    private loadLocalAsset(param: ResInterface.LoadLocalResParam, resolve: (value: ResCache) => void): void {
+    public loadLocal(param: ResInterface.LoadLocalResParam): ResCache {
         let resCache: ResCache = null;
+        switch (param.loadType) {
+            case ResDefine.LoadType.ASSET:
+                resCache = this.loadLocalAsset(param);
+                break;
+            case ResDefine.LoadType.DIR:
+                resCache = this.loadLocalDir(param);
+                break;
+            case ResDefine.LoadType.SCENE:
+                resCache = this.loadLocalScene(param);
+                break;
+            default:
+                G.LogMgr.sys(`加载本地 类型错误 ${param.loadType}`);
+                break;
+        }
+        return resCache;
+    }
+
+    private loadLocalAsset(param: ResInterface.LoadLocalResParam): ResCache {
         let bundle: cc.AssetManager.Bundle = cc.assetManager.getBundle(param.bundleName);
-        if (!bundle) {
-            resolve(resCache);
-            return;
-        }
+        let resCache: ResCache = new ResCache();
+        resCache.base = param.path;
+        resCache.asset = null;
+        resCache.type = param.assetType;
+        resCache.bundle = bundle;
+        resCache.mode = ResDefine.LoadMode.LOCAL;
+        resCache.state = ResDefine.ResState.LOADING;
 
-        
-    }
-
-    public loadRemote(param: ResInterface.LoadRemoteResParam): void {
-
-    }
-
-    public loadLocalRes(): void {
-        let resCache: ResCache = this.m_buffer.getCache(param.bundleName, param.path);
-        if (resCache) {
-            switch (resCache.state) {
-                case ResDefine.ResState.LOADED:
-
-                    break;
-                case ResDefine.ResState.LOADING:
-                    resCache = null;
-                    break;
-            }
-            param.onComplete(resCache);
-        } else {
-            let bundle: cc.AssetManager.Bundle = cc.assetManager.getBundle(param.bundleName);
-            if (!bundle) {
-                G.LogMgr.sys(`找不到 "${param.bundleName}" 包名、加载 bundle 失败`);
-                param.onComplete(resCache);
-                return;
-            }
-
-            resCache = new ResCache();
-            resCache.url = param.path;
-            resCache.type = param.type
-            resCache.bundle = bundle;
-            resCache.mode = ResDefine.LoadMode.LOCAL;
-            resCache.state = ResDefine.ResState.LOADING;
-            this.m_buffer.setCache(resCache);
-
-            let asset: cc.Asset = bundle.get(resCache.url, resCache.type);
-            if (asset) {
-                resCache.asset = asset;
-                param.onComplete(resCache);
+        let onComplete: (error: Error, assets: cc.Asset) => void = (error: Error, assets: cc.Asset) => {
+            if (error) {
+                G.LogMgr.sys(`加载 资源 失败 ${param.path}`);
             } else {
-                let completeCallback: Function = ((error: Error, asset: cc.Asset) => {
-                    if (error) {
-                        this.m_buffer.delCache(resCache.bundle.name as BundleDefine.Name, resCache.url);
-                        resCache = null;
-                    } else {
-                        resCache.asset = asset;
-                        resCache.state = ResDefine.ResState.LOADED;
-                    }
-                    param.onComplete(resCache);
-                });
-
-                if (param.onProgress) {
-                    bundle.load(resCache.url, resCache.type, param.onProgress, completeCallback.bind(this));
-                } else if (param.onComplete) {
-                    bundle.load(resCache.url, resCache.type, completeCallback.bind(this));
-                }
+                G.LogMgr.log(`加载 资源 成功 ${param.path}`);
+                resCache.asset = assets;
+                resCache.addRef();
             }
-        }
-    }
 
-    public loadLocalDirRes(param: ResInterface.LoadResParam): void {
-        let resCache: ResCache = this.m_buffer.getCache(param.bundleName, param.path);
-        if (resCache) {
-            switch (resCache.state) {
-                case ResDefine.ResState.LOADED:
+            param.completeCallback(resCache);
+            resCache && resCache.callRepeatParam();
+            this.loadedCallback && this.loadedCallback(resCache);
+        };
 
-                    break;
-                case ResDefine.ResState.LOADING:
-                    resCache = null;
-                    break;
-            }
-            param.onComplete(resCache);
+        if (param.progressCallback) {
+            bundle.load(param.path, param.assetType, param.progressCallback, onComplete);
         } else {
-            let bundle: cc.AssetManager.Bundle = cc.assetManager.getBundle(param.bundleName);
-            if (!bundle) {
-                G.LogMgr.sys(`找不到 "${param.bundleName}" 包名、加载 bundle 失败`);
-                param.onComplete(resCache);
-                return;
-            }
-
-            resCache = new ResCache();
-            resCache.url = param.path;
-            resCache.type = param.type
-            resCache.bundle = bundle;
-            resCache.mode = ResDefine.LoadMode.LOCAL;
-            resCache.state = ResDefine.ResState.LOADING;
-            this.m_buffer.setCache(resCache);
-
-            let asset: cc.Asset = bundle.get(resCache.url, resCache.type);
-            if (asset) {
-                resCache.asset = asset;
-                param.onComplete(resCache);
-            } else {
-                let completeCallback: Function = ((error: Error, asset: cc.Asset | cc.Asset[]) => {
-                    if (error) {
-                        this.m_buffer.delCache(resCache.bundle.name as BundleDefine.Name, resCache.url);
-                        resCache = null;
-                    } else {
-                        resCache.asset = asset;
-                        resCache.state = ResDefine.ResState.LOADED;
-                    }
-                    param.onComplete(resCache);
-                });
-
-                if (param.onProgress) {
-                    bundle.loadDir(resCache.url, resCache.type, param.onProgress, completeCallback.bind(this));
-                } else if (param.onComplete) {
-                    bundle.loadDir(resCache.url, resCache.type, completeCallback.bind(this));
-                }
-            }
+            bundle.load(param.path, param.assetType, onComplete);
         }
+
+        return resCache;
     }
 
-    public loadRemoteRes(): void {
+    private loadLocalDir(param: ResInterface.LoadLocalResParam): ResCache {
+        let resCache: ResCache = null;
 
+        return resCache;
+    }
+
+    private loadLocalScene(param: ResInterface.LoadLocalResParam): ResCache {
+        let resCache: ResCache = null;
+
+        return resCache;
+    }
+
+    public loadRemote(param: ResInterface.LoadRemoteResParam): ResCache {
+        let resCache: ResCache = null;
+
+        return resCache;
     }
 
 }

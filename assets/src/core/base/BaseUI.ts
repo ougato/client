@@ -2,12 +2,20 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:21:20
  * LastEditors  : ougato
- * LastEditTime : 2021-07-15 00:47:32
+ * LastEditTime : 2021-08-10 02:12:19
  * FilePath     : /client/assets/src/core/base/BaseUI.ts
  * Description  : UI 基类、是 BaseView 和 BaseScene 的父类
  */
 
+import * as ResInterface from "../interface/ResInterface";
+import ResCache from "../manager/res/ResCache";
+
 export default class BaseUI extends cc.Component {
+
+    // 资源缓存列表
+    protected resList: ResCache[] = null;
+    // 事件监听列表
+    protected eventList: any = null;
 
     /**
      * 如果该组件启用，则每帧调用 update。
@@ -59,7 +67,8 @@ export default class BaseUI extends cc.Component {
      * 当该组件被销毁时调用 
      */
     protected onDestroy(): void {
-
+        this.atuoReleaseRes();
+        this.autoRemoveEvent();
     }
 
     /**
@@ -109,7 +118,8 @@ export default class BaseUI extends cc.Component {
      * 初始化数据
      */
     protected initData(): void {
-
+        this.resList = [];
+        this.eventList = [];
     }
 
     /**
@@ -117,5 +127,48 @@ export default class BaseUI extends cc.Component {
      */
     protected initUI(): void {
 
+    }
+
+    /**
+     * 添加事件
+     */
+    protected addEvent(): void {
+
+    }
+
+    /**
+     * 删除事件
+     * 自动删除，由 UI 销毁后自动删除注册过的事件
+     */
+    private autoRemoveEvent(): void {
+
+    }
+
+    /**
+     * 加载资源
+     * 目的是基类实现自动释放、不需开发者手动调用加载释放
+     * @param {ResInterface.LoadResParam} 加载资源参数
+     */
+    protected loadRes(param: ResInterface.LoadResParam): void {
+        let completeCallback: (resCache: ResCache | null) => void = param.completeCallback;
+        param.completeCallback = (resCache: ResCache | null) => {
+            if (resCache) {
+                this.resList.push(resCache);
+            }
+        }
+        G.ResMgr.load(param);
+    }
+
+    /**
+     * 释放资源
+     * 自动释放，由 UI 销毁后自动删除资源的引用计数
+     */
+    private atuoReleaseRes(): void {
+        if (this.resList && this.resList.length > 0) {
+            for (let i: number = 0; this.resList.length; ++i) {
+                let resCache: ResCache = this.resList[i];
+                G.ResMgr.release(resCache);
+            }
+        }
     }
 }

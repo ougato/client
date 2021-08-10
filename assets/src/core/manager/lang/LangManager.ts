@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-11 17:01:18
  * LastEditors  : ougato
- * LastEditTime : 2021-07-15 23:51:07
+ * LastEditTime : 2021-08-04 02:13:52
  * FilePath     : /client/assets/src/core/manager/lang/LangManager.ts
  * Description  : 语言管理器、本地话多语言的加载和切换
  */
@@ -22,9 +22,9 @@ export default class LangManager extends BaseManager {
     private static s_instance: LangManager = null;
 
     // 数据内容 Map<包名, 多语言缓存数据>>
-    private m_dataMap: Map<BundleDefine.Name, LangInterface.LangCacheData> = null;
+    private _dataMap: Map<BundleDefine.Name, LangInterface.LangCacheData> = null;
     // 当前语言
-    private m_lang: LangDefine.Lang = null;
+    private _lang: LangDefine.Lang = null;
 
     public static getInstance(): LangManager {
         if (this.s_instance === null) {
@@ -43,8 +43,8 @@ export default class LangManager extends BaseManager {
     constructor() {
         super();
 
-        this.m_dataMap = new Map();
-        this.m_lang = this.getCurrLang();
+        this._dataMap = new Map();
+        this._lang = this.getCurrLang();
     }
 
     /**
@@ -64,7 +64,7 @@ export default class LangManager extends BaseManager {
      * @returns {string} 文件路径
      */
     private getMD5Path(): string {
-        return LangDefine.RelPath.MD5 + this.m_lang;
+        return LangDefine.RelPath.MD5 + this._lang;
     }
 
     /**
@@ -72,7 +72,7 @@ export default class LangManager extends BaseManager {
      * @returns {string} 文件路径
      */
     private getJsonPath(): string {
-        return LangDefine.RelPath.JSON + this.m_lang;
+        return LangDefine.RelPath.JSON + this._lang;
     }
 
     /**
@@ -80,7 +80,7 @@ export default class LangManager extends BaseManager {
      * @returns {string} 图集目录路径
      */
     private getAtlasPath(): string {
-        return LangDefine.RelPath.ATLAS + this.m_lang;
+        return LangDefine.RelPath.ATLAS + this._lang;
     }
 
     /**
@@ -199,13 +199,13 @@ export default class LangManager extends BaseManager {
     //  * @param json {object} 内容
     //  */
     // private setCacheJson(bundleName: BundleDefine.Name, json: object): void {
-    //     let langCacheData: LangInterface.LangCacheData = this.m_dataMap.get(bundleName);
+    //     let langCacheData: LangInterface.LangCacheData = this._dataMap.get(bundleName);
     //     if (!langCacheData) {
     //         langCacheData = {
     //             json: null,
     //             atlas: null,
     //         }
-    //         this.m_dataMap.set(bundleName, langCacheData);
+    //         this._dataMap.set(bundleName, langCacheData);
     //     }
     //     langCacheData.json = json;
     // }
@@ -225,13 +225,13 @@ export default class LangManager extends BaseManager {
     //  * @param atlas {cc.SpriteAtlas} 图集
     //  */
     // private setAtlas(bundleName: BundleDefine.Name, atlas: cc.SpriteAtlas): void {
-    //     let langCacheData: LangInterface.LangCacheData = this.m_dataMap.get(bundleName);
+    //     let langCacheData: LangInterface.LangCacheData = this._dataMap.get(bundleName);
     //     if (!langCacheData) {
     //         langCacheData = {
     //             json: null,
     //             atlas: null,
     //         }
-    //         this.m_dataMap.set(bundleName, langCacheData);
+    //         this._dataMap.set(bundleName, langCacheData);
     //     }
     //     langCacheData.atlas = atlas;
     // }
@@ -285,8 +285,8 @@ export default class LangManager extends BaseManager {
     //  */
     // public get(key: string, bundle: string, ...format: string[] | number[]): string {
     //     let value: string = "";
-    //     // if (this.m_data && this.m_data[key] !== undefined) {
-    //     //     value = this.m_data[key];
+    //     // if (this._data && this._data[key] !== undefined) {
+    //     //     value = this._data[key];
     //     // }
 
     //     // if (format.length > 0) {

@@ -36,7 +36,7 @@ export default class LogManager extends BaseManager {
      * @param data {...any[]} 数据
      */
     public sys(...data: any[]): void {
-        this.warn(data);
+        console.warn.apply(console, data);
     }
 
     /**

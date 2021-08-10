@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-08 23:31:28
  * LastEditors  : ougato
- * LastEditTime : 2021-07-26 01:04:40
+ * LastEditTime : 2021-08-10 02:30:28
  * FilePath     : /client/assets/src/core/manager/res/ResManager.ts
  * Description  : 资源管理器、所有游戏中用到的资源操作、由 ResManager 进行统一管理
  */
@@ -14,6 +14,7 @@ import * as ResInterface from "../../interface/ResInterface";
 import ResCache from "./ResCache";
 import * as ResDefine from "../../define/ResDefine";
 import * as BundleDefine from "../../define/BundleDefine";
+import * as EventDefine from "../../define/EventDefine";
 
 export default class ResManager extends BaseManager {
 
@@ -34,18 +35,27 @@ export default class ResManager extends BaseManager {
     }
 
     // 缓存器
-    private m_buffer: ResBuffer = null;
+    private _buffer: ResBuffer = null;
     // 加载器
-    private m_loader: ResLoader = null;
+    private _loader: ResLoader = null;
 
     constructor() {
         super();
 
-        this.m_buffer = new ResBuffer();
-        this.m_loader = new ResLoader();
+        this._buffer = new ResBuffer();
+        this._loader = new ResLoader();
+
+        this._loader.loadedCallback = this.onLoaded;
     }
 
-    public async load(param: ResInterface.LoadResParam): Promise<void> {
+    /**
+     * 加载资源
+     * 注：
+     * 如果手动调用全局的 ResManager 请一定要手动释放
+     * 不是必须调用全局的 ResManager 请继承 BaseUI 后，在自定义 UI 界面使用 this.load
+     * @param param {ResInterface.LoadResParam} 加载资源参数
+     */
+    public load(param: ResInterface.LoadResParam): void {
         if (param.bundleName === null || param.bundleName === undefined) {
             param.bundleName = BundleDefine.Name.RESOURCES;
         }
@@ -58,9 +68,40 @@ export default class ResManager extends BaseManager {
             param.loadMode = ResDefine.LoadMode.LOCAL;
         }
 
-        let resCache: ResCache = this.m_buffer.getCache(param.bundleName, param.base);
-        if (resCache !== null) {
-            param.onComplete(resCache);
+        if (param.progressCallback === null || param.progressCallback === undefined) {
+            param.progressCallback = null;
+        }
+
+        let resCache: ResCache = this._buffer.getCache(param.base, param.bundleName);
+        if (resCache) {
+            if (resCache.state === ResDefine.ResState.LOADED) {
+                resCache.addRef();
+                param.completeCallback(resCache);
+            } else if (resCache.state === ResDefine.ResState.LOADING) {
+                resCache.addRepeatParam(param);
+            }
+            return;
+        }
+
+        let bundle: cc.AssetManager.Bundle = cc.assetManager.getBundle(param.bundleName);
+        if (!bundle) {
+            G.LogMgr.sys(`找不到 "${param.bundleName}" 包名、加载 bundle 失败`);
+            param.completeCallback(resCache);
+            return;
+        }
+
+        let asset: cc.Asset = bundle.get(param.base, param.assetType);
+        if (asset) {
+            resCache = new ResCache();
+            resCache.base = param.base;
+            resCache.asset = asset;
+            resCache.type = param.assetType;
+            resCache.bundle = bundle;
+            resCache.mode = ResDefine.LoadMode.LOCAL;
+            resCache.state = ResDefine.ResState.LOADED;
+            resCache.addRef();
+            param.completeCallback(resCache);
+            this._buffer.setCache(resCache);
             return;
         }
 
@@ -70,26 +111,65 @@ export default class ResManager extends BaseManager {
                 bundleName: param.bundleName,
                 assetType: param.assetType,
                 loadType: param.loadType,
-                onProgress: param.onProgress,
-                onComplete: param.onComplete,
+                progressCallback: param.progressCallback,
+                completeCallback: param.completeCallback,
             }
-            resCache = await this.m_loader.loadLocal(localParam);
+            resCache = this._loader.loadLocal(localParam);
         } else if (param.loadMode === ResDefine.LoadMode.REMOTE) {
             let remoteParam: ResInterface.LoadRemoteResParam = {
                 url: param.base,
                 bundleName: param.bundleName,
                 assetType: param.assetType,
-                onProgress: param.onProgress,
-                onComplete: param.onComplete,
+                progressCallback: param.progressCallback,
+                completeCallback: param.completeCallback,
             }
-            resCache = await this.m_loader.loadRemote(remoteParam);
+            resCache = this._loader.loadRemote(remoteParam);
         } else {
             G.LogMgr.sys(`资源管理器加载方式错误`);
         }
 
         if (resCache) {
-            this.m_buffer.setCache(resCache);
+            this._buffer.setCache(resCache);
         }
+    }
+
+    public release(resCache: ResCache): void;
+    public release(base: string, bundleName?: BundleDefine.Name): void;
+    public release(): void {
+        if (arguments.length === 1 && arguments[0] instanceof ResCache) {
+            let resCache: ResCache = arguments[0];
+            if (resCache.asset instanceof Array) {
+                for (let i: number = 0; i < resCache.asset.length; ++i) {
+                    let asset: cc.Asset = resCache.asset[i];
+                    
+                }
+            } else {
+
+            }
+        } else if ((arguments.length === 1 || arguments.length === 2) && typeof arguments[0] === "string" &&
+            (typeof arguments[1] === undefined || typeof arguments[1] === null || typeof arguments[1] === "string")) {
+            let base: string = arguments[0];
+            let bundleName: BundleDefine.Name = arguments[1];
+
+            if (bundleName === null || bundleName === undefined) {
+                bundleName = BundleDefine.Name.RESOURCES;
+            }
+
+            let resCache: ResCache = this._buffer.getCache(base, bundleName);
+            if (resCache) {
+
+            }
+        } else {
+            G.LogMgr.warn(`资源释放参数错误`);
+        }
+    }
+
+    private onLoaded(resCache: ResCache): void {
+        console.log(resCache);
+    }
+
+    private onReleased(base: string, bundleName: BundleDefine.Name): void {
+
     }
 
 }

@@ -2,13 +2,14 @@
  * Author       : ougato
  * Date         : 2021-07-10 00:39:14
  * LastEditors  : ougato
- * LastEditTime : 2021-07-15 02:09:05
+ * LastEditTime : 2021-08-10 00:30:31
  * FilePath     : /client/assets/src/core/manager/res/ResCache.ts
  * Description  : 资源缓存
  */
 
 import * as ResDefine from "../../define/ResDefine";
 import * as BundleDefine from "../../define/BundleDefine";
+import * as ResInterface from "../../interface/ResInterface";
 
 export default class ResCache {
 
@@ -24,11 +25,12 @@ export default class ResCache {
     public mode: ResDefine.LoadMode = null;
     // 状态
     public state: ResDefine.ResState = null;
-    // 释放后回调
-    public releasedCallback: Function = null;
+
+    // 在 LOADING 状态中、重复加载的接口参数列表
+    private _repeatLoadResParamList: ResInterface.LoadResParam[] = null;
 
     constructor() {
-
+        this._repeatLoadResParamList = [];
     }
 
     /**
@@ -43,5 +45,58 @@ export default class ResCache {
         }
 
         return bundleName;
+    }
+
+    /**
+     * 添加重复加载的接口参数
+     * @param param {ResInterface.LoadResParam} 加载的接口参数
+     */
+    public addRepeatParam(param: ResInterface.LoadResParam): void {
+        this._repeatLoadResParamList.push(param);
+    }
+
+    /**
+     * 调用重复添加的接口参数
+     */
+    public callRepeatParam(): void {
+        if (!this._repeatLoadResParamList) {
+            return;
+        }
+
+        for (let i: number = 0; i < this._repeatLoadResParamList.length; ++i) {
+            let param: ResInterface.LoadResParam = this._repeatLoadResParamList[i];
+            this.asset
+            param.completeCallback(this);
+        }
+
+        this._repeatLoadResParamList = [];
+    }
+
+    /**
+     * 增加引用计数
+     */
+    public addRef(): void {
+        if (this.asset instanceof Array) {
+            for (let i: number = 0; i < this.asset.length; ++i) {
+                let asset: cc.Asset = this.asset[i];
+                asset.addRef();
+            }
+        } else {
+            this.asset.addRef();
+        }
+    }
+
+    /**
+     * 减少引用计数
+     */
+    public decRef(): void {
+        if (this.asset instanceof Array) {
+            for (let i: number = 0; i < this.asset.length; ++i) {
+                let asset: cc.Asset = this.asset[i];
+                asset.decRef();
+            }
+        } else {
+            this.asset.decRef();
+        }
     }
 }
