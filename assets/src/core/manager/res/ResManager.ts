@@ -75,10 +75,10 @@ export default class ResManager extends BaseManager {
         let resCache: ResCache = this._buffer.getCache(param.base, param.bundleName);
         if (resCache) {
             if (resCache.state === ResDefine.ResState.LOADED) {
-                resCache.addRef();
+                resCache.addCache();
                 param.completeCallback(resCache);
             } else if (resCache.state === ResDefine.ResState.LOADING) {
-                resCache.addRepeatParam(param);
+                resCache.addWaitParam(param);
             }
             return;
         }
@@ -99,7 +99,7 @@ export default class ResManager extends BaseManager {
             resCache.bundle = bundle;
             resCache.mode = ResDefine.LoadMode.LOCAL;
             resCache.state = ResDefine.ResState.LOADED;
-            resCache.addRef();
+            resCache.addCache();
             param.completeCallback(resCache);
             this._buffer.setCache(resCache);
             return;
@@ -141,7 +141,9 @@ export default class ResManager extends BaseManager {
             if (resCache.asset instanceof Array) {
                 for (let i: number = 0; i < resCache.asset.length; ++i) {
                     let asset: cc.Asset = resCache.asset[i];
-                    
+                    if (asset.refCount) {
+
+                    }
                 }
             } else {
 

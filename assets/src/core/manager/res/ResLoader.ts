@@ -56,11 +56,11 @@ export default class ResLoader {
             } else {
                 G.LogMgr.log(`加载 资源 成功 ${param.path}`);
                 resCache.asset = assets;
-                resCache.addRef();
+                resCache.addCache();
             }
 
             param.completeCallback(resCache);
-            resCache && resCache.callRepeatParam();
+            resCache && resCache.callWaitParam();
             this.loadedCallback && this.loadedCallback(resCache);
         };
 

@@ -26,11 +26,14 @@ export default class ResCache {
     // 状态
     public state: ResDefine.ResState = null;
 
-    // 在 LOADING 状态中、重复加载的接口参数列表
-    private _repeatLoadResParamList: ResInterface.LoadResParam[] = null;
+    // 在 LOADING 状态中、等待加载的接口参数列表
+    private _waitLoadResParamList: ResInterface.LoadResParam[] = null;
+    // 缓存计数
+    public _cacheCount: number = null;
 
     constructor() {
-        this._repeatLoadResParamList = [];
+        this._waitLoadResParamList = [];
+        this._cacheCount = 0;
     }
 
     /**
@@ -48,34 +51,35 @@ export default class ResCache {
     }
 
     /**
-     * 添加重复加载的接口参数
+     * 添加等待加载的接口参数
      * @param param {ResInterface.LoadResParam} 加载的接口参数
      */
-    public addRepeatParam(param: ResInterface.LoadResParam): void {
-        this._repeatLoadResParamList.push(param);
+    public addWaitParam(param: ResInterface.LoadResParam): void {
+        this._waitLoadResParamList.push(param);
     }
 
     /**
-     * 调用重复添加的接口参数
+     * 调用 LOADING 时等待添加的接口参数
      */
-    public callRepeatParam(): void {
-        if (!this._repeatLoadResParamList) {
+    public callWaitParam(): void {
+        if (!this._waitLoadResParamList) {
             return;
         }
 
-        for (let i: number = 0; i < this._repeatLoadResParamList.length; ++i) {
-            let param: ResInterface.LoadResParam = this._repeatLoadResParamList[i];
-            this.asset
+        for (let i: number = 0; i < this._waitLoadResParamList.length; ++i) {
+            this.addCache();
+            let param: ResInterface.LoadResParam = this._waitLoadResParamList[i];
             param.completeCallback(this);
         }
 
-        this._repeatLoadResParamList = [];
+        this._waitLoadResParamList = [];
     }
 
     /**
-     * 增加引用计数
+     * 增加缓存计数
      */
-    public addRef(): void {
+    public addCache(): void {
+        ++this._cacheCount;
         if (this.asset instanceof Array) {
             for (let i: number = 0; i < this.asset.length; ++i) {
                 let asset: cc.Asset = this.asset[i];
@@ -87,9 +91,10 @@ export default class ResCache {
     }
 
     /**
-     * 减少引用计数
+     * 减少缓存计数
      */
-    public decRef(): void {
+    public decCache(): void {
+        --this._cacheCount;
         if (this.asset instanceof Array) {
             for (let i: number = 0; i < this.asset.length; ++i) {
                 let asset: cc.Asset = this.asset[i];
@@ -98,5 +103,13 @@ export default class ResCache {
         } else {
             this.asset.decRef();
         }
+    }
+
+    /**
+     * 获取缓存计数
+     * @returns {number} 引用数量
+     */
+    public getCacheCount(): number {
+        return this._cacheCount;
     }
 }
