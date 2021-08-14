@@ -76,6 +76,7 @@ export default class ResManager extends BaseManager {
         if (resCache) {
             if (resCache.state === ResDefine.ResState.LOADED) {
                 resCache.addCache();
+                resCache.callFinishedProgress(param.progressCallback);
                 param.completeCallback(resCache);
             } else if (resCache.state === ResDefine.ResState.LOADING) {
                 resCache.addWaitParam(param);
@@ -100,6 +101,7 @@ export default class ResManager extends BaseManager {
             resCache.mode = ResDefine.LoadMode.LOCAL;
             resCache.state = ResDefine.ResState.LOADED;
             resCache.addCache();
+            resCache.callFinishedProgress(param.progressCallback);
             param.completeCallback(resCache);
             this._buffer.setCache(resCache);
             return;
@@ -136,18 +138,9 @@ export default class ResManager extends BaseManager {
     public release(resCache: ResCache): void;
     public release(base: string, bundleName?: BundleDefine.Name): void;
     public release(): void {
+        let resCache: ResCache = null;
         if (arguments.length === 1 && arguments[0] instanceof ResCache) {
-            let resCache: ResCache = arguments[0];
-            if (resCache.asset instanceof Array) {
-                for (let i: number = 0; i < resCache.asset.length; ++i) {
-                    let asset: cc.Asset = resCache.asset[i];
-                    if (asset.refCount) {
-
-                    }
-                }
-            } else {
-
-            }
+            resCache = arguments[0];
         } else if ((arguments.length === 1 || arguments.length === 2) && typeof arguments[0] === "string" &&
             (typeof arguments[1] === undefined || typeof arguments[1] === null || typeof arguments[1] === "string")) {
             let base: string = arguments[0];
@@ -156,22 +149,27 @@ export default class ResManager extends BaseManager {
             if (bundleName === null || bundleName === undefined) {
                 bundleName = BundleDefine.Name.RESOURCES;
             }
-
-            let resCache: ResCache = this._buffer.getCache(base, bundleName);
-            if (resCache) {
-
-            }
+            resCache = this._buffer.getCache(base, bundleName);
         } else {
             G.LogMgr.warn(`资源释放参数错误`);
+            return;
+        }
+
+        if (resCache && resCache.decCache() <= 0) {
+            this._buffer.delCache(resCache.base, resCache.getBundleName());
         }
     }
 
     private onLoaded(resCache: ResCache): void {
-        console.log(resCache);
+        console.log(`加载后 ${resCache.base}`);
     }
 
     private onReleased(base: string, bundleName: BundleDefine.Name): void {
 
+    }
+
+    public print(): void {
+        this._buffer.print();
     }
 
 }

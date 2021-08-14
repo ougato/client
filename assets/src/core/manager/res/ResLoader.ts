@@ -64,7 +64,7 @@ export default class ResLoader {
             this.loadedCallback && this.loadedCallback(resCache);
         };
 
-        if (param.progressCallback) {
+        if (param.progressCallback && param.progressCallback instanceof Function) {
             bundle.load(param.path, param.assetType, param.progressCallback, onComplete);
         } else {
             bundle.load(param.path, param.assetType, onComplete);

@@ -12,10 +12,10 @@ import ResCache from "../manager/res/ResCache";
 
 export default class BaseUI extends cc.Component {
 
-    // 资源缓存列表
-    protected resList: ResCache[] = null;
-    // 事件监听列表
-    protected eventList: any = null;
+    // 加载资源列表
+    private loadList: ResCache[] = null;
+    // 监听事件列表
+    private eventList: any = null;
 
     /**
      * 如果该组件启用，则每帧调用 update。
@@ -67,8 +67,8 @@ export default class BaseUI extends cc.Component {
      * 当该组件被销毁时调用 
      */
     protected onDestroy(): void {
-        this.atuoReleaseRes();
-        this.autoRemoveEvent();
+        this.autoRelease();
+        this.autoOff();
     }
 
     /**
@@ -118,7 +118,7 @@ export default class BaseUI extends cc.Component {
      * 初始化数据
      */
     protected initData(): void {
-        this.resList = [];
+        this.loadList = [];
         this.eventList = [];
     }
 
@@ -130,18 +130,27 @@ export default class BaseUI extends cc.Component {
     }
 
     /**
-     * 添加事件
+     * 监听事件
      */
-    protected addEvent(): void {
+    protected on(): void {
 
     }
 
     /**
-     * 删除事件
-     * 自动删除，由 UI 销毁后自动删除注册过的事件
+     * 手动移除事件
      */
-    private autoRemoveEvent(): void {
+    protected off(): void {
 
+    }
+
+    /**
+     * 自动移除事件
+     * 由 UI 销毁后自动删除注册过的事件
+     */
+    private autoOff(): void {
+
+
+        this.eventList = [];
     }
 
     /**
@@ -149,12 +158,13 @@ export default class BaseUI extends cc.Component {
      * 目的是基类实现自动释放、不需开发者手动调用加载释放
      * @param {ResInterface.LoadResParam} 加载资源参数
      */
-    protected loadRes(param: ResInterface.LoadResParam): void {
+    protected load(param: ResInterface.LoadResParam): void {
         let completeCallback: (resCache: ResCache | null) => void = param.completeCallback;
         param.completeCallback = (resCache: ResCache | null) => {
             if (resCache) {
-                this.resList.push(resCache);
+                this.loadList.push(resCache);
             }
+            completeCallback(resCache);
         }
         G.ResMgr.load(param);
     }
@@ -163,12 +173,13 @@ export default class BaseUI extends cc.Component {
      * 释放资源
      * 自动释放，由 UI 销毁后自动删除资源的引用计数
      */
-    private atuoReleaseRes(): void {
-        if (this.resList && this.resList.length > 0) {
-            for (let i: number = 0; this.resList.length; ++i) {
-                let resCache: ResCache = this.resList[i];
+    private autoRelease(): void {
+        if (this.loadList && this.loadList.length > 0) {
+            for (let i: number = 0; i < this.loadList.length; ++i) {
+                let resCache: ResCache = this.loadList[i];
                 G.ResMgr.release(resCache);
             }
+            this.loadList = [];
         }
     }
 }

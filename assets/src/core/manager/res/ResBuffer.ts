@@ -87,6 +87,29 @@ export default class ResBuffer {
         if (resCache) {
             baseCacheMap.delete(base);
         }
+
+        if (baseCacheMap.size <= 0) {
+            this._cacheMap.delete(bundleName);
+        }
+    }
+
+    public print(): void {
+        let info: string = "资源缓存：\n";
+        this._cacheMap.forEach((value: Map<string, ResCache>, bundleName: string, map: Map<string, Map<string, ResCache>>) => {
+            info += `[${bundleName}` + "\n";
+            value.forEach((resCache: ResCache, base: string, map: Map<string, ResCache>) => {
+                info += `  ${base} ` + `${resCache.getCacheCount()}\n`;
+                if (resCache.asset instanceof Array) {
+                    for (let i: number = 0; i < resCache.asset.length; ++i) {
+                        let asset: cc.Asset = resCache.asset[i];
+                        info += `    ${asset.name} ${asset.refCount}\n`;
+                    }
+                } else {
+                    info += `    ${resCache.asset.name} ${resCache.asset.refCount}\n`;
+                }
+            })
+        });
+        G.LogMgr.log(info);
     }
 
 }

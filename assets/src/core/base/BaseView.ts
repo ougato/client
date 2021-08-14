@@ -8,9 +8,15 @@
  */
 
 import BaseUI from "./BaseUI";
- 
-export default class BaseView extends BaseUI{
+
+export default class BaseView extends BaseUI {
+
     // 是否加载完成
     public isLoaded: boolean = false;
-    
+
+    protected onLoad(): void {
+        super.onLoad();
+        
+    }
+
 }

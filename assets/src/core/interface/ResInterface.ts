@@ -24,7 +24,7 @@ export interface LoadResParam {
     // 加载方式 （默认：ResDefine.LoadMode.LOCAL）
     loadMode?: ResDefine.LoadMode;
     // 加载进度回调
-    progressCallback?: (finish: number, total: number, item: cc.AssetManager.RequestItem) => void;
+    progressCallback?: (finish: number, total: number, item?: cc.AssetManager.RequestItem) => void;
     // 加载完成回调
     completeCallback: (resCache: ResCache | null) => void;
 }
@@ -40,7 +40,7 @@ export interface LoadLocalResParam {
     // 加载类型 
     loadType: ResDefine.LoadType;
     // 加载进度回调
-    progressCallback?: (finish: number, total: number, item: cc.AssetManager.RequestItem) => void;
+    progressCallback?: (finish: number, total: number, item?: cc.AssetManager.RequestItem) => void;
     // 加载完成回调
     completeCallback: (resCache: ResCache | null) => void;
 }
@@ -54,7 +54,7 @@ export interface LoadRemoteResParam {
     // 资源类型
     assetType: AssetsType;
     // 加载进度回调
-    progressCallback?: (finish: number, total: number, item: cc.AssetManager.RequestItem) => void;
+    progressCallback?: (finish: number, total: number, item?: cc.AssetManager.RequestItem) => void;
     // 加载完成回调
     completeCallback: (resCache: ResCache | null) => void;
 }

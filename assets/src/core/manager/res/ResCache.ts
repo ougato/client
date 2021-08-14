@@ -29,7 +29,7 @@ export default class ResCache {
     // 在 LOADING 状态中、等待加载的接口参数列表
     private _waitLoadResParamList: ResInterface.LoadResParam[] = null;
     // 缓存计数
-    public _cacheCount: number = null;
+    private _cacheCount: number = null;
 
     constructor() {
         this._waitLoadResParamList = [];
@@ -69,10 +69,29 @@ export default class ResCache {
         for (let i: number = 0; i < this._waitLoadResParamList.length; ++i) {
             this.addCache();
             let param: ResInterface.LoadResParam = this._waitLoadResParamList[i];
+            this.callFinishedProgress(param.progressCallback);
             param.completeCallback(this);
         }
 
         this._waitLoadResParamList = [];
+    }
+
+    /**
+     * 调用加载完成后的资源百分比
+     * @param progressCallback {(finish: number, total: number, item?: cc.AssetManager.RequestItem) => void} 百分比回调
+     */
+    public callFinishedProgress(progressCallback: (finish: number, total: number, item?: cc.AssetManager.RequestItem) => void): void {
+        if (progressCallback && progressCallback instanceof Function) {
+            let finish: number = 0;
+            let total: number = 0;
+            if (this.asset instanceof Array) {
+                finish = this.asset.length;
+            } else {
+                finish = 1;
+            }
+            total = finish
+            progressCallback(finish, total);
+        }
     }
 
     /**
@@ -92,8 +111,9 @@ export default class ResCache {
 
     /**
      * 减少缓存计数
+     * @returns {number} 返回减少后的缓存计数
      */
-    public decCache(): void {
+    public decCache(): number {
         --this._cacheCount;
         if (this.asset instanceof Array) {
             for (let i: number = 0; i < this.asset.length; ++i) {
@@ -103,6 +123,7 @@ export default class ResCache {
         } else {
             this.asset.decRef();
         }
+        return this._cacheCount;
     }
 
     /**
