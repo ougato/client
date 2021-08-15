@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:21:20
  * LastEditors  : ougato
- * LastEditTime : 2021-08-10 02:12:19
+ * LastEditTime : 2021-08-15 22:51:22
  * FilePath     : /client/assets/src/core/base/BaseUI.ts
  * Description  : UI 基类、是 BaseView 和 BaseScene 的父类
  */
@@ -13,9 +13,9 @@ import ResCache from "../manager/res/ResCache";
 export default class BaseUI extends cc.Component {
 
     // 加载资源列表
-    private loadList: ResCache[] = null;
+    private _loadList: ResCache[] = null;
     // 监听事件列表
-    private eventList: any = null;
+    private _eventList: any = null;
 
     /**
      * 如果该组件启用，则每帧调用 update。
@@ -118,8 +118,8 @@ export default class BaseUI extends cc.Component {
      * 初始化数据
      */
     protected initData(): void {
-        this.loadList = [];
-        this.eventList = [];
+        this._loadList = [];
+        this._eventList = [];
     }
 
     /**
@@ -150,7 +150,7 @@ export default class BaseUI extends cc.Component {
     private autoOff(): void {
 
 
-        this.eventList = [];
+        this._eventList = [];
     }
 
     /**
@@ -162,7 +162,7 @@ export default class BaseUI extends cc.Component {
         let completeCallback: (resCache: ResCache | null) => void = param.completeCallback;
         param.completeCallback = (resCache: ResCache | null) => {
             if (resCache) {
-                this.loadList.push(resCache);
+                this._loadList.push(resCache);
             }
             completeCallback(resCache);
         }
@@ -174,12 +174,12 @@ export default class BaseUI extends cc.Component {
      * 自动释放，由 UI 销毁后自动删除资源的引用计数
      */
     private autoRelease(): void {
-        if (this.loadList && this.loadList.length > 0) {
-            for (let i: number = 0; i < this.loadList.length; ++i) {
-                let resCache: ResCache = this.loadList[i];
+        if (this._loadList && this._loadList.length > 0) {
+            for (let i: number = 0; i < this._loadList.length; ++i) {
+                let resCache: ResCache = this._loadList[i];
                 G.ResMgr.release(resCache);
             }
-            this.loadList = [];
+            this._loadList = [];
         }
     }
 }

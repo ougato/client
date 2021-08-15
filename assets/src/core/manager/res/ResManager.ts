@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-08 23:31:28
  * LastEditors  : ougato
- * LastEditTime : 2021-08-10 02:30:28
+ * LastEditTime : 2021-08-15 23:40:19
  * FilePath     : /client/assets/src/core/manager/res/ResManager.ts
  * Description  : 资源管理器、所有游戏中用到的资源操作、由 ResManager 进行统一管理
  */
@@ -135,6 +135,13 @@ export default class ResManager extends BaseManager {
         }
     }
 
+    /**
+     * 释放资源
+     * @param resCache {ResCache} 资源缓存
+     * 
+     * @param base {string} 本地资源路径 / 远程资源链接
+     * @param bundleName {BundleDefine.Name} 包名
+     */
     public release(resCache: ResCache): void;
     public release(base: string, bundleName?: BundleDefine.Name): void;
     public release(): void {
