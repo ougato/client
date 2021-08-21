@@ -29,7 +29,7 @@ export default class BootScene extends BaseScene {
      * 游戏启动
      */
     private async launch(): Promise<void> {
-         
+        
     }
 
 }

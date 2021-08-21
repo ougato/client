@@ -10,7 +10,6 @@
 import * as ResInterface from "../../interface/ResInterface";
 import * as ResDefine from "../../define/ResDefine";
 import ResCache from "./ResCache";
-import * as EventDefine from "../../define/EventDefine";
 
 export default class ResLoader {
 

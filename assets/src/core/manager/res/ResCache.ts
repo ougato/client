@@ -38,7 +38,7 @@ export default class ResCache {
 
     /**
      * 获取包名称
-     * @returns {string} 包名称
+     * @returns {BundleDefine.Name} 包名称
      */
     public getBundleName(): BundleDefine.Name {
         let bundleName: BundleDefine.Name = null;
@@ -89,7 +89,7 @@ export default class ResCache {
             } else {
                 finish = 1;
             }
-            total = finish
+            total = finish;
             progressCallback(finish, total);
         }
     }

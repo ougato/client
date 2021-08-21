@@ -8,12 +8,19 @@
  */
 
 import BaseManager from "../../base/BaseManager";
+import * as UIInterface from "../../interface/UIInterface";
+import * as BundleDefine from "../../define/BundleDefine";
+import UIBundleNode from "./UIBundleNode";
 import BaseView from "../../base/BaseView";
-import { ViewParam } from "../../interface/UIInterface";
 
-export default class UIManager extends BaseManager{
-    
+export default class UIManager extends BaseManager {
+
     private static s_instance: UIManager = null;
+
+    // 包的根节点 Map
+    private _bundleRootNodeMap: Map<BundleDefine.Name, UIBundleNode> = new Map();
+    // 包的节点树视图 Map
+    private _bundleViewMap: Map<BundleDefine.Name, BaseView> = new Map();
 
     public static getInstance(): UIManager {
         if (this.s_instance === null) {
@@ -28,9 +35,10 @@ export default class UIManager extends BaseManager{
         }
         this.s_instance = null;
     }
-    
+
     constructor() {
         super();
+        
     }
 
     /**
@@ -38,7 +46,16 @@ export default class UIManager extends BaseManager{
      * @param param {ViewParam} 视图参数
      * @param data {...any[]} 数据
      */
-    public openView<T extends BaseView>(param: ViewParam, ...data: any[]): void {
+    public openView(param: UIInterface.ViewParam, ...data: any[]): void {
+
+    }
+
+    /**
+     * 打开场景
+     * 由于整个游戏设计只有一个 fire 场景，其他场景概念都使用 prefab 来代替
+     * 目的是更好的控制资源加载和释放
+     */
+    public openScene(): void {
 
     }
 }
