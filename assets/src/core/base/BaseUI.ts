@@ -2,16 +2,19 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:21:20
  * LastEditors  : ougato
- * LastEditTime : 2021-08-15 22:51:22
+ * LastEditTime : 2021-08-26 00:55:52
  * FilePath     : /client/assets/src/core/base/BaseUI.ts
  * Description  : UI 基类、是 BaseView 和 BaseScene 的父类
  */
 
 import * as ResInterface from "../interface/ResInterface";
 import ResCache from "../manager/res/ResCache";
+import * as UIInterface from "../interface/UIInterface";
 
-export default class BaseUI extends cc.Component {
+export default class BaseUI extends cc.Component implements UIInterface.UIConstraint {
 
+    // 预制路径
+    public prefabPath: string = null;
     // 加载资源列表
     private _loadList: ResCache[] = null;
     // 监听事件列表

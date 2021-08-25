@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:43:43
  * LastEditors  : ougato
- * LastEditTime : 2021-07-10 02:56:40
+ * LastEditTime : 2021-08-26 02:13:16
  * FilePath     : /client/assets/src/core/interface/UIInterface.ts
  * Description  : 界面接口
  */
@@ -19,16 +19,16 @@ export interface ViewParam {
     bundleName?: BundleDefine.Name;
     // 风格
     style?: UIDefine.Style;
-    // 多少秒没加载完成视图，就显示加载界面
-    loadingDelay: number;
+    // 多久没加载完成视图，就显示进度界面（单位：毫秒）
+    progressDelay: number;
     // 层级
     layer?: UIDefine.Layer;
     // 加载完成回调
-    onComplete?: Function;
+    onComplete?: () => void;
     // 加载进度回调
-    onProgress?: Function;
+    onProgress?: (finish: number, total: number, item?: cc.AssetManager.RequestItem) => void;
     // 加载错误回调
-    onError?: Function;
+    onError?: () => void;
 }
 
 export interface SceneParam {
@@ -36,14 +36,19 @@ export interface SceneParam {
     sceneClass: BaseScene;
     // 包名称
     bundleName?: BundleDefine.Name;
-    // 多少秒没加载完成视图，就显示加载界面
-    loadingDelay: number;
-    // 是否预加载
-    isPreload?: boolean;
+    // 多久没加载完成视图，就显示进度界面（单位：毫秒）
+    progressDelay: number;
+    // 是否释放所有场景
+    isReleaseAllScene: boolean;
     // 加载完成回调
-    onComplete?: Function;
+    onComplete?: () => void;
     // 加载进度回调
-    onProgress?: Function;
+    onProgress?: (finish: number, total: number, item?: cc.AssetManager.RequestItem) => void;
     // 加载错误回调
-    onError?: Function;
+    onError?: () => void;
+}
+
+export interface UIConstraint {
+    // 预制路径
+    prefabPath: string;
 }
