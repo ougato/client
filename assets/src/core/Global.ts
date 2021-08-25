@@ -34,7 +34,6 @@ export default class Global {
 
     constructor() {
         window.G = this;
-
     }
 
     private destroy(): void {
