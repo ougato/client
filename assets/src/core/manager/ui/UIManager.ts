@@ -21,10 +21,10 @@ export default class UIManager extends BaseManager {
 
     private static s_instance: UIManager = null;
 
-    // 场景列表、在大厅资源小的情况下保留大厅、增加游戏返回到大厅时候的速度
-    private _uiSceneList: UISceneCache[] = null;
-    // 当前场景、单场景设计、所有场景都是以 Prefab 代替
-    private _currUIScene: UISceneCache = null;
+    // 场景 Map 考虑在大厅资源小的情况下可以保留大厅、增加游戏返回到大厅时候的速度
+    private _sceneCacheMap: Map<BundleDefine.Name, UISceneCache> = null;
+    // 当前场景
+    private _currSceneCache: UISceneCache = null;
 
     public static getInstance(): UIManager {
         if (this.s_instance === null) {
@@ -47,8 +47,7 @@ export default class UIManager extends BaseManager {
     }
 
     private init(): void {
-        this._uiSceneList = [];
-        this._currUIScene = null;
+        this._sceneCacheMap = new Map();
     }
 
     /**
@@ -78,13 +77,13 @@ export default class UIManager extends BaseManager {
      * @param param {UIInterface.SceneParam} 场景参数
      * @param data {...any[]} 数据
      */
-    public openScene(param: UIInterface.SceneParam, ...data: any[]): void {
+    public openScene<T extends BaseScene>(param: UIInterface.SceneParam<T>, ...data: any[]): void {
         if (param.sceneClass === null || param.sceneClass === undefined) {
             G.LogMgr.warn(`场景类不能为空`);
             return;
         }
 
-        if (!(param.sceneClass instanceof BaseScene)) {
+        if (!(param.sceneClass.prototype instanceof BaseScene)) {
             G.LogMgr.warn(`场景必须继承 BaseScene 类`);
             return;
         }
@@ -101,18 +100,19 @@ export default class UIManager extends BaseManager {
             param.isReleaseAllScene = true;
         }
 
-        if (this._currUIScene && this._currUIScene.class === param.sceneClass) {
+        let className: string = cc.js.getClassName(param.sceneClass);
+
+        if (this._currSceneCache && this._currSceneCache.bundleName === param.bundleName && this._currSceneCache.className === className) {
             G.LogMgr.warn(`不能重复加载相同场景 ${param.sceneClass.name}`);
             return;
         }
 
         if (param.sceneClass.prefabPath === null || param.sceneClass.prefabPath === undefined || typeof (param.sceneClass.prefabPath) !== "string" || param.sceneClass.prefabPath.length <= 0) {
-            G.LogMgr.warn(`找不到 ${param.sceneClass.name} 预制的路径`);
+            G.LogMgr.warn(`找不到 ${param.sceneClass.name} 预制的路径、请重写 BaseUI 中的静态成员 prefabPath 的路径`);
             return;
         }
 
         let progressTimer: number = this.startProgressTimer(param.progressDelay);
-        let currUIScene: UISceneCache = this.getScene(param.sceneClass);
 
         if (currUIScene) {
             if (currUIScene.isLoaded) {
@@ -148,7 +148,6 @@ export default class UIManager extends BaseManager {
                 },
             })
         }
-
     }
 
     /**
@@ -160,6 +159,28 @@ export default class UIManager extends BaseManager {
             G.LogMgr.log(`释放场景不能为空`);
             return;
         }
+    }
+
+    /**
+     * 打开进度转场视图
+     */
+    public openProgress(): void {
+
+    }
+
+    /**
+     * 关闭进度转场视图
+     */
+    public closeProgress(): void {
+
+    }
+
+    /**
+     * 设置进度转场百分比
+     * @param percent {number | string} 百分比
+     */
+    public setProgress(percent: number | string): void {
+
     }
 
     /**
@@ -178,18 +199,20 @@ export default class UIManager extends BaseManager {
 
     /**
      * 获取场景
-     * @param sceneClass {BaseScene} 场景类
-     * @returns {UISceneCache} 打开后的场景
+     * @param bundleName {BundleDefine.Name} 包名 如果 bundleName 参数为 undefined 和 null，那么就返回当前场景
+     * @returns {UISceneCache} 场景 如果找不到需要场景返回 null
      */
-    private getScene(sceneClass: BaseScene): UISceneCache {
-        let uiSceneCache: UISceneCache = null;
-        for (let i: number = 0; i < this._uiSceneList.length; ++i) {
-            if (this._uiSceneList[i].class === sceneClass) {
-                uiSceneCache = this._uiSceneList[i];
-                break;
-            }
+    public getScene(bundleName?: BundleDefine.Name): UISceneCache {
+        if (bundleName === undefined || bundleName === null) {
+            return this._currSceneCache;
         }
-        return uiSceneCache;
+
+        let sceneCache: UISceneCache = this._sceneCacheMap.get(bundleName);
+        if (!sceneCache) {
+            sceneCache = null;
+        }
+
+        return sceneCache;
     }
 
     /**

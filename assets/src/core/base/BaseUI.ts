@@ -11,10 +11,10 @@ import * as ResInterface from "../interface/ResInterface";
 import ResCache from "../manager/res/ResCache";
 import * as UIInterface from "../interface/UIInterface";
 
-export default class BaseUI extends cc.Component implements UIInterface.UIConstraint {
+export default class BaseUI extends cc.Component {
 
     // 预制路径
-    public prefabPath: string = null;
+    public static prefabPath: string = null;
     // 加载资源列表
     private _loadList: ResCache[] = null;
     // 监听事件列表

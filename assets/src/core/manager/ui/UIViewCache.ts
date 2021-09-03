@@ -7,6 +7,13 @@
  * Description  : 视图缓存
  */
 
-export default class UIViewCache {
+import UICache from "./UICache";
+
+export default class UIViewCache extends UICache {
     
+    constructor() {
+        super()
+        
+    }
+
 }

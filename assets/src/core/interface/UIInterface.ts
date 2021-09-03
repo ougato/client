@@ -11,6 +11,9 @@ import BaseView from "../base/BaseView";
 import * as UIDefine from "../define/UIDefine";
 import * as BundleDefine from "../define/BundleDefine";
 import BaseScene from "../base/BaseScene";
+import BaseUI from "../base/BaseUI";
+import UISceneCache from "../manager/ui/UISceneCache";
+import UIViewCache from "../manager/ui/UIViewCache";
 
 export interface ViewParam {
     // 视图类
@@ -19,7 +22,7 @@ export interface ViewParam {
     bundleName?: BundleDefine.Name;
     // 风格
     style?: UIDefine.Style;
-    // 多久没加载完成视图，就显示进度界面（单位：毫秒）
+    // 多久视图没加载完成，就显示进度界面（单位：毫秒）
     progressDelay: number;
     // 层级
     layer?: UIDefine.Layer;
@@ -31,15 +34,15 @@ export interface ViewParam {
     onError?: () => void;
 }
 
-export interface SceneParam {
+export interface SceneParam<T extends BaseScene> {
     // 场景类
-    sceneClass: BaseScene;
+    sceneClass: UIClassInterface<T>;
     // 包名称
     bundleName?: BundleDefine.Name;
-    // 多久没加载完成视图，就显示进度界面（单位：毫秒）
-    progressDelay: number;
+    // 多久视图没加载完成，就显示进度界面（单位：毫秒）
+    progressDelay?: number;
     // 是否释放所有场景
-    isReleaseAllScene: boolean;
+    isReleaseAllScene?: boolean;
     // 加载完成回调
     onComplete?: () => void;
     // 加载进度回调
@@ -48,7 +51,8 @@ export interface SceneParam {
     onError?: () => void;
 }
 
-export interface UIConstraint {
+export interface UIClassInterface<T extends BaseUI> {
+    new(): T;
     // 预制路径
     prefabPath: string;
 }

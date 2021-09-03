@@ -8,6 +8,7 @@
  */
 
 import BaseScene from "../../core/base/BaseScene";
+import HallScene from "../view/HallScene";
 
 const { ccclass, property } = cc._decorator;
 
@@ -29,7 +30,9 @@ export default class BootScene extends BaseScene {
      * 游戏启动
      */
     private async launch(): Promise<void> {
-        
+        G.UIMgr.openScene({
+            sceneClass: HallScene,
+        });
     }
 
 }

@@ -7,23 +7,16 @@
  * Description  : 场景缓存
  */
 
-import BaseScene from "../../base/BaseScene";
+import UICache from "./UICache";
+import UIViewCache from "./UIViewCache";
 
-export default class UISceneCache {
+export default class UISceneCache extends UICache {
 
-    // 路径
-    public path: string = null;
-    // 场景类
-    public class: BaseScene = null;
-    // 是否加载完成
-    public isLoaded: boolean = null;
+    // 视图 Map
+    private _viewCacheMap: Map<string, UIViewCache> = null;
 
     constructor() {
-        this.init();
+        super()
     }
-
-    private init():void {
-        this.isLoaded = false;
-    }
-
+    
 }
