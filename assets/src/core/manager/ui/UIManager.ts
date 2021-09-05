@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:36:55
  * LastEditors  : ougato
- * LastEditTime : 2021-08-26 02:22:14
+ * LastEditTime : 2021-09-05 03:13:26
  * FilePath     : /client/assets/src/core/manager/ui/UIManager.ts
  * Description  : 界面管理器、所有的视图和场景、都由 UIManager 统一管理、包括打开视图|关闭视图|切换场景等等
  */
@@ -23,8 +23,12 @@ export default class UIManager extends BaseManager {
 
     // 场景 Map 考虑在大厅资源小的情况下可以保留大厅、增加游戏返回到大厅时候的速度
     private _sceneCacheMap: Map<BundleDefine.Name, UISceneCache> = null;
+    // 场景加载进度定时器
+    private _sceneProgressTimer: number = null;
     // 当前场景
     private _currSceneCache: UISceneCache = null;
+    // 当前场景最高层级
+    private _currSceneTopZIndex: number = 0;
 
     public static getInstance(): UIManager {
         if (this.s_instance === null) {
@@ -65,7 +69,7 @@ export default class UIManager extends BaseManager {
         }
 
         if (param.layer === null || param.layer === undefined) {
-            param.layer = UIDefine.Layer.VIEW;
+            param.layer = UIDefine.ViewLayer.VIEW;
         }
 
     }
@@ -102,7 +106,7 @@ export default class UIManager extends BaseManager {
 
         let className: string = cc.js.getClassName(param.sceneClass);
 
-        if (this._currSceneCache && this._currSceneCache.bundleName === param.bundleName && this._currSceneCache.className === className) {
+        if (this._currSceneCache && this._currSceneCache.resCache && this._currSceneCache.resCache.getBundleName() === param.bundleName && this._currSceneCache.className === className) {
             G.LogMgr.warn(`不能重复加载相同场景 ${param.sceneClass.name}`);
             return;
         }
@@ -112,42 +116,40 @@ export default class UIManager extends BaseManager {
             return;
         }
 
-        let progressTimer: number = this.startProgressTimer(param.progressDelay);
+        this.startProgressTimer(param.progressDelay);
 
-        if (currUIScene) {
-            if (currUIScene.isLoaded) {
-
-            } else {
-
-            }
-            this.stopProgressTimer(progressTimer);
-        } else {
-            currUIScene = new UISceneCache();
-            currUIScene.class = param.sceneClass;
-            currUIScene.path = param.sceneClass.prefabPath;
-            G.ResMgr.load({
-                base: currUIScene.path,
-                bundleName: param.bundleName,
-                assetType: cc.Prefab,
-                progressCallback: (finish: number, total: number, item?: cc.AssetManager.RequestItem) => {
-                    let retain: number = 2;
-                    let percent: number = MathUtils.decimal(finish / total, retain);
-                    this.setProgress(MathUtils.fill0(percent, retain));
-                    if (param.onProgress) param.onProgress(finish, total, item);
-                },
-                // 加载完成回调
-                completeCallback: (resCache: ResCache | null) => {
-                    if (resCache !== null) {
-                        currUIScene.isLoaded = true;
-                        this._currUIScene = currUIScene;
-                        if (param.onComplete) param.onComplete();
-                    } else {
-                        if (param.onError) param.onError();
-                    }
-                    this.stopProgressTimer(progressTimer);
-                },
-            })
+        if (this._currSceneCache) {
+            this._currSceneCache.release();
         }
+
+        this._currSceneCache = new UISceneCache();
+        this._currSceneCache.className = className;
+        G.ResMgr.load({
+            base: param.sceneClass.prefabPath,
+            bundleName: param.bundleName,
+            assetType: cc.Prefab,
+            progressCallback: (finish: number, total: number, item?: cc.AssetManager.RequestItem) => {
+                let retain: number = 2;
+                let percent: number = MathUtils.decimal(finish / total, retain);
+                this.setProgress(MathUtils.fill0(percent, retain));
+                if (param.onProgress) param.onProgress(finish, total, item);
+            },
+            completeCallback: (resCache: ResCache | null) => {
+                if (resCache !== null) {
+                    let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
+                    let script: BaseUI = this.addScript(node, param.sceneClass);
+                    this.addToScene(node);
+                    this._currSceneCache.resCache = resCache;
+                    this._currSceneCache.node = node;
+                    this._currSceneCache.script = script;
+                    if (param.onComplete) param.onComplete();
+                    if (script.onLoaded) script.onLoaded(data);
+                } else {
+                    if (param.onError) param.onError();
+                }
+                this.stopProgressTimer();
+            },
+        })
     }
 
     /**
@@ -220,21 +222,92 @@ export default class UIManager extends BaseManager {
      * @param ms {number} 等待多久打开进度视图（单位：毫秒）
      * @returns {number} 定时器 ID
      */
-    private startProgressTimer(ms: number): number {
-        return setTimeout(() => {
+    private startProgressTimer(ms: number): void {
+        this.stopProgressTimer();
+        this._sceneProgressTimer = setTimeout(() => {
             this.openProgress();
         }, ms);
     }
 
     /**
      * 停止进度视图定时器
-     * @param id {number} 定时器 ID
      */
-    private stopProgressTimer(id: number): void {
-        if (id !== null && id !== undefined) {
-            clearTimeout(id);
+    private stopProgressTimer(): void {
+        if (this._sceneProgressTimer !== null && this._sceneProgressTimer !== undefined) {
+            clearTimeout(this._sceneProgressTimer);
             this.closeProgress();
         }
     }
 
+    /**
+     * 挂载根节点脚本组件
+     */
+    private addScript<T extends BaseUI>(node: cc.Node, uiClass: UIInterface.UIClass<T>): BaseUI | null {
+        let script: BaseUI = null;
+
+        if (!node) {
+            G.LogMgr.warn(`挂载脚本失败 ${cc.js.getClassName(uiClass)}、节点为空`);
+            return null;
+        }
+
+        if (!uiClass) {
+            G.LogMgr.warn(`挂载脚本失败 ${cc.js.getClassName(uiClass)}、脚本类为空`);
+            return null;
+        }
+
+        script = node.getComponent(uiClass);
+        if (!script) {
+            script = node.addComponent(uiClass);
+            if (!script) {
+                G.LogMgr.warn(`挂载脚本失败 ${cc.js.getClassName(uiClass)}`);
+                script = null;
+            }
+        }
+
+        return script;
+    }
+
+    private addToScene(node: cc.Node): void {
+        let realScene: cc.Scene = cc.director.getScene();
+        if (!realScene) {
+            G.LogMgr.warn(`游戏场景为空`);
+            return;
+        }
+
+        let canvasNode: cc.Node = realScene.getChildByName("Canvas");
+        if (!canvasNode) {
+            G.LogMgr.warn(`找不到场景上的节点名 Canvas`);
+            return;
+        }
+
+        let zIndex: number = this._currSceneTopZIndex + 1;
+        if (zIndex >= UIDefine.SceneLayer.SYSTEM) {
+            zIndex = this.resetSceneZIndex() + 1;
+        }
+        canvasNode.addChild(node, zIndex);
+        this._currSceneTopZIndex = zIndex;
+    }
+
+    /**
+     * 重置场景的层级
+     * @returns {number} 当前场景最高层级
+     */
+    private resetSceneZIndex(): number {
+        let sceneCacheList: any[][] = Object.entries(this._sceneCacheMap);
+        sceneCacheList = sceneCacheList.sort((a: any[], b: any[]) => {
+            return a[1].node.zIndex - b[1].node.zIndex;
+        });
+
+        let topZIndex: number = UIDefine.SceneLayer.SCENE;
+        for (let i: number = 0; i < sceneCacheList.length; ++i) {
+            let bundleName: BundleDefine.Name = sceneCacheList[i][0];
+            let uiSceneCache: UISceneCache = this._sceneCacheMap.get(bundleName);
+            if (uiSceneCache) {
+                topZIndex += i;
+                uiSceneCache.node.zIndex = topZIndex;
+            }
+        }
+
+        return topZIndex;
+    }
 }

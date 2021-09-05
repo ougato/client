@@ -1,52 +1,35 @@
-import BaseScene from "../../core/base/BaseScene";
-import BaseView from "../../core/base/BaseView";
-import ResCache from "../../core/manager/res/ResCache";
-import * as UIInterface from "../../core/interface/UIInterface";
+/*
+ * Author       : ougato
+ * Date         : 2021-09-04 23:39:20
+ * LastEditors  : ougato
+ * LastEditTime : 2021-09-05 03:08:21
+ * FilePath     : /client/assets/src/ui/view/HallScene.ts
+ * Description  : 
+ */
 
-const {ccclass, property} = cc._decorator;
+import MarioScene from "../../../games/mario/src/MarioScene";
+import BaseScene from "../../core/base/BaseScene";
+import * as BundleDefine from "../../core/define/BundleDefine";
+
+const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class HallScene extends BaseScene {
-
-    @property(cc.Sprite)
-    private s1: cc.Sprite = null;
-
-    @property(cc.Sprite)
-    private s2: cc.Sprite = null;
-
-    @property(cc.Sprite)
-    private s3: cc.Sprite = null;
 
     // 预制路径
     public static prefabPath: string = "scene/HallScene";
 
     // onLoad () {}
 
-    start () {
-        
-        // this.load({
-        //     base: "texture/IMG_9456",
-        //     assetType: cc.SpriteFrame,
-        //     completeCallback: (resCache: ResCache) => {
-        //         this.s1.spriteFrame = resCache.asset as cc.SpriteFrame;
-        //     }
-        // })
+    start() {
 
-        // this.load({
-        //     base: "texture/IMG_9456",
-        //     assetType: cc.SpriteFrame,
-        //     completeCallback: (resCache: ResCache) => {
-        //         this.s2.spriteFrame = resCache.asset as cc.SpriteFrame;
-        //     }
-        // })
+    }
 
-        // this.load({
-        //     base: "texture/IMG_9456",
-        //     assetType: cc.SpriteFrame,
-        //     completeCallback: (resCache: ResCache) => {
-        //         this.s3.spriteFrame = resCache.asset as cc.SpriteFrame;
-        //     }
-        // })
+    private onClickMario(): void {
+        G.UIMgr.openScene({
+            sceneClass: MarioScene,
+            bundleName: BundleDefine.Name.MARIO,
+        })
     }
 
     // update (dt) {}

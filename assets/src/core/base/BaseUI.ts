@@ -2,14 +2,13 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:21:20
  * LastEditors  : ougato
- * LastEditTime : 2021-08-26 00:55:52
+ * LastEditTime : 2021-09-05 02:54:54
  * FilePath     : /client/assets/src/core/base/BaseUI.ts
  * Description  : UI 基类、是 BaseView 和 BaseScene 的父类
  */
 
 import * as ResInterface from "../interface/ResInterface";
 import ResCache from "../manager/res/ResCache";
-import * as UIInterface from "../interface/UIInterface";
 
 export default class BaseUI extends cc.Component {
 
@@ -99,7 +98,7 @@ export default class BaseUI extends cc.Component {
      * 加载完成回调 数据带入
      * @param data {...any[]} 多个数据参数
      */
-    protected onLoaded(...data: any[]): void {
+    public onLoaded(...data: any[]): void {
 
     }
 
@@ -158,7 +157,6 @@ export default class BaseUI extends cc.Component {
 
     /**
      * 加载资源
-     * 目的是基类实现自动释放、不需开发者手动调用加载释放
      * @param {ResInterface.LoadResParam} 加载资源参数
      */
     protected load(param: ResInterface.LoadResParam): void {
@@ -174,7 +172,7 @@ export default class BaseUI extends cc.Component {
 
     /**
      * 释放资源
-     * 自动释放，由 UI 销毁后自动删除资源的引用计数
+     * 自动释放由手动加载的资源，UI 销毁后自动删除资源的引用计数
      */
     private autoRelease(): void {
         if (this._loadList && this._loadList.length > 0) {

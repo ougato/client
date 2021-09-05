@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:43:43
  * LastEditors  : ougato
- * LastEditTime : 2021-08-26 02:13:16
+ * LastEditTime : 2021-09-05 01:52:33
  * FilePath     : /client/assets/src/core/interface/UIInterface.ts
  * Description  : 界面接口
  */
@@ -12,8 +12,6 @@ import * as UIDefine from "../define/UIDefine";
 import * as BundleDefine from "../define/BundleDefine";
 import BaseScene from "../base/BaseScene";
 import BaseUI from "../base/BaseUI";
-import UISceneCache from "../manager/ui/UISceneCache";
-import UIViewCache from "../manager/ui/UIViewCache";
 
 export interface ViewParam {
     // 视图类
@@ -25,7 +23,7 @@ export interface ViewParam {
     // 多久视图没加载完成，就显示进度界面（单位：毫秒）
     progressDelay: number;
     // 层级
-    layer?: UIDefine.Layer;
+    layer?: UIDefine.ViewLayer;
     // 加载完成回调
     onComplete?: () => void;
     // 加载进度回调
@@ -36,7 +34,7 @@ export interface ViewParam {
 
 export interface SceneParam<T extends BaseScene> {
     // 场景类
-    sceneClass: UIClassInterface<T>;
+    sceneClass: UIClass<T>;
     // 包名称
     bundleName?: BundleDefine.Name;
     // 多久视图没加载完成，就显示进度界面（单位：毫秒）
@@ -51,7 +49,7 @@ export interface SceneParam<T extends BaseScene> {
     onError?: () => void;
 }
 
-export interface UIClassInterface<T extends BaseUI> {
+export interface UIClass<T extends BaseUI> {
     new(): T;
     // 预制路径
     prefabPath: string;

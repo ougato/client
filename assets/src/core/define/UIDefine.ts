@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:56:31
  * LastEditors  : ougato
- * LastEditTime : 2021-07-14 23:09:14
+ * LastEditTime : 2021-09-05 01:49:57
  * FilePath     : /client/assets/src/core/define/UIDefine.ts
  * Description  : 界面定义
  */
@@ -16,8 +16,16 @@ export enum Style {
 // 层级间隔
 export const LAYER_INTERVAL: number = 100;
 
-// 层级
-export enum Layer {
+// 场景级的层
+export enum SceneLayer {
+    // 场景层
+    SCENE = 0,
+    // 系统层
+    SYSTEM = 1 * LAYER_INTERVAL,
+}
+
+// 视图级的层
+export enum ViewLayer {
     // 底层
     BOTTOM = 0,
     // 视图层
