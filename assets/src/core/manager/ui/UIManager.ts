@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:36:55
  * LastEditors  : ougato
- * LastEditTime : 2021-09-05 03:13:26
+ * LastEditTime : 2021-09-07 00:24:27
  * FilePath     : /client/assets/src/core/manager/ui/UIManager.ts
  * Description  : 界面管理器、所有的视图和场景、都由 UIManager 统一管理、包括打开视图|关闭视图|切换场景等等
  */
@@ -106,9 +106,11 @@ export default class UIManager extends BaseManager {
 
         let className: string = cc.js.getClassName(param.sceneClass);
 
-        if (this._currSceneCache && this._currSceneCache.resCache && this._currSceneCache.resCache.getBundleName() === param.bundleName && this._currSceneCache.className === className) {
-            G.LogMgr.warn(`不能重复加载相同场景 ${param.sceneClass.name}`);
-            return;
+        if (this._currSceneCache && this._currSceneCache.className === className) {
+            if (!this._currSceneCache.resCache || this._currSceneCache.resCache.getBundleName() === param.bundleName) {
+                G.LogMgr.warn(`不能重复加载相同场景 ${param.sceneClass.name}`);
+                return;
+            }
         }
 
         if (param.sceneClass.prefabPath === null || param.sceneClass.prefabPath === undefined || typeof (param.sceneClass.prefabPath) !== "string" || param.sceneClass.prefabPath.length <= 0) {
@@ -118,12 +120,12 @@ export default class UIManager extends BaseManager {
 
         this.startProgressTimer(param.progressDelay);
 
-        if (this._currSceneCache) {
-            this._currSceneCache.release();
+        let newSceneCache: UISceneCache = new UISceneCache();
+        if (!this._currSceneCache) {
+            this._currSceneCache = newSceneCache;
+            this._currSceneCache.className = className;
         }
 
-        this._currSceneCache = new UISceneCache();
-        this._currSceneCache.className = className;
         G.ResMgr.load({
             base: param.sceneClass.prefabPath,
             bundleName: param.bundleName,
@@ -136,6 +138,11 @@ export default class UIManager extends BaseManager {
             },
             completeCallback: (resCache: ResCache | null) => {
                 if (resCache !== null) {
+                    if (this._currSceneCache !== newSceneCache) {
+                        this._currSceneCache.release();
+                        this._currSceneCache = newSceneCache;
+                        this._currSceneCache.className = className;
+                    }
                     let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
                     let script: BaseUI = this.addScript(node, param.sceneClass);
                     this.addToScene(node);

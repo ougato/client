@@ -2,22 +2,23 @@
  * Author       : ougato
  * Date         : 2021-09-04 23:39:20
  * LastEditors  : ougato
- * LastEditTime : 2021-09-07 00:38:55
- * FilePath     : /client/assets/src/ui/view/HallScene.ts
+ * LastEditTime : 2021-09-07 00:38:20
+ * FilePath     : /client/assets/src/ui/view/LoginScene.ts
  * Description  : 
  */
 
+import MarioScene from "../../../games/mario/src/MarioScene";
 import BaseScene from "../../core/base/BaseScene";
 import * as BundleDefine from "../../core/define/BundleDefine";
-import LoginScene from "./LoginScene";
+import HallScene from "./HallScene";
 
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class HallScene extends BaseScene {
+export default class LoginScene extends BaseScene {
 
     // 预制路径
-    public static prefabPath: string = "scene/HallScene";
+    public static prefabPath: string = "scene/LoginScene";
 
     // onLoad () {}
 
@@ -27,7 +28,7 @@ export default class HallScene extends BaseScene {
 
     private onClickMario(): void {
         G.UIMgr.openScene({
-            sceneClass: LoginScene,
+            sceneClass: HallScene,
             bundleName: BundleDefine.Name.RESOURCES,
         })
     }

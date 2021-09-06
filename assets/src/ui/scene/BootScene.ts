@@ -2,13 +2,13 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2021-09-05 02:58:05
+ * LastEditTime : 2021-09-07 00:39:48
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
 
 import BaseScene from "../../core/base/BaseScene";
-import HallScene from "../view/HallScene";
+import LoginScene from "../view/LoginScene";
 
 const { ccclass, property } = cc._decorator;
 
@@ -31,7 +31,7 @@ export default class BootScene extends BaseScene {
      */
     private async launch(): Promise<void> {
         G.UIMgr.openScene({
-            sceneClass: HallScene,
+            sceneClass: LoginScene,
         });
     }
 
