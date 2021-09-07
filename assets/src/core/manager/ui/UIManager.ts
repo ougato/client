@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:36:55
  * LastEditors  : ougato
- * LastEditTime : 2021-09-07 00:24:27
+ * LastEditTime : 2021-09-08 00:36:49
  * FilePath     : /client/assets/src/core/manager/ui/UIManager.ts
  * Description  : 界面管理器、所有的视图和场景、都由 UIManager 统一管理、包括打开视图|关闭视图|切换场景等等
  */
@@ -16,6 +16,7 @@ import BaseUI from "../../base/BaseUI";
 import UISceneCache from "./UISceneCache";
 import ResCache from "../res/ResCache";
 import MathUtils from "../../utils/MathUtils";
+import BaseView from "../../base/BaseView";
 
 export default class UIManager extends BaseManager {
 
@@ -59,7 +60,17 @@ export default class UIManager extends BaseManager {
      * @param param {UIInterface.ViewParam} 视图参数
      * @param data {...any[]} 数据
      */
-    public openView(param: UIInterface.ViewParam, ...data: any[]): void {
+    public openView<T extends BaseView>(param: UIInterface.ViewParam<T>, ...data: any[]): void {
+        if (param.viewClass === null || param.viewClass === undefined) {
+            G.LogMgr.warn(`视图类不能为空`);
+            return;
+        }
+
+        if (!(param.viewClass.prototype instanceof BaseView)) {
+            G.LogMgr.warn(`视图必须继承 BaseView 类`);
+            return;
+        }
+
         if (param.bundleName === null || param.bundleName === undefined) {
             param.bundleName = BundleDefine.Name.RESOURCES;
         }
@@ -68,6 +79,10 @@ export default class UIManager extends BaseManager {
             param.style = UIDefine.Style.DEFAULT;
         }
 
+        if (param.progressDelay === null || param.progressDelay === undefined || typeof (param.progressDelay) !== "number" || param.progressDelay < 0) {
+            param.progressDelay = 0;
+        }
+        
         if (param.layer === null || param.layer === undefined) {
             param.layer = UIDefine.ViewLayer.VIEW;
         }
@@ -153,12 +168,12 @@ export default class UIManager extends BaseManager {
 
                             this._currSceneCache = newSceneCache;
                             this._currSceneCache.className = className;
-                            this._sceneCacheMap.set(param.bundleName, newSceneCache);
 
                             if (param.isReleaseAllScene) {
                                 this.closeAllScene();
                             }
                         }
+                        this._sceneCacheMap.set(param.bundleName, newSceneCache);
                         let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
                         let script: BaseUI = this.addScript(node, param.sceneClass);
                         this.addToScene(node);
@@ -166,7 +181,7 @@ export default class UIManager extends BaseManager {
                         this._currSceneCache.node = node;
                         this._currSceneCache.script = script;
                         if (param.onComplete) param.onComplete();
-                        if (script.onLoaded) script.onLoaded(data);
+                        if (script.onLoaded) script.onLoaded.apply(script, data);
                     } else {
                         if (!this._currSceneCache.resCache) {
                             this._currSceneCache = null;
@@ -178,17 +193,6 @@ export default class UIManager extends BaseManager {
             })
         }
 
-    }
-
-    /**
-     * 释放场景
-     * @param scene {BaseScene} 需要释放的场景
-     */
-    public releaseScene(scene: BaseScene): void {
-        if (!scene) {
-            G.LogMgr.log(`释放场景不能为空`);
-            return;
-        }
     }
 
     /**
@@ -215,13 +219,6 @@ export default class UIManager extends BaseManager {
 
     /**
      * 关闭除了当前场景以外的其他的场景
-     */
-    public closeExceptScene(): void {
-
-    }
-
-    /**
-     * 关闭所有场景（排除当前场景被关闭）
      */
     public closeAllScene(): void {
         this._sceneCacheMap.forEach((value: UISceneCache, key: BundleDefine.Name, map: Map<BundleDefine.Name, UISceneCache>) => {

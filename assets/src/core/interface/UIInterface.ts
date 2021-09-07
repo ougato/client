@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:43:43
  * LastEditors  : ougato
- * LastEditTime : 2021-09-05 01:52:33
+ * LastEditTime : 2021-09-08 00:34:21
  * FilePath     : /client/assets/src/core/interface/UIInterface.ts
  * Description  : 界面接口
  */
@@ -13,15 +13,15 @@ import * as BundleDefine from "../define/BundleDefine";
 import BaseScene from "../base/BaseScene";
 import BaseUI from "../base/BaseUI";
 
-export interface ViewParam {
+export interface ViewParam<T extends BaseView> {
     // 视图类
-    viewClass: BaseView;
+    viewClass: UIClass<T>;
     // 包名称
     bundleName?: BundleDefine.Name;
     // 风格
     style?: UIDefine.Style;
     // 多久视图没加载完成，就显示进度界面（单位：毫秒）
-    progressDelay: number;
+    progressDelay?: number;
     // 层级
     layer?: UIDefine.ViewLayer;
     // 加载完成回调
