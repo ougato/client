@@ -120,43 +120,64 @@ export default class UIManager extends BaseManager {
 
         this.startProgressTimer(param.progressDelay);
 
-        let newSceneCache: UISceneCache = new UISceneCache();
-        if (!this._currSceneCache) {
-            this._currSceneCache = newSceneCache;
-            this._currSceneCache.className = className;
+        if (this.isSceneExist(param.bundleName, className)) {
+            this.topScene(param.bundleName);
+            if (param.isReleaseAllScene) {
+                this.closeAllScene();
+            }
+        } else {
+            let newSceneCache: UISceneCache = new UISceneCache();
+            if (!this._currSceneCache) {
+                this._currSceneCache = newSceneCache;
+                this._currSceneCache.className = className;
+            }
+
+            G.ResMgr.load({
+                base: param.sceneClass.prefabPath,
+                bundleName: param.bundleName,
+                assetType: cc.Prefab,
+                progressCallback: (finish: number, total: number, item?: cc.AssetManager.RequestItem) => {
+                    let retain: number = 2;
+                    let percent: number = MathUtils.decimal(finish / total, retain);
+                    this.setProgress(MathUtils.fill0(percent, retain));
+                    if (param.onProgress) param.onProgress(finish, total, item);
+                },
+                completeCallback: (resCache: ResCache | null) => {
+                    if (resCache !== null) {
+                        if (this._currSceneCache !== newSceneCache) {
+                            let oldSceneCache: UISceneCache = this._sceneCacheMap.get(param.bundleName);
+                            if (oldSceneCache) {
+                                this._sceneCacheMap.delete(oldSceneCache.resCache.getBundleName());
+                                oldSceneCache.release();
+                            }
+
+                            this._currSceneCache = newSceneCache;
+                            this._currSceneCache.className = className;
+                            this._sceneCacheMap.set(param.bundleName, newSceneCache);
+
+                            if (param.isReleaseAllScene) {
+                                this.closeAllScene();
+                            }
+                        }
+                        let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
+                        let script: BaseUI = this.addScript(node, param.sceneClass);
+                        this.addToScene(node);
+                        this._currSceneCache.resCache = resCache;
+                        this._currSceneCache.node = node;
+                        this._currSceneCache.script = script;
+                        if (param.onComplete) param.onComplete();
+                        if (script.onLoaded) script.onLoaded(data);
+                    } else {
+                        if (!this._currSceneCache.resCache) {
+                            this._currSceneCache = null;
+                        }
+                        if (param.onError) param.onError();
+                    }
+                    this.stopProgressTimer();
+                },
+            })
         }
 
-        G.ResMgr.load({
-            base: param.sceneClass.prefabPath,
-            bundleName: param.bundleName,
-            assetType: cc.Prefab,
-            progressCallback: (finish: number, total: number, item?: cc.AssetManager.RequestItem) => {
-                let retain: number = 2;
-                let percent: number = MathUtils.decimal(finish / total, retain);
-                this.setProgress(MathUtils.fill0(percent, retain));
-                if (param.onProgress) param.onProgress(finish, total, item);
-            },
-            completeCallback: (resCache: ResCache | null) => {
-                if (resCache !== null) {
-                    if (this._currSceneCache !== newSceneCache) {
-                        this._currSceneCache.release();
-                        this._currSceneCache = newSceneCache;
-                        this._currSceneCache.className = className;
-                    }
-                    let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
-                    let script: BaseUI = this.addScript(node, param.sceneClass);
-                    this.addToScene(node);
-                    this._currSceneCache.resCache = resCache;
-                    this._currSceneCache.node = node;
-                    this._currSceneCache.script = script;
-                    if (param.onComplete) param.onComplete();
-                    if (script.onLoaded) script.onLoaded(data);
-                } else {
-                    if (param.onError) param.onError();
-                }
-                this.stopProgressTimer();
-            },
-        })
     }
 
     /**
@@ -200,10 +221,14 @@ export default class UIManager extends BaseManager {
     }
 
     /**
-     * 关闭所有场景
+     * 关闭所有场景（排除当前场景被关闭）
      */
     public closeAllScene(): void {
-
+        this._sceneCacheMap.forEach((value: UISceneCache, key: BundleDefine.Name, map: Map<BundleDefine.Name, UISceneCache>) => {
+            if (!this._currSceneCache || this._currSceneCache !== value) {
+                value.release();
+            }
+        });
     }
 
     /**
@@ -316,5 +341,42 @@ export default class UIManager extends BaseManager {
         }
 
         return topZIndex;
+    }
+
+    /**
+     * 场景提升到最顶层
+     * @param bundleName {BundleDefine.Name} 包名
+     */
+    private topScene(bundleName: BundleDefine.Name): void {
+        let uiSceneCache: UISceneCache = this._sceneCacheMap.get(bundleName);
+        if (!uiSceneCache) {
+            G.LogMgr.warn(`未找到场景需要提升到最顶层 ${bundleName}`);
+            return;
+        }
+
+        let zIndex: number = this._currSceneTopZIndex + 1;
+        if (zIndex >= UIDefine.SceneLayer.SYSTEM) {
+            zIndex = this.resetSceneZIndex() + 1;
+        }
+        uiSceneCache.node.zIndex = zIndex;
+        this._currSceneTopZIndex = zIndex;
+        this._currSceneCache = uiSceneCache;
+    }
+
+    /**
+     * 场景是否存在
+     * @param bundleName {BundleDefine.Name} 包名
+     * @param className {string} 类名
+     * @returns {boolean} 是否存在
+     */
+    private isSceneExist(bundleName: BundleDefine.Name, className: string): boolean {
+        let isExist: boolean = false;
+        let uiSceneCache: UISceneCache = this._sceneCacheMap.get(bundleName);
+
+        if (uiSceneCache) {
+            isExist = uiSceneCache.className === className;
+        }
+
+        return isExist;
     }
 }
