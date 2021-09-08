@@ -7,8 +7,8 @@
  * Description  : 视图缓存
  */
 
-import BaseView from "../../base/BaseView";
 import UICache from "./UICache";
+
 
 export default class UIViewCache extends UICache {
 
@@ -23,4 +23,5 @@ export default class UIViewCache extends UICache {
     public release(): void {
         super.release();
     }
+    
 }

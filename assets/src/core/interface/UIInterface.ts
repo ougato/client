@@ -20,8 +20,8 @@ export interface ViewParam<T extends BaseView> {
     bundleName?: BundleDefine.Name;
     // 风格
     style?: UIDefine.Style;
-    // 多久视图没加载完成，就显示进度界面（单位：毫秒）
-    progressDelay?: number;
+    // 多久视图没加载完成，就显示等待界面（单位：毫秒）
+    delay?: number;
     // 层级
     layer?: UIDefine.ViewLayer;
     // 加载完成回调
@@ -37,8 +37,8 @@ export interface SceneParam<T extends BaseScene> {
     sceneClass: UIClass<T>;
     // 包名称
     bundleName?: BundleDefine.Name;
-    // 多久视图没加载完成，就显示进度界面（单位：毫秒）
-    progressDelay?: number;
+    // 多久视图没加载完成，就显示加载界面（单位：毫秒）
+    delay?: number;
     // 是否释放所有场景
     isReleaseAllScene?: boolean;
     // 加载完成回调

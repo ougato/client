@@ -17,6 +17,7 @@ import UISceneCache from "./UISceneCache";
 import ResCache from "../res/ResCache";
 import MathUtils from "../../utils/MathUtils";
 import BaseView from "../../base/BaseView";
+import UIPersistCache from "./UIPersistCache";
 
 export default class UIManager extends BaseManager {
 
@@ -25,11 +26,13 @@ export default class UIManager extends BaseManager {
     // 场景 Map 考虑在大厅资源小的情况下可以保留大厅、增加游戏返回到大厅时候的速度
     private _sceneCacheMap: Map<BundleDefine.Name, UISceneCache> = null;
     // 场景加载进度定时器
-    private _sceneProgressTimer: number = null;
+    private _sceneLoadingTimer: number = null;
     // 当前场景
     private _currSceneCache: UISceneCache = null;
     // 当前场景最高层级
-    private _currSceneTopZIndex: number = 0;
+    private _currSceneTopZIndex: number = null;
+    // 常驻
+    private _persistCache: UIPersistCache = null;
 
     public static getInstance(): UIManager {
         if (this.s_instance === null) {
@@ -53,12 +56,16 @@ export default class UIManager extends BaseManager {
 
     private init(): void {
         this._sceneCacheMap = new Map();
+        this._sceneLoadingTimer = null;
+        this._currSceneCache = null;
+        this._currSceneTopZIndex = 0;
+        this._persistCache = null;
     }
 
     /**
-     * 打开视图
-     * @param param {UIInterface.ViewParam} 视图参数
-     * @param data {...any[]} 数据
+     * 打开视图（所有打开的视图，只能在当前场景打开，不会存在于其他场景）
+     * @param param {UIInterface.ViewParam<T>} 视图参数
+     * @param data {...any[]} 可变长参数
      */
     public openView<T extends BaseView>(param: UIInterface.ViewParam<T>, ...data: any[]): void {
         if (param.viewClass === null || param.viewClass === undefined) {
@@ -79,14 +86,43 @@ export default class UIManager extends BaseManager {
             param.style = UIDefine.Style.DEFAULT;
         }
 
-        if (param.progressDelay === null || param.progressDelay === undefined || typeof (param.progressDelay) !== "number" || param.progressDelay < 0) {
-            param.progressDelay = 0;
+        if (param.delay === null || param.delay === undefined || typeof (param.delay) !== "number" || param.delay < 0) {
+            param.delay = 0;
         }
-        
+
         if (param.layer === null || param.layer === undefined) {
             param.layer = UIDefine.ViewLayer.VIEW;
         }
 
+        if (!this._currSceneCache) {
+            G.LogMgr.warn(`当前没有可使用的场景，需要加载一个场景并打开视图`);
+            return;
+        }
+
+        this._currSceneCache.addView(param, data);
+    }
+
+    /**
+     * 关闭视图（仅关闭当前场景内的视图，其他场景的视图不管，但是删除的时候会有多个，从最顶层的那个开始关闭，只关一个）
+     * @param viewClass {UIInterface.UIClass<T>} 视图类
+     */
+    public closeView<T extends BaseView>(viewClass: UIInterface.UIClass<T>): void {
+        if (viewClass === null || viewClass === undefined) {
+            G.LogMgr.warn(`视图类不能为空`);
+            return;
+        }
+        
+        if (!(viewClass.prototype instanceof BaseView)) {
+            G.LogMgr.warn(`视图必须继承 BaseView 类`);
+            return;
+        }
+
+        if (!this._currSceneCache) {
+            G.LogMgr.warn(`当前没有可使用的场景，需要加载一个场景并打开视图`);
+            return;
+        }
+
+        this._currSceneCache.delView(cc.js.getClassName(viewClass));
     }
 
     /**
@@ -111,8 +147,8 @@ export default class UIManager extends BaseManager {
             param.bundleName = BundleDefine.Name.RESOURCES;
         }
 
-        if (param.progressDelay === null || param.progressDelay === undefined || typeof (param.progressDelay) !== "number" || param.progressDelay < 0) {
-            param.progressDelay = 0;
+        if (param.delay === null || param.delay === undefined || typeof (param.delay) !== "number" || param.delay < 0) {
+            param.delay = 0;
         }
 
         if (param.isReleaseAllScene === null || param.isReleaseAllScene === undefined || typeof (param.isReleaseAllScene) !== "boolean") {
@@ -133,7 +169,7 @@ export default class UIManager extends BaseManager {
             return;
         }
 
-        this.startProgressTimer(param.progressDelay);
+        this.startLoadingTimer(param.delay);
 
         if (this.isSceneExist(param.bundleName, className)) {
             this.topScene(param.bundleName);
@@ -152,9 +188,7 @@ export default class UIManager extends BaseManager {
                 bundleName: param.bundleName,
                 assetType: cc.Prefab,
                 progressCallback: (finish: number, total: number, item?: cc.AssetManager.RequestItem) => {
-                    let retain: number = 2;
-                    let percent: number = MathUtils.decimal(finish / total, retain);
-                    this.setProgress(MathUtils.fill0(percent, retain));
+                    this.setLoading(finish / total);
                     if (param.onProgress) param.onProgress(finish, total, item);
                 },
                 completeCallback: (resCache: ResCache | null) => {
@@ -175,11 +209,10 @@ export default class UIManager extends BaseManager {
                         }
                         this._sceneCacheMap.set(param.bundleName, newSceneCache);
                         let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
-                        let script: BaseUI = this.addScript(node, param.sceneClass);
-                        this.addToScene(node);
+                        let script: BaseUI = newSceneCache.addScript(node, param.sceneClass);
+                        this.addToCanvas(node);
                         this._currSceneCache.resCache = resCache;
                         this._currSceneCache.node = node;
-                        this._currSceneCache.script = script;
                         if (param.onComplete) param.onComplete();
                         if (script.onLoaded) script.onLoaded.apply(script, data);
                     } else {
@@ -188,7 +221,7 @@ export default class UIManager extends BaseManager {
                         }
                         if (param.onError) param.onError();
                     }
-                    this.stopProgressTimer();
+                    this.stopLoadingTimer();
                 },
             })
         }
@@ -196,25 +229,60 @@ export default class UIManager extends BaseManager {
     }
 
     /**
-     * 打开进度转场视图
+     * 打开防触摸视图
      */
-    public openProgress(): void {
-
+    public openLockScreen(): void {
+        this._persistCache.showLockScreen();
     }
 
     /**
-     * 关闭进度转场视图
+     * 关闭防触摸视图
      */
-    public closeProgress(): void {
+    public closeLockScreen(): void {
+        this._persistCache.hideLockScreen();
+    }
 
+    /**
+     * 打开加载进度视图（Loading）
+     */
+    public openLoading(): void {
+        this._persistCache.showLoading();
+    }
+
+    /**
+     * 关闭加载进度视图
+     */
+    public closeLoading(): void {
+        this._persistCache.hideLoading();
     }
 
     /**
      * 设置进度转场百分比
      * @param percent {number | string} 百分比
      */
-    public setProgress(percent: number | string): void {
+    public setLoading(percent: number | string): void {
+        percent = Number(percent);
+        if (isNaN(percent)) {
+            G.LogMgr.warn(`设置进度转场百分比 传入的百分比不是一个数，默认处理为 0`);
+            percent = 0;
+        }
+        let retain: number = 2;
+        percent = MathUtils.decimal(percent, retain);
+        this._persistCache.setLoading(MathUtils.fill0(percent, retain));
+    }
 
+    /**
+     * 打开等待视图（转圈）
+     */
+    public openWaiting(): void {
+        this._persistCache.showWaiting();
+    }
+
+    /**
+     * 关闭等待视图
+     */
+    public closeWaiting(): void {
+        this._persistCache.hideWaiting();
     }
 
     /**
@@ -251,55 +319,32 @@ export default class UIManager extends BaseManager {
      * @param ms {number} 等待多久打开进度视图（单位：毫秒）
      * @returns {number} 定时器 ID
      */
-    private startProgressTimer(ms: number): void {
-        this.stopProgressTimer();
-        this._sceneProgressTimer = setTimeout(() => {
-            this.openProgress();
+    private startLoadingTimer(ms: number): void {
+        this.stopLoadingTimer();
+        this._sceneLoadingTimer = setTimeout(() => {
+            this.openLoading();
         }, ms);
     }
 
     /**
      * 停止进度视图定时器
      */
-    private stopProgressTimer(): void {
-        if (this._sceneProgressTimer !== null && this._sceneProgressTimer !== undefined) {
-            clearTimeout(this._sceneProgressTimer);
-            this.closeProgress();
+    private stopLoadingTimer(): void {
+        if (this._sceneLoadingTimer !== null && this._sceneLoadingTimer !== undefined) {
+            clearTimeout(this._sceneLoadingTimer);
+            this.closeLoading();
         }
     }
 
     /**
-     * 挂载根节点脚本组件
+     * 添加到 fire 场景下的 Canvas 画布的子节点
+     * @param node {cc.Node} 需要添加的场景或者是常驻
+     * @returns 
      */
-    private addScript<T extends BaseUI>(node: cc.Node, uiClass: UIInterface.UIClass<T>): BaseUI | null {
-        let script: BaseUI = null;
-
-        if (!node) {
-            G.LogMgr.warn(`挂载脚本失败 ${cc.js.getClassName(uiClass)}、节点为空`);
-            return null;
-        }
-
-        if (!uiClass) {
-            G.LogMgr.warn(`挂载脚本失败 ${cc.js.getClassName(uiClass)}、脚本类为空`);
-            return null;
-        }
-
-        script = node.getComponent(uiClass);
-        if (!script) {
-            script = node.addComponent(uiClass);
-            if (!script) {
-                G.LogMgr.warn(`挂载脚本失败 ${cc.js.getClassName(uiClass)}`);
-                script = null;
-            }
-        }
-
-        return script;
-    }
-
-    private addToScene(node: cc.Node): void {
+    private addToCanvas(node: cc.Node): void {
         let realScene: cc.Scene = cc.director.getScene();
         if (!realScene) {
-            G.LogMgr.warn(`游戏场景为空`);
+            G.LogMgr.warn(`游戏场景 fire 为空`);
             return;
         }
 
@@ -310,7 +355,7 @@ export default class UIManager extends BaseManager {
         }
 
         let zIndex: number = this._currSceneTopZIndex + 1;
-        if (zIndex >= UIDefine.SceneLayer.SYSTEM) {
+        if (zIndex >= (UIDefine.CanvasLayer.SCENE + 1) * UIDefine.LAYER_INTERVAL) {
             zIndex = this.resetSceneZIndex() + 1;
         }
         canvasNode.addChild(node, zIndex);
@@ -318,7 +363,7 @@ export default class UIManager extends BaseManager {
     }
 
     /**
-     * 重置场景的层级
+     * 重置场景层的层级顺序连续
      * @returns {number} 当前场景最高层级
      */
     private resetSceneZIndex(): number {
@@ -327,7 +372,7 @@ export default class UIManager extends BaseManager {
             return a[1].node.zIndex - b[1].node.zIndex;
         });
 
-        let topZIndex: number = UIDefine.SceneLayer.SCENE;
+        let topZIndex: number = UIDefine.CanvasLayer.SCENE;
         for (let i: number = 0; i < sceneCacheList.length; ++i) {
             let bundleName: BundleDefine.Name = sceneCacheList[i][0];
             let uiSceneCache: UISceneCache = this._sceneCacheMap.get(bundleName);
@@ -352,7 +397,7 @@ export default class UIManager extends BaseManager {
         }
 
         let zIndex: number = this._currSceneTopZIndex + 1;
-        if (zIndex >= UIDefine.SceneLayer.SYSTEM) {
+        if (zIndex >= (UIDefine.CanvasLayer.SCENE + 1) * UIDefine.LAYER_INTERVAL) {
             zIndex = this.resetSceneZIndex() + 1;
         }
         uiSceneCache.node.zIndex = zIndex;

@@ -16,12 +16,12 @@ export enum Style {
 // 层级间隔
 export const LAYER_INTERVAL: number = 100;
 
-// 场景级的层
-export enum SceneLayer {
-    // 场景层
-    SCENE = 0,
-    // 系统层
-    SYSTEM = 1 * LAYER_INTERVAL,
+// 画布级的层
+export enum CanvasLayer {
+    // 场景层（大厅、游戏）
+    SCENE = 0 * LAYER_INTERVAL,
+    // 常驻层（防触摸、加载转圈、转场进度、跑马灯）
+    PERSIST = 1 * LAYER_INTERVAL,
 }
 
 // 视图级的层
