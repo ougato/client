@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:36:55
  * LastEditors  : ougato
- * LastEditTime : 2021-09-08 00:36:49
+ * LastEditTime : 2021-09-22 00:00:04
  * FilePath     : /client/assets/src/core/manager/ui/UIManager.ts
  * Description  : 界面管理器、所有的视图和场景、都由 UIManager 统一管理、包括打开视图|关闭视图|切换场景等等
  */
@@ -51,15 +51,8 @@ export default class UIManager extends BaseManager {
     constructor() {
         super();
 
-        this.init();
-    }
-
-    private init(): void {
         this._sceneCacheMap = new Map();
-        this._sceneLoadingTimer = null;
-        this._currSceneCache = null;
         this._currSceneTopZIndex = 0;
-        this._persistCache = null;
     }
 
     /**
@@ -315,7 +308,7 @@ export default class UIManager extends BaseManager {
     }
 
     /**
-     * 启动进度视图定时器
+     * 启动加载定时器
      * @param ms {number} 等待多久打开进度视图（单位：毫秒）
      * @returns {number} 定时器 ID
      */
@@ -327,7 +320,7 @@ export default class UIManager extends BaseManager {
     }
 
     /**
-     * 停止进度视图定时器
+     * 停止加载定时器
      */
     private stopLoadingTimer(): void {
         if (this._sceneLoadingTimer !== null && this._sceneLoadingTimer !== undefined) {
