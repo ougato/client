@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:36:55
  * LastEditors  : ougato
- * LastEditTime : 2021-09-22 00:00:04
+ * LastEditTime : 2021-10-20 02:22:48
  * FilePath     : /client/assets/src/core/manager/ui/UIManager.ts
  * Description  : 界面管理器、所有的视图和场景、都由 UIManager 统一管理、包括打开视图|关闭视图|切换场景等等
  */
@@ -23,16 +23,16 @@ export default class UIManager extends BaseManager {
 
     private static s_instance: UIManager = null;
 
-    // 场景 Map 考虑在大厅资源小的情况下可以保留大厅、增加游戏返回到大厅时候的速度
-    private _sceneCacheMap: Map<BundleDefine.Name, UIScene> = null;
-    // 场景加载进度定时器
-    private _sceneLoadingTimer: number = null;
+    // 场景 Map<包名, 场景对象> 考虑在大厅资源小的情况下可以保留大厅、增加游戏返回到大厅时候的速度
+    private _sceneMap: Map<BundleDefine.Name, UIScene> = null;
+    // 常驻 Map<类名, 常驻对象>
+    private _persistMap: Map<string, UIPersist> = null;
+    // 场景加载定时器
+    private _sceneTimer: number = null;
     // 当前场景
-    private _currSceneCache: UIScene = null;
-    // 当前场景最高层级
-    private _currSceneTopZIndex: number = null;
-    // 常驻
-    private _persistCache: UIPersist = null;
+    private _currScene: UIScene = null;
+    // 场景最高层级
+    private _sceneTopZIndex: number = null;
 
     public static getInstance(): UIManager {
         if (this.s_instance === null) {
@@ -51,16 +51,35 @@ export default class UIManager extends BaseManager {
     constructor() {
         super();
 
-        this._sceneCacheMap = new Map();
-        this._currSceneTopZIndex = 0;
+        this._sceneMap = new Map();
+        this._sceneTopZIndex = 0;
+        this._persistMap = new Map();
     }
 
-    public init(): void {
+    protected destroy(): void {
+        this._sceneMap.forEach((scene: UIScene, bundleName: BundleDefine.Name, map: Map<BundleDefine.Name, UIScene>) => {
+            scene.release();
+        });
+        this._sceneMap.clear();
+        this._sceneMap = null;
+        this._persistMap.forEach((persist: UIPersist, className: string, map: Map<string, UIPersist>) => {
+            persist.release();
+        });
+        this._persistMap.clear();
+        this._persistMap = null;
+        this.stopSceneTimer();
+        this._sceneTimer = null;
+        this._currScene = null;
+        this._sceneTopZIndex = null;
+
+    }
+
+    public async init(): Promise<void> {
         
     }
 
     /**
-     * 打开视图（所有打开的视图，只能在当前场景打开，不会存在于其他场景）
+     * 打开视图（在当前场景中打开视图、当前场景中只能存在唯一视图）
      * @param param {UIInterface.ViewParam<T>} 视图参数
      * @param data {...any[]} 可变长参数
      */
@@ -91,12 +110,12 @@ export default class UIManager extends BaseManager {
             param.layer = UIDefine.ViewLayer.VIEW;
         }
 
-        if (!this._currSceneCache) {
+        if (!this._currScene) {
             G.LogMgr.warn(`当前没有可使用的场景，需要加载一个场景并打开视图`);
             return;
         }
 
-        this._currSceneCache.addView(param, data);
+        this._currScene.addView(param, data);
     }
 
     /**
@@ -114,12 +133,12 @@ export default class UIManager extends BaseManager {
             return;
         }
 
-        if (!this._currSceneCache) {
+        if (!this._currScene) {
             G.LogMgr.warn(`当前没有可使用的场景，需要加载一个场景并打开视图`);
             return;
         }
 
-        this._currSceneCache.delView(cc.js.getClassName(viewClass));
+        this._currScene.delView(cc.js.getClassName(viewClass));
     }
 
     /**
@@ -154,8 +173,8 @@ export default class UIManager extends BaseManager {
 
         let className: string = cc.js.getClassName(param.sceneClass);
 
-        if (this._currSceneCache && this._currSceneCache.className === className) {
-            if (!this._currSceneCache.resCache || this._currSceneCache.resCache.getBundleName() === param.bundleName) {
+        if (this._currScene && this._currScene.className === className) {
+            if (!this._currScene.resCache || this._currScene.resCache.getBundleName() === param.bundleName) {
                 G.LogMgr.warn(`不能重复加载相同场景 ${param.sceneClass.name}`);
                 return;
             }
@@ -166,7 +185,7 @@ export default class UIManager extends BaseManager {
             return;
         }
 
-        this.startLoadingTimer(param.delay);
+        this.startSceneTimer(param.delay);
 
         if (this.isSceneExist(param.bundleName, className)) {
             this.topScene(param.bundleName);
@@ -174,10 +193,10 @@ export default class UIManager extends BaseManager {
                 this.closeAllScene();
             }
         } else {
-            let newSceneCache: UIScene = new UIScene();
-            if (!this._currSceneCache) {
-                this._currSceneCache = newSceneCache;
-                this._currSceneCache.className = className;
+            let newScene: UIScene = new UIScene();
+            if (!this._currScene) {
+                this._currScene = newScene;
+                this._currScene.className = className;
             }
 
             G.ResMgr.load({
@@ -190,35 +209,35 @@ export default class UIManager extends BaseManager {
                 },
                 completeCallback: (resCache: ResCache | null) => {
                     if (resCache !== null) {
-                        if (this._currSceneCache !== newSceneCache) {
-                            let oldSceneCache: UIScene = this._sceneCacheMap.get(param.bundleName);
-                            if (oldSceneCache) {
-                                this._sceneCacheMap.delete(oldSceneCache.resCache.getBundleName());
-                                oldSceneCache.release();
+                        if (this._currScene !== newScene) {
+                            let oldScene: UIScene = this._sceneMap.get(param.bundleName);
+                            if (oldScene) {
+                                this._sceneMap.delete(oldScene.resCache.getBundleName());
+                                oldScene.release();
                             }
 
-                            this._currSceneCache = newSceneCache;
-                            this._currSceneCache.className = className;
+                            this._currScene = newScene;
+                            this._currScene.className = className;
 
                             if (param.isReleaseAllScene) {
                                 this.closeAllScene();
                             }
                         }
-                        this._sceneCacheMap.set(param.bundleName, newSceneCache);
+                        this._sceneMap.set(param.bundleName, newScene);
                         let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
-                        let script: BaseComponent = newSceneCache.addScript(node, param.sceneClass);
+                        let script: BaseComponent = newScene.addScript(node, param.sceneClass);
                         this.addToCanvas(node);
-                        this._currSceneCache.resCache = resCache;
-                        this._currSceneCache.node = node;
+                        this._currScene.resCache = resCache;
+                        this._currScene.node = node;
                         if (param.onComplete) param.onComplete();
                         if (script.onLoaded) script.onLoaded.apply(script, data);
                     } else {
-                        if (!this._currSceneCache.resCache) {
-                            this._currSceneCache = null;
+                        if (!this._currScene.resCache) {
+                            this._currScene = null;
                         }
                         if (param.onError) param.onError();
                     }
-                    this.stopLoadingTimer();
+                    this.stopSceneTimer();
                 },
             })
         }
@@ -229,28 +248,28 @@ export default class UIManager extends BaseManager {
      * 打开防触摸视图
      */
     public openLockScreen(): void {
-        this._persistCache.showLockScreen();
+
     }
 
     /**
      * 关闭防触摸视图
      */
     public closeLockScreen(): void {
-        this._persistCache.hideLockScreen();
+
     }
 
     /**
      * 打开加载进度视图（Loading）
      */
     public openLoading(): void {
-        this._persistCache.showLoading();
+
     }
 
     /**
      * 关闭加载进度视图
      */
     public closeLoading(): void {
-        this._persistCache.hideLoading();
+
     }
 
     /**
@@ -265,29 +284,29 @@ export default class UIManager extends BaseManager {
         }
         let retain: number = 2;
         percent = MathUtils.decimal(percent, retain);
-        this._persistCache.setLoading(MathUtils.fill0(percent, retain));
+        // this._persist.setLoading(MathUtils.fill0(percent, retain));
     }
 
     /**
      * 打开等待视图（转圈）
      */
     public openWaiting(): void {
-        this._persistCache.showWaiting();
+        // this._persist.showWaiting();
     }
 
     /**
      * 关闭等待视图
      */
     public closeWaiting(): void {
-        this._persistCache.hideWaiting();
+        // this._persist.hideWaiting();
     }
 
     /**
      * 关闭除了当前场景以外的其他的场景
      */
     public closeAllScene(): void {
-        this._sceneCacheMap.forEach((value: UIScene, key: BundleDefine.Name, map: Map<BundleDefine.Name, UIScene>) => {
-            if (!this._currSceneCache || this._currSceneCache !== value) {
+        this._sceneMap.forEach((value: UIScene, key: BundleDefine.Name, map: Map<BundleDefine.Name, UIScene>) => {
+            if (!this._currScene || this._currScene !== value) {
                 value.release();
             }
         });
@@ -300,15 +319,15 @@ export default class UIManager extends BaseManager {
      */
     public getScene(bundleName?: BundleDefine.Name): UIScene {
         if (bundleName === undefined || bundleName === null) {
-            return this._currSceneCache;
+            return this._currScene;
         }
 
-        let sceneCache: UIScene = this._sceneCacheMap.get(bundleName);
-        if (!sceneCache) {
-            sceneCache = null;
+        let scene: UIScene = this._sceneMap.get(bundleName);
+        if (!scene) {
+            scene = null;
         }
 
-        return sceneCache;
+        return scene;
     }
 
     /**
@@ -316,9 +335,12 @@ export default class UIManager extends BaseManager {
      * @param ms {number} 等待多久打开进度视图（单位：毫秒）
      * @returns {number} 定时器 ID
      */
-    private startLoadingTimer(ms: number): void {
-        this.stopLoadingTimer();
-        this._sceneLoadingTimer = setTimeout(() => {
+    private startSceneTimer(ms: number): void {
+        if (this._sceneTimer !== null && this._sceneTimer !== undefined) {
+            return;
+        }
+
+        this._sceneTimer = setTimeout(() => {
             this.openLoading();
         }, ms);
     }
@@ -326,9 +348,10 @@ export default class UIManager extends BaseManager {
     /**
      * 停止加载定时器
      */
-    private stopLoadingTimer(): void {
-        if (this._sceneLoadingTimer !== null && this._sceneLoadingTimer !== undefined) {
-            clearTimeout(this._sceneLoadingTimer);
+    private stopSceneTimer(): void {
+        if (this._sceneTimer !== null && this._sceneTimer !== undefined) {
+            clearTimeout(this._sceneTimer);
+            this._sceneTimer = null;
             this.closeLoading();
         }
     }
@@ -351,12 +374,12 @@ export default class UIManager extends BaseManager {
             return;
         }
 
-        let zIndex: number = this._currSceneTopZIndex + 1;
+        let zIndex: number = this._sceneTopZIndex + 1;
         if (zIndex >= (UIDefine.CanvasLayer.SCENE + 1) * UIDefine.LAYER_INTERVAL) {
             zIndex = this.resetSceneZIndex() + 1;
         }
         canvasNode.addChild(node, zIndex);
-        this._currSceneTopZIndex = zIndex;
+        this._sceneTopZIndex = zIndex;
     }
 
     /**
@@ -364,18 +387,18 @@ export default class UIManager extends BaseManager {
      * @returns {number} 当前场景最高层级
      */
     private resetSceneZIndex(): number {
-        let sceneCacheList: any[][] = Object.entries(this._sceneCacheMap);
-        sceneCacheList = sceneCacheList.sort((a: any[], b: any[]) => {
+        let sceneList: any[][] = Object.entries(this._sceneMap);
+        sceneList = sceneList.sort((a: any[], b: any[]) => {
             return a[1].node.zIndex - b[1].node.zIndex;
         });
 
         let topZIndex: number = UIDefine.CanvasLayer.SCENE;
-        for (let i: number = 0; i < sceneCacheList.length; ++i) {
-            let bundleName: BundleDefine.Name = sceneCacheList[i][0];
-            let uiSceneCache: UIScene = this._sceneCacheMap.get(bundleName);
-            if (uiSceneCache) {
+        for (let i: number = 0; i < sceneList.length; ++i) {
+            let bundleName: BundleDefine.Name = sceneList[i][0];
+            let uiScene: UIScene = this._sceneMap.get(bundleName);
+            if (uiScene) {
                 topZIndex += i;
-                uiSceneCache.node.zIndex = topZIndex;
+                uiScene.node.zIndex = topZIndex;
             }
         }
 
@@ -387,19 +410,19 @@ export default class UIManager extends BaseManager {
      * @param bundleName {BundleDefine.Name} 包名
      */
     private topScene(bundleName: BundleDefine.Name): void {
-        let uiSceneCache: UIScene = this._sceneCacheMap.get(bundleName);
-        if (!uiSceneCache) {
+        let uiScene: UIScene = this._sceneMap.get(bundleName);
+        if (!uiScene) {
             G.LogMgr.warn(`未找到场景需要提升到最顶层 ${bundleName}`);
             return;
         }
 
-        let zIndex: number = this._currSceneTopZIndex + 1;
+        let zIndex: number = this._sceneTopZIndex + 1;
         if (zIndex >= (UIDefine.CanvasLayer.SCENE + 1) * UIDefine.LAYER_INTERVAL) {
             zIndex = this.resetSceneZIndex() + 1;
         }
-        uiSceneCache.node.zIndex = zIndex;
-        this._currSceneTopZIndex = zIndex;
-        this._currSceneCache = uiSceneCache;
+        uiScene.node.zIndex = zIndex;
+        this._sceneTopZIndex = zIndex;
+        this._currScene = uiScene;
     }
 
     /**
@@ -410,10 +433,10 @@ export default class UIManager extends BaseManager {
      */
     private isSceneExist(bundleName: BundleDefine.Name, className: string): boolean {
         let isExist: boolean = false;
-        let uiSceneCache: UIScene = this._sceneCacheMap.get(bundleName);
+        let uiScene: UIScene = this._sceneMap.get(bundleName);
 
-        if (uiSceneCache) {
-            isExist = uiSceneCache.className === className;
+        if (uiScene) {
+            isExist = uiScene.className === className;
         }
 
         return isExist;

@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:43:43
  * LastEditors  : ougato
- * LastEditTime : 2021-09-08 00:34:21
+ * LastEditTime : 2021-10-19 23:24:47
  * FilePath     : /client/assets/src/core/interface/UIInterface.ts
  * Description  : 界面接口
  */
@@ -22,7 +22,7 @@ export interface ViewParam<T extends BaseView> {
     style?: UIDefine.Style;
     // 多久视图没加载完成，就显示等待界面（单位：毫秒）
     delay?: number;
-    // 层级
+    // 分层
     layer?: UIDefine.ViewLayer;
     // 加载完成回调
     onComplete?: () => void;

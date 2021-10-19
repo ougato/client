@@ -15,7 +15,7 @@ import LoginScene from "./LoginScene";
 const { ccclass, property } = cc._decorator;
 
 @ccclass
-export default class HallScene extends BaseView {
+export default class HallScene extends BaseScene {
 
     // 预制路径
     public static prefabPath: string = "scene/HallScene";

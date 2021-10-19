@@ -2,9 +2,9 @@
  * Author       : ougato
  * Date         : 2021-08-26 01:00:54
  * LastEditors  : ougato
- * LastEditTime : 2021-09-05 03:15:08
+ * LastEditTime : 2021-10-19 23:18:11
  * FilePath     : /client/assets/src/core/manager/ui/UIPersist.ts
- * Description  : 场景缓存
+ * Description  : 常驻类（包含所有常驻视图 并且 这些常驻视图都是唯一存在）
  */
 
 import UIBase from "./UIBase";
