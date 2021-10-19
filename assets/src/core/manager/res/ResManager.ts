@@ -52,7 +52,7 @@ export default class ResManager extends BaseManager {
      * 加载资源
      * 注：
      * 如果手动调用全局的 ResManager 请一定要手动释放
-     * 不是必须调用全局的 ResManager 请继承 BaseUI 后，在自定义 UI 界面使用 this.load
+     * 不是必须调用全局的 ResManager 请继承 BaseComponent 后，在自定义 UI 界面使用 this.load
      * @param param {ResInterface.LoadResParam} 加载资源参数
      */
     public load(param: ResInterface.LoadResParam): void {

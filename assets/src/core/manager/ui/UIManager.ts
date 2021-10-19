@@ -12,27 +12,27 @@ import * as UIInterface from "../../interface/UIInterface";
 import * as BundleDefine from "../../define/BundleDefine";
 import * as UIDefine from "../../define/UIDefine";
 import BaseScene from "../../base/BaseScene";
-import BaseUI from "../../base/BaseUI";
-import UISceneCache from "./UISceneCache";
+import BaseComponent from "../../base/BaseComponent";
+import UIScene from "./UIScene";
 import ResCache from "../res/ResCache";
 import MathUtils from "../../utils/MathUtils";
 import BaseView from "../../base/BaseView";
-import UIPersistCache from "./UIPersistCache";
+import UIPersist from "./UIPersist";
 
 export default class UIManager extends BaseManager {
 
     private static s_instance: UIManager = null;
 
     // 场景 Map 考虑在大厅资源小的情况下可以保留大厅、增加游戏返回到大厅时候的速度
-    private _sceneCacheMap: Map<BundleDefine.Name, UISceneCache> = null;
+    private _sceneCacheMap: Map<BundleDefine.Name, UIScene> = null;
     // 场景加载进度定时器
     private _sceneLoadingTimer: number = null;
     // 当前场景
-    private _currSceneCache: UISceneCache = null;
+    private _currSceneCache: UIScene = null;
     // 当前场景最高层级
     private _currSceneTopZIndex: number = null;
     // 常驻
-    private _persistCache: UIPersistCache = null;
+    private _persistCache: UIPersist = null;
 
     public static getInstance(): UIManager {
         if (this.s_instance === null) {
@@ -53,6 +53,10 @@ export default class UIManager extends BaseManager {
 
         this._sceneCacheMap = new Map();
         this._currSceneTopZIndex = 0;
+    }
+
+    public init(): void {
+        
     }
 
     /**
@@ -104,7 +108,7 @@ export default class UIManager extends BaseManager {
             G.LogMgr.warn(`视图类不能为空`);
             return;
         }
-        
+
         if (!(viewClass.prototype instanceof BaseView)) {
             G.LogMgr.warn(`视图必须继承 BaseView 类`);
             return;
@@ -158,7 +162,7 @@ export default class UIManager extends BaseManager {
         }
 
         if (param.sceneClass.prefabPath === null || param.sceneClass.prefabPath === undefined || typeof (param.sceneClass.prefabPath) !== "string" || param.sceneClass.prefabPath.length <= 0) {
-            G.LogMgr.warn(`找不到 ${param.sceneClass.name} 预制的路径、请重写 BaseUI 中的静态成员 prefabPath 的路径`);
+            G.LogMgr.warn(`找不到 ${param.sceneClass.name} 预制的路径、请重写 BaseComponent 中的静态成员 prefabPath 的路径`);
             return;
         }
 
@@ -170,7 +174,7 @@ export default class UIManager extends BaseManager {
                 this.closeAllScene();
             }
         } else {
-            let newSceneCache: UISceneCache = new UISceneCache();
+            let newSceneCache: UIScene = new UIScene();
             if (!this._currSceneCache) {
                 this._currSceneCache = newSceneCache;
                 this._currSceneCache.className = className;
@@ -187,7 +191,7 @@ export default class UIManager extends BaseManager {
                 completeCallback: (resCache: ResCache | null) => {
                     if (resCache !== null) {
                         if (this._currSceneCache !== newSceneCache) {
-                            let oldSceneCache: UISceneCache = this._sceneCacheMap.get(param.bundleName);
+                            let oldSceneCache: UIScene = this._sceneCacheMap.get(param.bundleName);
                             if (oldSceneCache) {
                                 this._sceneCacheMap.delete(oldSceneCache.resCache.getBundleName());
                                 oldSceneCache.release();
@@ -202,7 +206,7 @@ export default class UIManager extends BaseManager {
                         }
                         this._sceneCacheMap.set(param.bundleName, newSceneCache);
                         let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
-                        let script: BaseUI = newSceneCache.addScript(node, param.sceneClass);
+                        let script: BaseComponent = newSceneCache.addScript(node, param.sceneClass);
                         this.addToCanvas(node);
                         this._currSceneCache.resCache = resCache;
                         this._currSceneCache.node = node;
@@ -282,7 +286,7 @@ export default class UIManager extends BaseManager {
      * 关闭除了当前场景以外的其他的场景
      */
     public closeAllScene(): void {
-        this._sceneCacheMap.forEach((value: UISceneCache, key: BundleDefine.Name, map: Map<BundleDefine.Name, UISceneCache>) => {
+        this._sceneCacheMap.forEach((value: UIScene, key: BundleDefine.Name, map: Map<BundleDefine.Name, UIScene>) => {
             if (!this._currSceneCache || this._currSceneCache !== value) {
                 value.release();
             }
@@ -292,14 +296,14 @@ export default class UIManager extends BaseManager {
     /**
      * 获取场景
      * @param bundleName {BundleDefine.Name} 包名 如果 bundleName 参数为 undefined 和 null，那么就返回当前场景
-     * @returns {UISceneCache} 场景 如果找不到需要场景返回 null
+     * @returns {UIScene} 场景 如果找不到需要场景返回 null
      */
-    public getScene(bundleName?: BundleDefine.Name): UISceneCache {
+    public getScene(bundleName?: BundleDefine.Name): UIScene {
         if (bundleName === undefined || bundleName === null) {
             return this._currSceneCache;
         }
 
-        let sceneCache: UISceneCache = this._sceneCacheMap.get(bundleName);
+        let sceneCache: UIScene = this._sceneCacheMap.get(bundleName);
         if (!sceneCache) {
             sceneCache = null;
         }
@@ -368,7 +372,7 @@ export default class UIManager extends BaseManager {
         let topZIndex: number = UIDefine.CanvasLayer.SCENE;
         for (let i: number = 0; i < sceneCacheList.length; ++i) {
             let bundleName: BundleDefine.Name = sceneCacheList[i][0];
-            let uiSceneCache: UISceneCache = this._sceneCacheMap.get(bundleName);
+            let uiSceneCache: UIScene = this._sceneCacheMap.get(bundleName);
             if (uiSceneCache) {
                 topZIndex += i;
                 uiSceneCache.node.zIndex = topZIndex;
@@ -383,7 +387,7 @@ export default class UIManager extends BaseManager {
      * @param bundleName {BundleDefine.Name} 包名
      */
     private topScene(bundleName: BundleDefine.Name): void {
-        let uiSceneCache: UISceneCache = this._sceneCacheMap.get(bundleName);
+        let uiSceneCache: UIScene = this._sceneCacheMap.get(bundleName);
         if (!uiSceneCache) {
             G.LogMgr.warn(`未找到场景需要提升到最顶层 ${bundleName}`);
             return;
@@ -406,7 +410,7 @@ export default class UIManager extends BaseManager {
      */
     private isSceneExist(bundleName: BundleDefine.Name, className: string): boolean {
         let isExist: boolean = false;
-        let uiSceneCache: UISceneCache = this._sceneCacheMap.get(bundleName);
+        let uiSceneCache: UIScene = this._sceneCacheMap.get(bundleName);
 
         if (uiSceneCache) {
             isExist = uiSceneCache.className === className;

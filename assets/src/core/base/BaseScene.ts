@@ -7,9 +7,9 @@
  * Description  : 场景基类
  */
 
-import BaseUI from "./BaseUI";
+import BaseComponent from "./BaseComponent";
 
-export default class BaseScene extends BaseUI {
+export default class BaseScene extends BaseComponent {
 
     protected onLoad(): void {
         super.onLoad();

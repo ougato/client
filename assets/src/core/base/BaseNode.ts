@@ -7,9 +7,9 @@
  * Description  : 节点基类
  */
 
-import BaseUI from "./BaseUI";
+import BaseComponent from "./BaseComponent";
 
-export default class BaseNode extends BaseUI {
+export default class BaseNode extends BaseComponent {
 
     // 是否加载完成
     public isLoaded: boolean = false;

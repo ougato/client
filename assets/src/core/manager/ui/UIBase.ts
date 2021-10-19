@@ -3,22 +3,22 @@
  * Date         : 2021-08-26 01:00:54
  * LastEditors  : ougato
  * LastEditTime : 2021-09-05 02:53:29
- * FilePath     : /client/assets/src/core/manager/ui/UICache.ts
+ * FilePath     : /client/assets/src/core/manager/ui/UIBase.ts
  * Description  : 场景缓存
  */
 
-import BaseUI from "../../base/BaseUI";
+import BaseComponent from "../../base/BaseComponent";
 import ResCache from "../res/ResCache";
 import * as UIInterface from "../../interface/UIInterface";
 
-export default class UICache {
+export default class UIBase {
 
     // 类名
     public className: string = null;
     // 根节点
     public node: cc.Node = null;
     // 脚本
-    public script: BaseUI = null;
+    public script: BaseComponent = null;
     // 资源缓存信息
     public resCache: ResCache = null;
 
@@ -29,8 +29,8 @@ export default class UICache {
     /**
      * 挂载根节点脚本组件
      */
-    public addScript<T extends BaseUI>(node: cc.Node, uiClass: UIInterface.UIClass<T>): BaseUI | null {
-        let script: BaseUI = null;
+    public addScript<T extends BaseComponent>(node: cc.Node, uiClass: UIInterface.UIClass<T>): BaseComponent | null {
+        let script: BaseComponent = null;
 
         if (!node) {
             G.LogMgr.warn(`挂载脚本失败 ${cc.js.getClassName(uiClass)}、节点为空`);

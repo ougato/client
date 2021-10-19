@@ -3,14 +3,14 @@
  * Date         : 2021-07-10 00:39:14
  * LastEditors  : ougato
  * LastEditTime : 2021-09-05 02:52:46
- * FilePath     : /client/assets/src/core/manager/ui/UIViewCache.ts
+ * FilePath     : /client/assets/src/core/manager/ui/UIView.ts
  * Description  : 视图缓存
  */
 
-import UICache from "./UICache";
+import UIBase from "./UIBase";
 
 
-export default class UIViewCache extends UICache {
+export default class UIView extends UIBase {
 
     constructor() {
         super()
@@ -23,5 +23,5 @@ export default class UIViewCache extends UICache {
     public release(): void {
         super.release();
     }
-    
+
 }

@@ -3,14 +3,14 @@
  * Date         : 2021-07-07 00:21:20
  * LastEditors  : ougato
  * LastEditTime : 2021-09-05 02:54:54
- * FilePath     : /client/assets/src/core/base/BaseUI.ts
- * Description  : UI 基类、是 BaseView 和 BaseScene 的父类
+ * FilePath     : /client/assets/src/core/base/BaseComponent.ts
+ * Description  : 组件 基类、是 BaseView 和 BaseScene 的父类
  */
 
 import * as ResInterface from "../interface/ResInterface";
 import ResCache from "../manager/res/ResCache";
 
-export default class BaseUI extends cc.Component {
+export default class BaseComponent extends cc.Component {
 
     // 预制路径
     public static prefabPath: string = null;

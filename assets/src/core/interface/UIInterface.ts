@@ -11,7 +11,7 @@ import BaseView from "../base/BaseView";
 import * as UIDefine from "../define/UIDefine";
 import * as BundleDefine from "../define/BundleDefine";
 import BaseScene from "../base/BaseScene";
-import BaseUI from "../base/BaseUI";
+import BaseComponent from "../base/BaseComponent";
 
 export interface ViewParam<T extends BaseView> {
     // 视图类
@@ -49,7 +49,7 @@ export interface SceneParam<T extends BaseScene> {
     onError?: () => void;
 }
 
-export interface UIClass<T extends BaseUI> {
+export interface UIClass<T extends BaseComponent> {
     new(): T;
     // 预制路径
     prefabPath: string;

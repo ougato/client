@@ -3,24 +3,24 @@
  * Date         : 2021-08-26 01:00:54
  * LastEditors  : ougato
  * LastEditTime : 2021-09-05 03:15:08
- * FilePath     : /client/assets/src/core/manager/ui/UISceneCache.ts
+ * FilePath     : /client/assets/src/core/manager/ui/UIScene.ts
  * Description  : 场景缓存
  */
 
 import BaseView from "../../base/BaseView";
-import UICache from "./UICache";
-import UIViewCache from "./UIViewCache";
+import UIBase from "./UIBase";
+import UIView from "./UIView";
 import * as UIInterface from "../../interface/UIInterface";
 import * as UIDefine from "../../define/UIDefine";
 import ResCache from "../res/ResCache";
-import BaseUI from "../../base/BaseUI";
+import BaseComponent from "../../base/BaseComponent";
 
-export default class UISceneCache extends UICache {
+export default class UIScene extends UIBase {
 
     // 视图列表
-    private _viewCacheList: UIViewCache[] = null;
+    private _viewCacheList: UIView[] = null;
     // 当前视图
-    private _currViewCache: UIViewCache = null;
+    private _currViewCache: UIView = null;
     // 每个视图最高层级 Map<层级枚举, 最高层级>
     private _viewTopZIndexMap: Map<UIDefine.ViewLayer, number> = null;
     // 视图加载等待定时器
@@ -49,7 +49,7 @@ export default class UISceneCache extends UICache {
         G.UIMgr.openLockScreen();
         this.startWaitingTimer(param.delay);
 
-        let newViewCache: UIViewCache = new UIViewCache();
+        let newViewCache: UIView = new UIView();
         if (!this._currViewCache) {
             this._currViewCache = newViewCache;
             this._currViewCache.className = className;
@@ -70,7 +70,7 @@ export default class UISceneCache extends UICache {
                     }
                     let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
                     this.addToScene(node, param.layer);
-                    let script: BaseUI = newViewCache.addScript(node, param.viewClass);
+                    let script: BaseComponent = newViewCache.addScript(node, param.viewClass);
                     this._currViewCache.resCache = resCache;
                     this._currViewCache.node = node;
                     if (param.onComplete) param.onComplete();
@@ -95,7 +95,7 @@ export default class UISceneCache extends UICache {
     public delView(className: string): void {
         let isDelele: boolean = false;
         for (let i: number = this._viewCacheList.length - 1; i >= 0; --i) {
-            let viewCache: UIViewCache = this._viewCacheList[i];
+            let viewCache: UIView = this._viewCacheList[i];
             if (viewCache.className === className) {
                 this._viewCacheList.splice(i, 1);
                 viewCache.release();
@@ -172,26 +172,26 @@ export default class UISceneCache extends UICache {
      * @returns {number} 当前层最高层级
      */
     private resetViewZIndex(layer: UIDefine.ViewLayer): number {
-        let layerViewCacheList: UIViewCache[] = [];
+        let layerViewCacheList: UIView[] = [];
         for (let i: number = 0; i < this._viewCacheList.length; ++i) {
-            let viewCache: UIViewCache = this._viewCacheList[i];
+            let viewCache: UIView = this._viewCacheList[i];
             if (viewCache.node && cc.isValid(viewCache.node)) {
                 if (viewCache.node.zIndex >= layer && viewCache.node.zIndex < (layer + 1) * UIDefine.LAYER_INTERVAL) {
                     layerViewCacheList.push(viewCache);
                 }
             } else {
-                G.LogMgr.warn(`请检查视图、节点不存在或者节点已无效、但是没有被移除 UISceneCache 列表以外`);
+                G.LogMgr.warn(`请检查视图、节点不存在或者节点已无效、但是没有被移除 UIScene 列表以外`);
             }
         }
 
-        layerViewCacheList = layerViewCacheList.sort((a: UIViewCache, b: UIViewCache) => {
+        layerViewCacheList = layerViewCacheList.sort((a: UIView, b: UIView) => {
             return a.node.zIndex - b.node.zIndex;
         });
 
         let topZIndex: number = layer;
         for (let i: number = 0; i < layerViewCacheList.length; ++i) {
             let zIndex: number = topZIndex + i;
-            let layerViewCache: UIViewCache = layerViewCacheList[i];
+            let layerViewCache: UIView = layerViewCacheList[i];
             if (zIndex < (layer + 1) * UIDefine.LAYER_INTERVAL) {
                 layerViewCache.node.zIndex = zIndex;
                 topZIndex = zIndex;

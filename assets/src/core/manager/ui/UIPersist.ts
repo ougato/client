@@ -3,21 +3,21 @@
  * Date         : 2021-08-26 01:00:54
  * LastEditors  : ougato
  * LastEditTime : 2021-09-05 03:15:08
- * FilePath     : /client/assets/src/core/manager/ui/UISceneCache.ts
+ * FilePath     : /client/assets/src/core/manager/ui/UIPersist.ts
  * Description  : 场景缓存
  */
 
-import UICache from "./UICache";
+import UIBase from "./UIBase";
 
-export default class UIPersistCache extends UICache {
+export default class UIPersist extends UIBase {
 
     // 常驻 Map<常驻类名, 常驻对象>
-    private _persistCacheMap: Map<string, UIPersistCache> = null;
+    private _persistMap: Map<string, UIPersist> = null;
 
     constructor() {
         super()
 
-        this._persistCacheMap = new Map();
+        this._persistMap = new Map();
     }
 
     /**
