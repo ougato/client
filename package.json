@@ -1,0 +1,21 @@
+{
+  "name": "client",
+  "version": "1.0.0",
+  "description": "由于 Cocos Creator 官方团队关闭了对 npm 包导入的支持，留作将来开放后使用",
+  "main": "index.js",
+  "scripts": {},
+  "repository": {
+    "type": "git",
+    "url": " http://gitlab.ougato.com:8880/games/client.git"
+  },
+  "author": "ougato",
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/js-md5": "^0.4.2",
+    "fetch-ponyfill": "^6.1.1",
+    "js-md5": "^0.7.3",
+    "pip": "0.0.1",
+    "protobufjs": "^6.10.1"
+  }
+}
