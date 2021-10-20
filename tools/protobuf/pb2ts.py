@@ -1,3 +1,12 @@
+'''
+Author       : ougato
+Date         : 2021-07-14 02:03:13
+LastEditors  : ougato
+LastEditTime : 2021-10-21 02:00:58
+FilePath     : /undefinede:/Project/games/client/tools/protobuf/pb2ts.py
+Description  : 
+'''
+ 
 """
 Author       : ougato
 Date         : 2020-09-29 01:20:04
@@ -28,7 +37,7 @@ PBJS_LINUX_EXECUTE_PATH = os.path.join(PB_EXECUTE_PATH, "pbjs")
 PBTS_WINDOWS_EXECUTE_PATH = os.path.join(PB_EXECUTE_PATH, "pbts.cmd")
 PBTS_LINUX_EXECUTE_PATH = os.path.join(PB_EXECUTE_PATH, "pbts")
 PROTO_INPUT_PATH = os.path.relpath(
-    os.path.join(CURRENT_PATH, "..", "..", "protobuf", "*.proto")
+    os.path.join(CURRENT_PATH, "..", "..", "proto", "*.proto")
 )
 PROTO_OUTPUT_PATH = os.path.join(CURRENT_PATH, "..", "..", "assets", "src", "protobuf")
 JS_PATH = os.path.relpath(os.path.join(PROTO_OUTPUT_PATH, "Proto.js"))
