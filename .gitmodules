@@ -1,0 +1,3 @@
+[submodule "proto"]
+	path = proto
+	url = git@codeup.aliyun.com:ptggame/cocos-2d/proto.git
