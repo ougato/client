@@ -2,72 +2,25 @@
  * Author       : ougato
  * Date         : 2021-08-26 01:00:54
  * LastEditors  : ougato
- * LastEditTime : 2021-10-19 23:18:11
+ * LastEditTime : 2021-10-22 01:02:35
  * FilePath     : /client/assets/src/core/manager/ui/UIPersist.ts
- * Description  : 常驻类（包含所有常驻视图 并且 这些常驻视图都是唯一存在）
+ * Description  : 常驻类
  */
 
 import UIBase from "./UIBase";
 
 export default class UIPersist extends UIBase {
 
-    // 常驻 Map<常驻类名, 常驻对象>
-    private _persistMap: Map<string, UIPersist> = null;
-
     constructor() {
         super()
 
-        this._persistMap = new Map();
     }
 
     /**
-     * 显示禁止触摸视图
+     * 视图释放
      */
-    public showLockScreen(): void {
-
-    }
-
-    /**
-     * 隐藏禁止触摸视图
-     */
-    public hideLockScreen(): void {
-
-    }
-
-    /**
-     * 显示加载进度视图
-     */
-    public showLoading(): void {
-
-    }
-
-    /**
-     * 隐藏加载进度视图
-     */
-    public hideLoading(): void {
-
-    }
-
-    /**
-     * 设置进度百分比
-     * @param percent {string} 字符串保留小数点后相同位数
-     */
-    public setLoading(percent: string): void {
-
-    }
-
-    /**
-     * 显示等待转圈视图
-     */
-    public showWaiting(): void {
-
-    }
-
-    /**
-     * 隐藏等待转圈视图
-     */
-    public hideWaiting(): void {
-
+    public release(): void {
+        super.release();
     }
 
 }

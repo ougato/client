@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:36:55
  * LastEditors  : ougato
- * LastEditTime : 2021-10-20 02:22:48
+ * LastEditTime : 2021-10-22 01:55:27
  * FilePath     : /client/assets/src/core/manager/ui/UIManager.ts
  * Description  : 界面管理器、所有的视图和场景、都由 UIManager 统一管理、包括打开视图|关闭视图|切换场景等等
  */
@@ -18,6 +18,10 @@ import ResCache from "../res/ResCache";
 import MathUtils from "../../utils/MathUtils";
 import BaseView from "../../base/BaseView";
 import UIPersist from "./UIPersist";
+import LockScreenPersist from "../../../ui/persist/LockScreenPersist";
+import LoadingPersist from "../../../ui/persist/LoadingPersist";
+import WaitingPersist from "../../../ui/persist/WaitingPersist";
+import DialogPersist from "../../../ui/persist/DialogPersist";
 
 export default class UIManager extends BaseManager {
 
@@ -28,7 +32,7 @@ export default class UIManager extends BaseManager {
     // 常驻 Map<类名, 常驻对象>
     private _persistMap: Map<string, UIPersist> = null;
     // 场景加载定时器
-    private _sceneTimer: number = null;
+    private _sceneTimer: NodeJS.Timeout = null;
     // 当前场景
     private _currScene: UIScene = null;
     // 场景最高层级
@@ -57,6 +61,7 @@ export default class UIManager extends BaseManager {
     }
 
     protected destroy(): void {
+        super.destroy();
         this._sceneMap.forEach((scene: UIScene, bundleName: BundleDefine.Name, map: Map<BundleDefine.Name, UIScene>) => {
             scene.release();
         });
@@ -74,8 +79,12 @@ export default class UIManager extends BaseManager {
 
     }
 
-    public async init(): Promise<void> {
-        
+    public async asyncInit(): Promise<void> {
+        return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
+            Promise.all([this.initPersist(LockScreenPersist), this.initPersist(LoadingPersist), this.initPersist(WaitingPersist), this.initPersist(DialogPersist)]).then(() => {
+                resolve();
+            });
+        })
     }
 
     /**
@@ -248,7 +257,7 @@ export default class UIManager extends BaseManager {
      * 打开防触摸视图
      */
     public openLockScreen(): void {
-
+        
     }
 
     /**
@@ -328,6 +337,33 @@ export default class UIManager extends BaseManager {
         }
 
         return scene;
+    }
+
+    /**
+     * 初始化常驻
+     */
+    private async initPersist(persistClass: UIInterface.UIClass<BaseComponent>): Promise<void> {
+        return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
+            G.ResMgr.load({
+                base: persistClass.prefabPath,
+                bundleName: BundleDefine.Name.RESOURCES,
+                assetType: cc.Prefab,
+                completeCallback: (resCache: ResCache | null) => {
+                    if (resCache !== null) {
+                        let persist: UIPersist = new UIPersist();
+                        let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
+                        persist.className = cc.js.getClassName(persistClass);;
+                        persist.addScript(node, persistClass);
+                        persist.resCache = resCache;
+                        persist.node = node;
+                        this._persistMap.set(persist.className, persist);
+                        resolve();
+                    } else {
+                        reject();
+                    }
+                },
+            })
+        });
     }
 
     /**
@@ -441,4 +477,5 @@ export default class UIManager extends BaseManager {
 
         return isExist;
     }
+
 }

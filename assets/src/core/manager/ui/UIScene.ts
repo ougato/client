@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-08-26 01:00:54
  * LastEditors  : ougato
- * LastEditTime : 2021-10-20 02:01:44
+ * LastEditTime : 2021-10-21 20:57:05
  * FilePath     : /client/assets/src/core/manager/ui/UIScene.ts
  * Description  : 场景缓存
  */
@@ -23,7 +23,7 @@ export default class UIScene extends UIBase {
     // 每个视图最高层级 Map<层级枚举, 最高层级>
     private _viewTopZIndexMap: Map<UIDefine.ViewLayer, number> = null;
     // 视图加载定时器
-    private _viewTimer: number = null;
+    private _viewTimer: NodeJS.Timeout = null;
 
     constructor() {
         super()
