@@ -9,6 +9,182 @@ const $Reader = $protobuf.Reader, $Writer = $protobuf.Writer, $util = $protobuf.
 // Exported root namespace
 const $root = $protobuf.roots["default"] || ($protobuf.roots["default"] = {});
 
+export const Base = $root.Base = (() => {
+
+    /**
+     * Properties of a Base.
+     * @exports IBase
+     * @interface IBase
+     * @property {string|null} [msg] Base msg
+     * @property {number|null} [serial] Base serial
+     * @property {Uint8Array|null} [packet] Base packet
+     */
+
+    /**
+     * Constructs a new Base.
+     * @exports Base
+     * @classdesc Represents a Base.
+     * @implements IBase
+     * @constructor
+     * @param {IBase=} [p] Properties to set
+     */
+    function Base(p) {
+        if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                if (p[ks[i]] != null)
+                    this[ks[i]] = p[ks[i]];
+    }
+
+    /**
+     * Base msg.
+     * @member {string} msg
+     * @memberof Base
+     * @instance
+     */
+    Base.prototype.msg = "";
+
+    /**
+     * Base serial.
+     * @member {number} serial
+     * @memberof Base
+     * @instance
+     */
+    Base.prototype.serial = 0;
+
+    /**
+     * Base packet.
+     * @member {Uint8Array} packet
+     * @memberof Base
+     * @instance
+     */
+    Base.prototype.packet = $util.newBuffer([]);
+
+    /**
+     * Creates a new Base instance using the specified properties.
+     * @function create
+     * @memberof Base
+     * @static
+     * @param {IBase=} [properties] Properties to set
+     * @returns {Base} Base instance
+     */
+    Base.create = function create(properties) {
+        return new Base(properties);
+    };
+
+    /**
+     * Encodes the specified Base message. Does not implicitly {@link Base.verify|verify} messages.
+     * @function encode
+     * @memberof Base
+     * @static
+     * @param {IBase} m Base message or plain object to encode
+     * @param {$protobuf.Writer} [w] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    Base.encode = function encode(m, w) {
+        if (!w)
+            w = $Writer.create();
+        if (m.msg != null && Object.hasOwnProperty.call(m, "msg"))
+            w.uint32(10).string(m.msg);
+        if (m.serial != null && Object.hasOwnProperty.call(m, "serial"))
+            w.uint32(16).int32(m.serial);
+        if (m.packet != null && Object.hasOwnProperty.call(m, "packet"))
+            w.uint32(26).bytes(m.packet);
+        return w;
+    };
+
+    /**
+     * Encodes the specified Base message, length delimited. Does not implicitly {@link Base.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof Base
+     * @static
+     * @param {IBase} message Base message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    Base.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a Base message from the specified reader or buffer.
+     * @function decode
+     * @memberof Base
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} r Reader or buffer to decode from
+     * @param {number} [l] Message length if known beforehand
+     * @returns {Base} Base
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    Base.decode = function decode(r, l) {
+        if (!(r instanceof $Reader))
+            r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l, m = new $root.Base();
+        while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+            case 1:
+                m.msg = r.string();
+                break;
+            case 2:
+                m.serial = r.int32();
+                break;
+            case 3:
+                m.packet = r.bytes();
+                break;
+            default:
+                r.skipType(t & 7);
+                break;
+            }
+        }
+        return m;
+    };
+
+    /**
+     * Decodes a Base message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof Base
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {Base} Base
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    Base.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a Base message.
+     * @function verify
+     * @memberof Base
+     * @static
+     * @param {Object.<string,*>} m Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    Base.verify = function verify(m) {
+        if (typeof m !== "object" || m === null)
+            return "object expected";
+        if (m.msg != null && m.hasOwnProperty("msg")) {
+            if (!$util.isString(m.msg))
+                return "msg: string expected";
+        }
+        if (m.serial != null && m.hasOwnProperty("serial")) {
+            if (!$util.isInteger(m.serial))
+                return "serial: integer expected";
+        }
+        if (m.packet != null && m.hasOwnProperty("packet")) {
+            if (!(m.packet && typeof m.packet.length === "number" || $util.isString(m.packet)))
+                return "packet: buffer expected";
+        }
+        return null;
+    };
+
+    return Base;
+})();
+
 export const UserInfo = $root.UserInfo = (() => {
 
     /**

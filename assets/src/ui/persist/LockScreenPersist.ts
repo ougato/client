@@ -14,6 +14,8 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class LockScreenPersist extends BasePersist {
 
+    public static prefabPath: string = "prefab/persist/LockScreenPersist";
+
     protected onLoad(): void {
         super.onLoad();
 

@@ -257,7 +257,7 @@ export default class UIManager extends BaseManager {
      * 打开防触摸视图
      */
     public openLockScreen(): void {
-        
+
     }
 
     /**
@@ -349,7 +349,7 @@ export default class UIManager extends BaseManager {
                 bundleName: BundleDefine.Name.RESOURCES,
                 assetType: cc.Prefab,
                 completeCallback: (resCache: ResCache | null) => {
-                    if (resCache !== null) {
+                    if (resCache !== null && resCache.asset !== null) {
                         let persist: UIPersist = new UIPersist();
                         let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
                         persist.className = cc.js.getClassName(persistClass);;

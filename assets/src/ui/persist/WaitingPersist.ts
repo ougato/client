@@ -14,6 +14,8 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class WaitingPersist extends BasePersist {
 
+    public static prefabPath: string = "prefab/persist/WaitingPersist";
+
     protected onLoad(): void {
         super.onLoad();
 

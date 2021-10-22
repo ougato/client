@@ -4,6 +4,25 @@ export = Proto;
 declare namespace Proto {
 
 
+    interface IBase {
+        msg?: (string|null);
+        serial?: (number|null);
+        packet?: (Uint8Array|null);
+    }
+
+    class Base implements IBase {
+        constructor(p?: IBase);
+        public msg: string;
+        public serial: number;
+        public packet: Uint8Array;
+        public static create(properties?: IBase): Base;
+        public static encode(m: IBase, w?: $protobuf.Writer): $protobuf.Writer;
+        public static encodeDelimited(message: IBase, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): Base;
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): Base;
+        public static verify(m: { [k: string]: any }): (string|null);
+    }
+
     interface IUserInfo {
         id?: (string|null);
         nick?: (string|null);

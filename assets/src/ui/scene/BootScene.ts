@@ -15,8 +15,6 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class BootScene extends BaseScene {
 
-    private m_map : Map<string, number> = new Map();
-
     protected onLoad(): void {
         super.onLoad();
 
@@ -32,6 +30,8 @@ export default class BootScene extends BaseScene {
      * 游戏启动
      */
     private async launch(): Promise<void> {
+        await G.UIMgr.asyncInit();
+
         G.UIMgr.openScene({
             sceneClass: LoginScene,
         });

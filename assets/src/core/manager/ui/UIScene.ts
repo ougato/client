@@ -81,7 +81,7 @@ export default class UIScene extends UIBase {
                 if (param.onProgress) param.onProgress(finish, total, item);
             },
             completeCallback: (resCache: ResCache | null) => {
-                if (resCache !== null) {
+                if (resCache !== null && resCache.asset !== null) {
                     let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
                     let script: BaseComponent = view.addScript(node, param.viewClass);
                     view.resCache = resCache;

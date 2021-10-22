@@ -14,6 +14,8 @@ const { ccclass, property } = cc._decorator;
 @ccclass
 export default class DialogPersist extends BasePersist {
 
+    public static prefabPath: string = "prefab/persist/DialogPersist";
+
     protected onLoad(): void {
         super.onLoad();
 
