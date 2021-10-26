@@ -37,3 +37,15 @@ export enum ViewLayer {
     // 系统层
     SYSTEM = 4 * LAYER_INTERVAL,
 }
+
+// 常驻层级
+export enum PersistLayer {
+    // 锁屏
+    LOCK_SCREEN = 1,
+    // 对话框
+    DIALOG,
+    // 等待
+    WAITING,
+    // 加载
+    LOADING,
+}

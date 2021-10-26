@@ -22,6 +22,7 @@ import LockScreenPersist from "../../../ui/persist/LockScreenPersist";
 import LoadingPersist from "../../../ui/persist/LoadingPersist";
 import WaitingPersist from "../../../ui/persist/WaitingPersist";
 import DialogPersist from "../../../ui/persist/DialogPersist";
+import BasePersist from "../../base/BasePersist";
 
 export default class UIManager extends BaseManager {
 
@@ -342,7 +343,7 @@ export default class UIManager extends BaseManager {
     /**
      * 初始化常驻
      */
-    private async initPersist(persistClass: UIInterface.UIClass<BaseComponent>): Promise<void> {
+    private async initPersist(persistClass: UIInterface.UIClass<BasePersist>): Promise<void> {
         return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
             G.ResMgr.load({
                 base: persistClass.prefabPath,
@@ -366,10 +367,17 @@ export default class UIManager extends BaseManager {
         });
     }
 
+    private async openPersist(persistClass: UIInterface.UIClass<BasePersist>): Promise<void> {
+        let persist: UIPersist = this._persistMap.get(cc.js.getClassName(persistClass));
+        if (!persist) {
+            await this.initPersist(persistClass);
+        }
+        this.addToCanvas();
+    }
+
     /**
      * 启动加载定时器
      * @param ms {number} 等待多久打开进度视图（单位：毫秒）
-     * @returns {number} 定时器 ID
      */
     private startSceneTimer(ms: number): void {
         if (this._sceneTimer !== null && this._sceneTimer !== undefined) {
