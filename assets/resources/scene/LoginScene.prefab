@@ -222,7 +222,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "New Button",
+    "_name": "btnLogin",
     "_objFlags": 0,
     "_parent": {
       "__id__": 1
@@ -439,8 +439,8 @@
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
     "_useOriginalSize": false,
-    "_string": "HallScene",
-    "_N$string": "HallScene",
+    "_string": "游客登录",
+    "_N$string": "游客登录",
     "_fontSize": 20,
     "_lineHeight": 40,
     "_enableWrapText": false,
