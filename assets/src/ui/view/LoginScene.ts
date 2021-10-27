@@ -28,10 +28,11 @@ export default class LoginScene extends BaseScene {
     }
 
     private onClickMario(): void {
-        G.UIMgr.openScene({
-            sceneClass: HallScene,
-            bundleName: BundleDefine.Name.RESOURCES,
-        })
+        G.UIMgr.openWaiting();
+        // G.UIMgr.openScene({
+        //     sceneClass: HallScene,
+        //     bundleName: BundleDefine.Name.RESOURCES,
+        // })
     }
 
     // update (dt) {}

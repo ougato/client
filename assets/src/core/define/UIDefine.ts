@@ -41,7 +41,7 @@ export enum ViewLayer {
 // 常驻层级
 export enum PersistLayer {
     // 锁屏
-    LOCK_SCREEN = 1,
+    LOCK_SCREEN = 0,
     // 对话框
     DIALOG,
     // 等待

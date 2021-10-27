@@ -239,6 +239,7 @@ export default class UIManager extends BaseManager {
                         this.addToCanvas(node);
                         this._currScene.resCache = resCache;
                         this._currScene.node = node;
+                        this._currScene.script = script;
                         if (param.onComplete) param.onComplete();
                         if (script.onLoaded) script.onLoaded.apply(script, data);
                     } else {
@@ -258,28 +259,28 @@ export default class UIManager extends BaseManager {
      * 打开防触摸视图
      */
     public openLockScreen(): void {
-
+        this.openPersist(LockScreenPersist, UIDefine.PersistLayer.LOCK_SCREEN);
     }
 
     /**
      * 关闭防触摸视图
      */
     public closeLockScreen(): void {
-
+        this.closePersist(LockScreenPersist);
     }
 
     /**
      * 打开加载进度视图（Loading）
      */
     public openLoading(): void {
-
+        this.openPersist(LoadingPersist, UIDefine.PersistLayer.LOADING);
     }
 
     /**
      * 关闭加载进度视图
      */
     public closeLoading(): void {
-
+        this.closePersist(LoadingPersist);
     }
 
     /**
@@ -301,14 +302,28 @@ export default class UIManager extends BaseManager {
      * 打开等待视图（转圈）
      */
     public openWaiting(): void {
-        // this._persist.showWaiting();
+        this.openPersist(WaitingPersist, UIDefine.PersistLayer.WAITING);
     }
 
     /**
      * 关闭等待视图
      */
     public closeWaiting(): void {
-        // this._persist.hideWaiting();
+        this.closePersist(WaitingPersist);
+    }
+
+    /**
+     * 打开对话框
+     */
+    public openDialog(): void {
+        
+    }
+
+    /**
+     * 关闭对话框
+     */
+    public closeDialog(): void {
+        this.closePersist(DialogPersist);
     }
 
     /**
@@ -353,8 +368,9 @@ export default class UIManager extends BaseManager {
                     if (resCache !== null && resCache.asset !== null) {
                         let persist: UIPersist = new UIPersist();
                         let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
+                        let script: BasePersist = persist.addScript(node, persistClass) as BasePersist;
                         persist.className = cc.js.getClassName(persistClass);;
-                        persist.addScript(node, persistClass);
+                        persist.script = script;
                         persist.resCache = resCache;
                         persist.node = node;
                         this._persistMap.set(persist.className, persist);
@@ -367,12 +383,26 @@ export default class UIManager extends BaseManager {
         });
     }
 
-    private async openPersist(persistClass: UIInterface.UIClass<BasePersist>): Promise<void> {
+    private async openPersist(persistClass: UIInterface.UIClass<BasePersist>, layer: UIDefine.PersistLayer): Promise<void> {
         let persist: UIPersist = this._persistMap.get(cc.js.getClassName(persistClass));
         if (!persist) {
             await this.initPersist(persistClass);
         }
-        this.addToCanvas();
+
+        if (persist.node.parent) {
+            persist.script.show();
+        } else {
+            this.addToCanvas(persist.node, layer);
+        }
+    }
+
+    private closePersist(persistClass: UIInterface.UIClass<BasePersist>): void {
+        let persist: UIPersist = this._persistMap.get(cc.js.getClassName(persistClass));
+        if (persist === undefined || persist === null) {
+            return;
+        }
+
+        persist.script.hide();
     }
 
     /**
@@ -403,9 +433,10 @@ export default class UIManager extends BaseManager {
     /**
      * 添加到 fire 场景下的 Canvas 画布的子节点
      * @param node {cc.Node} 需要添加的场景或者是常驻
+     * @param layer {number} 层级（有值代表常驻，没值代表场景）
      * @returns 
      */
-    private addToCanvas(node: cc.Node): void {
+    private addToCanvas(node: cc.Node, layer?: number): void {
         let realScene: cc.Scene = cc.director.getScene();
         if (!realScene) {
             G.LogMgr.warn(`游戏场景 fire 为空`);
@@ -418,10 +449,16 @@ export default class UIManager extends BaseManager {
             return;
         }
 
-        let zIndex: number = this._sceneTopZIndex + 1;
-        if (zIndex >= (UIDefine.CanvasLayer.SCENE + 1) * UIDefine.LAYER_INTERVAL) {
-            zIndex = this.resetSceneZIndex() + 1;
+        let zIndex: number = 0;
+        if (layer === null || layer === undefined) {
+            zIndex = this._sceneTopZIndex + 1;
+            if (zIndex >= (UIDefine.CanvasLayer.SCENE + 1) * UIDefine.LAYER_INTERVAL) {
+                zIndex = this.resetSceneZIndex() + 1;
+            }
+        } else {
+            zIndex = UIDefine.CanvasLayer.PERSIST + layer;
         }
+
         canvasNode.addChild(node, zIndex);
         this._sceneTopZIndex = zIndex;
     }

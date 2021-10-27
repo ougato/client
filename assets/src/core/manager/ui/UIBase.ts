@@ -56,7 +56,6 @@ export default class UIBase {
         return script;
     }
 
-
     /**
      * 释放资源
      */

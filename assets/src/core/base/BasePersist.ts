@@ -16,7 +16,21 @@ export default class BasePersist extends BaseComponent {
 
     protected onLoad(): void {
         super.onLoad();
-        
+
+    }
+
+    /**
+     * 重写显示
+     */
+    public show(): void {
+        this.node.active = true;
+    }
+
+    /**
+     * 重写隐藏
+     */
+    public hide(): void {
+        this.node.active = false;
     }
 
 }

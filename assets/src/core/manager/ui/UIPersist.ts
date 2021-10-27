@@ -7,9 +7,13 @@
  * Description  : 常驻类
  */
 
+import BasePersist from "../../base/BasePersist";
 import UIBase from "./UIBase";
 
 export default class UIPersist extends UIBase {
+
+    // 脚本
+    public script: BasePersist = null;
 
     constructor() {
         super()
