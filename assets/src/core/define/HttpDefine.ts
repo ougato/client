@@ -1,9 +1,9 @@
 /*
  * @Author       : ougato
  * @Date         : 2020-09-16 23:53:59
- * @LastEditors  : ougato
- * @LastEditTime : 2020-10-22 16:15:07
- * @FilePath     : \client242\assets\src\define\HttpDefine.ts
+ * LastEditors  : ougato
+ * LastEditTime : 2021-10-29 00:50:24
+ * FilePath     : /client/assets/src/core/define/HttpDefine.ts
  * @Description  : Http 定义
  */
 
@@ -21,9 +21,18 @@ export enum Method {
     UNLINE = "UNLINE",
 }
 
+export enum RequestHeader {
+    // 请求的与实体对应的 MIME 信息
+    CONTENT_TYPE = "Content-Type",
+}
+
+export enum ResponseHeader {
+    // 响应内容的 MIME 类型
+    CONTENT_TYPE = "Content-Type",
+}
+
 export enum ContentType {
     JSON = "application/json;charset=UTF-8",
-    FROM = "application/x-www-form-urlencoded;charset=UTF-8",
 }
 
 export enum StateType {

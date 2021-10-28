@@ -1,19 +1,19 @@
 /*
  * @Author       : ougato
  * @Date         : 2020-10-21 18:00:36
- * @LastEditors  : ougato
- * @LastEditTime : 2020-11-12 00:48:14
- * @FilePath     : \client243\assets\src\core\http\HttpXmlRequest.ts
+ * LastEditors  : ougato
+ * LastEditTime : 2021-10-29 01:10:34
+ * FilePath     : /client/assets/src/core/http/HttpXmlRequest.ts
  * @Description  : 原生上不支持 fetch 的写法，只有默认使用 XMLHttpRequest
  */
 
-import EventDefine from "../../define/EventDefine";
-import * as HttpDefine from "../../define/HttpDefine";
-import * as HttpInterface from "../../interface/HttpInterface";
+import EventDefine from "../define/EventDefine";
+import * as HttpDefine from "../define/HttpDefine";
+import * as HttpInterface from "../interface/HttpInterface";
 import Logger from "../machine/Logger";
 import EventManager from "../manager/event/EventManager";
 
-export default class HttpXmlRequest implements HttpInterface.Method {
+export default class HttpXmlRequest implements HttpInterface.Http {
 
     // XMLHttpRequest 对象
     private m_xhr: XMLHttpRequest = null;
@@ -42,34 +42,40 @@ export default class HttpXmlRequest implements HttpInterface.Method {
      * 请求 XMLHttpRequest
      * @param url {string} 链接 
      * @param method {HttpDefine.Method} 方法
-     * @param body {BodyInit} 数据
-     * @param responseType {XMLHttpRequestResponseType} 响应后的数据类型
+     * @param body {XMLHttpRequestBodyInit} 数据
+     * @param param {HttpInterface.RequestParam} 请求参数
      * @return {Promise<HttpInterface.ResponseInfo>}
      */
-    public async request(url: string, method: HttpDefine.Method, body?: BodyInit, responseType?: XMLHttpRequestResponseType, requestHeader?: Map<string, string>): Promise<HttpInterface.ResponseInfo> {
+    public async request(url: string, method: HttpDefine.Method, body?: XMLHttpRequestBodyInit, param?: HttpInterface.RequestParam): Promise<HttpInterface.ResponseInfo> {
         this.m_url = url;
         this.m_method = method;
+
         if (body === undefined) {
             body = null;
         }
-        if (responseType === null || responseType === undefined) {
-            responseType = "text";
+        if (param.responseType === null || param.responseType === undefined) {
+            param.responseType = "json";
+        }
+
+        if (param.requestHeader === null || param.requestHeader === undefined) {
+            param.requestHeader = new Map();
+        }
+        if (!param.requestHeader.has(HttpDefine.RequestHeader.CONTENT_TYPE)) {
+            param.requestHeader.set(HttpDefine.RequestHeader.CONTENT_TYPE, HttpDefine.ContentType.JSON);
         }
 
         return new Promise((resolve, reject) => {
-            Logger.getInstance().log(`${this.m_method} 请求 ${this.m_url}`);
-            console.log(body);
+            G.LogMgr.log(`${this.m_method} 请求 ${this.m_url}`);
+            G.LogMgr.log(body);
 
             this.m_requestResolve = resolve;
 
             this.m_xhr.open(method, url);
-            this.m_xhr.setRequestHeader("Content-Type", "application/json");
-            if (requestHeader) {
-                requestHeader.forEach((value: string, key: string, map: Map<string, string>) => {
-                    this.m_xhr.setRequestHeader(key, value);
-                });
-            }
-            this.m_xhr.responseType = responseType;
+
+            this.m_xhr.responseType = param.responseType;
+            param.requestHeader.forEach((value: string, key: HttpDefine.RequestHeader, map: Map<HttpDefine.RequestHeader, string>) => {
+                this.m_xhr.setRequestHeader(key, value);
+            });
 
             this.startTimer();
             this.m_xhr.send(body);
@@ -111,29 +117,6 @@ export default class HttpXmlRequest implements HttpInterface.Method {
     }
 
     /**
-     * 获取 Response 中的 body 数据
-     * @param response {Response} 收到数据
-     * @return {Promise<BodyInit>}
-     */
-    private async getBodyByResponse(responseType: XMLHttpRequestResponseType, response: Response): Promise<BodyInit> {
-        switch (responseType) {
-            case "":
-            case "text":
-                return await response.text();
-            case "json":
-                return await response.json();
-            case "arraybuffer":
-                return await response.arrayBuffer();
-            case "blob":
-                return await response.blob();
-            case "document":
-                return await response.formData();
-            default:
-                return await response.text();
-        }
-    }
-
-    /**
      * 取消请求回调
      */
     private onAbort(): void {
@@ -152,7 +135,7 @@ export default class HttpXmlRequest implements HttpInterface.Method {
             state: HttpDefine.StateType.ERROR,
             body: ""
         });
-        EventManager.getInstance().emit(EventDefine.HTTP_ERROR);
+        G.EventMgr.emit(EventDefine.HTTP_ERROR);
     }
 
     /**

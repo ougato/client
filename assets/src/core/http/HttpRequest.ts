@@ -1,9 +1,9 @@
 /*
  * @Author       : ougato
  * @Date         : 2020-09-15 23:51:40
- * @LastEditors  : ougato
- * @LastEditTime : 2020-10-22 17:13:06
- * @FilePath     : \client242\assets\src\core\http\HttpRequest.ts
+ * LastEditors  : ougato
+ * LastEditTime : 2021-10-29 00:16:06
+ * FilePath     : /client/assets/src/core/http/HttpRequest.ts
  * @Description  : Http 对外接口
  */
 
@@ -30,10 +30,10 @@ export default class HttpRequest {
      * GET 请求
      * @param url {string} 请求链接
      * @param responseType {XMLHttpRequestResponseType} 响应后的数据类型
-     * @param cls {T extends HttpInterface.Method} 执行请求对象
+     * @param cls {T extends HttpInterface.Http} 执行请求对象
      * @return {Promise<HttpInterface.ResponseInfo>} 调用者使用 .then 做回调参数，可使用链式调用
      */
-    public static async get<T extends HttpInterface.Method>(url: string, responseType?: XMLHttpRequestResponseType, cls?: (new () => T)): Promise<HttpInterface.ResponseInfo> {
+    public static async get<T extends HttpInterface.Http>(url: string, responseType?: XMLHttpRequestResponseType, cls?: (new () => T)): Promise<HttpInterface.ResponseInfo> {
         if (!this.checkLegal(url)) {
             console.warn(`GET 地址不合法 ${url}`);
             return;
@@ -54,10 +54,10 @@ export default class HttpRequest {
      * @param url {string} 请求链接
      * @param body {string} JSON 打包后的字符串数据
      * @param responseType {XMLHttpRequestResponseType} 响应后的数据类型
-     * @param cls {T extends HttpInterface.Method} 执行请求对象
+     * @param cls {T extends HttpInterface.Http} 执行请求对象
      * @return {Promise<HttpInterface.ResponseInfo>} 调用者使用 .then 或 .catch，可使用链式调用
      */
-    public static async post<T extends HttpInterface.Method>(url: string, body?: string, responseType?: XMLHttpRequestResponseType, requestHeader?: Map<string, string>, cls?: (new () => T)): Promise<HttpInterface.ResponseInfo> {
+    public static async post<T extends HttpInterface.Http>(url: string, body?: string, responseType?: XMLHttpRequestResponseType, requestHeader?: Map<string, string>, cls?: (new () => T)): Promise<HttpInterface.ResponseInfo> {
         if (!this.checkLegal(url)) {
             console.warn(`POST 地址不合法 ${url}`);
             return;
