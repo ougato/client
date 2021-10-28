@@ -631,7 +631,7 @@
     },
     "component": "",
     "_componentId": "de144aApv1L3rj5sVpU707G",
-    "handler": "onClickMario",
+    "handler": "onClickLoginGuest",
     "customEventData": ""
   },
   {

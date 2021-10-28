@@ -8,6 +8,7 @@
  */
 
 import BaseScene from "../../core/base/BaseScene";
+import HttpRequest from "../../core/http/HttpRequest";
 import HallScene from "./HallScene";
 
 const { ccclass, property } = cc._decorator;
@@ -30,7 +31,7 @@ export default class LoginScene extends BaseScene {
      * 点击游客登录
      */
     private onClickLoginGuest(): void {
-        
+
     }
 
     // update (dt) {}
