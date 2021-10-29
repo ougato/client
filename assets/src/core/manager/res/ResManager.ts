@@ -14,7 +14,6 @@ import * as ResInterface from "../../interface/ResInterface";
 import ResCache from "./ResCache";
 import * as ResDefine from "../../define/ResDefine";
 import * as BundleDefine from "../../define/BundleDefine";
-import * as EventDefine from "../../define/EventDefine";
 
 export default class ResManager extends BaseManager {
 

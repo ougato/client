@@ -1,17 +1,16 @@
 /*
  * @Author       : ougato
  * @Date         : 2020-09-15 23:51:40
- * @LastEditors  : ougato
- * @LastEditTime : 2020-11-12 00:47:04
- * @FilePath     : \client243\assets\src\core\http\HttpFetch.ts
+ * LastEditors  : ougato
+ * LastEditTime : 2021-10-29 16:57:37
+ * FilePath     : /client/assets/src/core/http/HttpFetch.ts
  * @Description  : HttpFetch 请求对象
  */
 
-import * as HttpDefine from "../../define/HttpDefine";
-import * as HttpInterface from "../../interface/HttpInterface";
-import Logger from "../machine/Logger";
+import * as HttpDefine from "../define/HttpDefine";
+import * as HttpInterface from "../interface/HttpInterface";
 
-export default class HttpFetch implements HttpInterface.Method {
+export default class HttpFetch implements HttpInterface.Http {
 
     // 取消控制器
     private m_abortController: AbortController = null;
@@ -59,16 +58,35 @@ export default class HttpFetch implements HttpInterface.Method {
      * @param responseType {XMLHttpRequestResponseType} 响应后的数据类型 // 
      * @return {Promise<HttpInterface.ResponseInfo>}
      */
-    public async request(url: string, method: HttpDefine.Method, body?: BodyInit, responseType?: XMLHttpRequestResponseType): Promise<HttpInterface.ResponseInfo> {
+    public async request(url: string, method: HttpDefine.Method, body?: BodyInit, param?: HttpInterface.RequestParam): Promise<HttpInterface.ResponseInfo> {
         this.m_url = url;
         this.m_method = method;
-        if (responseType === null || responseType === undefined) {
-            responseType = "text";
+
+        if (!param) {
+            param = {};
+        }
+
+        if (param.responseType === null || param.responseType === undefined) {
+            param.responseType = "json";
+        }
+
+        if (param.requestHeader === null || param.requestHeader === undefined) {
+            param.requestHeader = new Map();
+        }
+        if (!param.requestHeader.has(HttpDefine.RequestHeader.CONTENT_TYPE)) {
+            param.requestHeader.set(HttpDefine.RequestHeader.CONTENT_TYPE, HttpDefine.ContentType.JSON);
+        }
+
+        if (param.responseHeader === null || param.responseHeader === undefined) {
+            param.responseHeader = new Map();
+        }
+        if (!param.responseHeader.has(HttpDefine.ResponseHeader.CONTENT_TYPE)) {
+            param.responseHeader.set(HttpDefine.ResponseHeader.CONTENT_TYPE, HttpDefine.ContentType.JSON);
         }
 
         return new Promise((resolve: (data: HttpInterface.ResponseInfo) => void) => {
-            Logger.getInstance().log(`${this.m_method} 请求 ${this.m_url}`);
-            console.log(body);
+            G.LogMgr.log(`${this.m_method} 请求 ${this.m_url}`);
+            G.LogMgr.log(body);
             this.m_requestInfo.method = method;
             if (body !== null || body !== undefined) {
                 this.m_requestInfo.body = body;
@@ -82,14 +100,14 @@ export default class HttpFetch implements HttpInterface.Method {
             this.startTimer();
             fetch(url, this.m_requestInfo).then(async (response: Response) => {
                 this.stopTimer();
-                Logger.getInstance().log(`${this.m_method} 响应 ${status}`);
+                G.LogMgr.log(`${this.m_method} 响应 ${response.status}`);
                 if (response.ok) {
                     data.state = HttpDefine.StateType.OK;
-                    data.body = await this.getBodyByResponse(responseType, response);
-                    console.log(data.body);
+                    data.body = await this.getBodyByResponse(param.responseType, response) as any;
+                    G.LogMgr.log(data.body);
                 } else {
                     data.state = HttpDefine.StateType.ERROR;
-                    data.body = response.statusText;
+                    data.body = null;
                 }
                 resolve(data);
             }).catch((e) => {
@@ -128,14 +146,13 @@ export default class HttpFetch implements HttpInterface.Method {
         }
     }
 
-
     /**
      * 开始定时器
      */
     private startTimer(): void {
         if (this.m_timer === null) {
             this.m_timer = setTimeout(() => {
-                Logger.getInstance().warn(`${this.m_method} 超时 ${this.m_url}`);
+                G.LogMgr.warn(`${this.m_method} 超时 ${this.m_url}`);
                 this.m_abortController.abort();
                 this.m_timer = null;
             }, HttpDefine.TIMEOUT * 1000);
