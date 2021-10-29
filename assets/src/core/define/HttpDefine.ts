@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-16 23:53:59
  * LastEditors  : ougato
- * LastEditTime : 2021-10-29 16:45:39
+ * LastEditTime : 2021-10-30 02:45:06
  * FilePath     : /client/assets/src/core/define/HttpDefine.ts
  * @Description  : Http 定义
  */
@@ -52,3 +52,5 @@ export enum ReadyState {
 
 // 超时时间（单位：秒）
 export const TIMEOUT: number = 10;
+// 等待界面超时时间（单位：秒）
+export const WAITING_TIMEOUT: number = 1;

@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2020-10-21 18:00:36
  * LastEditors  : ougato
- * LastEditTime : 2021-10-29 16:52:03
+ * LastEditTime : 2021-10-30 02:51:42
  * FilePath     : /client/assets/src/core/http/HttpXmlRequest.ts
  * Description  : 原生上不支持 fetch 的写法，只有默认使用 XMLHttpRequest
  */
@@ -23,6 +23,8 @@ export default class HttpXmlRequest implements HttpInterface.Http {
     private m_url: string = null;
     // 请求方法
     private m_method: HttpDefine.Method = null;
+    // 等待界面定时器
+    private m_waitingTimer: NodeJS.Timeout = null;
 
     constructor() {
         this.m_xhr = new XMLHttpRequest();
@@ -128,6 +130,29 @@ export default class HttpXmlRequest implements HttpInterface.Http {
     }
 
     /**
+     * 启动等待界面定时器
+     */
+    private startWaitingTimer(): void {
+        this.stopWaitingTimer();
+        G.UIMgr.openLockScreen();
+        this.m_waitingTimer = setTimeout(() => {
+            G.UIMgr.openWaiting();
+        }, HttpDefine.WAITING_TIMEOUT * 1000);
+    }
+
+    /**
+     * 停止等待界面定时器
+     */
+    private stopWaitingTimer(): void {
+        if (this.m_waitingTimer !== null && this.m_waitingTimer !== undefined) {
+            clearTimeout(this.m_waitingTimer);
+            this.m_waitingTimer = null;
+            G.UIMgr.closeLockScreen();
+            G.UIMgr.closeWaiting();
+        }
+    }
+
+    /**
      * 取消请求回调
      * 当调用 xhr.abort() 后触发
      */
@@ -171,7 +196,7 @@ export default class HttpXmlRequest implements HttpInterface.Http {
             state: HttpDefine.StateType.OK,
             body: null
         });
-        G.UIMgr.closeWaiting();
+        this.stopWaitingTimer();
     }
 
     /**
@@ -179,7 +204,7 @@ export default class HttpXmlRequest implements HttpInterface.Http {
      * 调用 xhr.send() 方法后立即触发，若 xhr.send() 未被调用则不会触发此事件。
      */
     private onLoadstart(): void {
-        G.UIMgr.openWaiting();
+        this.startWaitingTimer();
     }
 
     /**

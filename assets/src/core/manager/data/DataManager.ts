@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-10-29 17:28:20
  * LastEditors  : ougato
- * LastEditTime : 2021-10-29 18:30:36
+ * LastEditTime : 2021-10-29 23:55:46
  * FilePath     : /client/assets/src/core/manager/data/DataManager.ts
  * Description  : 数据管理器
  */
@@ -37,6 +37,17 @@ export default class DataManager extends BaseManager {
 
         this.m_dataMap = new Map();
     }
+    
+    /**
+     * 销毁 清理所有数据
+     */
+     protected destroy(): void {
+        this.m_dataMap.forEach((value: BaseData, key: string, map: Map<string, BaseData>) => {
+            value.destroy();
+        });
+        this.m_dataMap.clear();
+        this.m_dataMap = null;
+    }
 
     /**
      * 获取数据对象
@@ -56,7 +67,7 @@ export default class DataManager extends BaseManager {
      * 添加数据
      * @param dataClass {DataInterface.DataClass<T>} 数据类
      */
-    public add<T extends BaseData>(dataClass: DataInterface.DataClass<T>): BaseData {
+    public add<T extends BaseData>(dataClass: DataInterface.DataClass<T>): T {
         let className: string = cc.js.getClassName(dataClass);
 
         if (this.m_dataMap === null) {
@@ -64,7 +75,7 @@ export default class DataManager extends BaseManager {
             return;
         }
 
-        let baseData: BaseData = this.m_dataMap.get(className);
+        let baseData: T = this.m_dataMap.get(className) as T;
         if (baseData) {
             G.LogMgr.warn(`已经存在 ${className} 对象`);
             return baseData;
@@ -73,17 +84,6 @@ export default class DataManager extends BaseManager {
         baseData = new dataClass();
         this.m_dataMap.set(className, baseData);
         return baseData;
-    }
-
-    /**
-     * 销毁 清理所有数据
-     */
-    protected destroy(): void {
-        this.m_dataMap.forEach((value: BaseData, key: string, map: Map<string, BaseData>) => {
-            value.destroy();
-        });
-        this.m_dataMap.clear();
-        this.m_dataMap = null;
     }
 
 }

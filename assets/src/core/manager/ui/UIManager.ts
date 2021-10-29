@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:36:55
  * LastEditors  : ougato
- * LastEditTime : 2021-10-22 01:55:27
+ * LastEditTime : 2021-10-30 00:46:54
  * FilePath     : /client/assets/src/core/manager/ui/UIManager.ts
  * Description  : 界面管理器、所有的视图和场景、都由 UIManager 统一管理、包括打开视图|关闭视图|切换场景等等
  */
@@ -78,14 +78,6 @@ export default class UIManager extends BaseManager {
         this._currScene = null;
         this._sceneTopZIndex = null;
 
-    }
-
-    public async asyncInit(): Promise<void> {
-        return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
-            Promise.all([this.initPersist(LockScreenPersist), this.initPersist(LoadingPersist), this.initPersist(WaitingPersist), this.initPersist(DialogPersist)]).then(() => {
-                resolve();
-            });
-        })
     }
 
     /**
@@ -356,9 +348,9 @@ export default class UIManager extends BaseManager {
     }
 
     /**
-     * 初始化常驻
+     * 添加常驻
      */
-    private async initPersist(persistClass: UIInterface.UIClass<BasePersist>): Promise<void> {
+    public async addPersist(persistClass: UIInterface.UIClass<BasePersist>): Promise<void> {
         return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
             G.ResMgr.load({
                 base: persistClass.prefabPath,
@@ -386,7 +378,7 @@ export default class UIManager extends BaseManager {
     private async openPersist(persistClass: UIInterface.UIClass<BasePersist>, layer: UIDefine.PersistLayer): Promise<void> {
         let persist: UIPersist = this._persistMap.get(cc.js.getClassName(persistClass));
         if (!persist) {
-            await this.initPersist(persistClass);
+            await this.addPersist(persistClass);
         }
 
         if (persist.node.parent) {
