@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-16 23:56:17
  * LastEditors  : ougato
- * LastEditTime : 2021-10-29 15:59:25
+ * LastEditTime : 2021-11-01 02:35:03
  * FilePath     : /client/assets/src/core/interface/HttpInterface.ts
  * @Description  : Http 接口
  */
@@ -30,9 +30,9 @@ export interface ResponseInfo {
 // 请求参数
 export interface RequestParam {
     // 请求头
-    requestHeader?: Map<HttpDefine.RequestHeader, string>,
+    requestHeader?: Map<HttpDefine.RequestHeader | string, string>,
     // 响应头
-    responseHeader?: Map<HttpDefine.ResponseHeader, string>,
+    responseHeader?: Map<HttpDefine.ResponseHeader | string, string>,
     // 响应类型
     responseType?: XMLHttpRequestResponseType,
 }

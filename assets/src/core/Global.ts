@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 01:43:20
  * LastEditors  : ougato
- * LastEditTime : 2021-10-29 23:37:58
+ * LastEditTime : 2021-11-01 00:45:26
  * FilePath     : /client/assets/src/core/Global.ts
  * Description  : 
  */
@@ -13,6 +13,8 @@ import ResManager from "./manager/res/ResManager";
 import UIManager from "./manager/ui/UIManager";
 import LangManager from "./manager/lang/LangManager";
 import DataManager from "./manager/data/DataManager";
+import ControllerManager from "./manager/controller/ControllerManager";
+import LocalStorageManager from "./manager/localStorage/LocalStorageManager";
 
 export default class Global {
 
@@ -88,4 +90,21 @@ export default class Global {
     public get LangMgr(): LangManager {
         return LangManager.getInstance();
     }
+
+    /**
+     * 控制管理器
+     * @returns {ControllerManager} 实例对象
+     */
+    public get ControllerMgr(): ControllerManager {
+        return ControllerManager.getInstance();
+    }
+
+    /**
+     * 本地存储管理器
+     * @returns {ControllerManager} 实例对象
+     */
+    public get LocalStorageMgr(): LocalStorageManager {
+        return LocalStorageManager.getInstance()
+    }
+
 }

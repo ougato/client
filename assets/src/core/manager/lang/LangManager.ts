@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-11 17:01:18
  * LastEditors  : ougato
- * LastEditTime : 2021-10-10 21:46:22
+ * LastEditTime : 2021-11-01 00:46:55
  * FilePath     : /client/assets/src/core/manager/lang/LangManager.ts
  * Description  : 语言管理器、本地话多语言的加载和切换
  */
@@ -14,7 +14,6 @@ import * as LangInterface from "../../interface/LangInterface";
 import * as LocalStorageDefine from "../../define/LocalStorageDefine";
 import ResCache from "../res/ResCache";
 import ResManager from "../res/ResManager";
-import LocalStorageManager from "../localStorage/LocalStorageManager";
 import LangUtils from "../../utils/LangUtils";
 
 export default class LangManager extends BaseManager {
@@ -44,11 +43,10 @@ export default class LangManager extends BaseManager {
         super();
 
         this._dataMap = new Map();
-        this._lang = this.getCurrLang();
     }
 
-    public init(): void {
-        
+    public async asyncInit(): Promise<void> {
+        this._lang = this.getCurrLang();
     }
 
     /**
@@ -56,7 +54,7 @@ export default class LangManager extends BaseManager {
      * @returns {LangDefine.Lang} 当前语言
      */
     private getCurrLang(): LangDefine.Lang {
-        let lang: LangDefine.Lang = LocalStorageManager.getInstance().getItem(LocalStorageDefine.Lang.LANG) as LangDefine.Lang;
+        let lang: LangDefine.Lang = G.LocalStorageMgr.getItem(LocalStorageDefine.Lang.LANG) as LangDefine.Lang;
         if (lang === null) {
             lang = LangUtils.transOsLang(cc.sys.language);
         }
@@ -194,7 +192,7 @@ export default class LangManager extends BaseManager {
     //  * @param md5 {string} 多语言校验码
     //  */
     // private setLocalStorageMD5(bundleName: BundleDefine.Name, md5: string): void {
-    //     LocalStorageManager.getInstance().setItem(this.getLocalStorageMD5Key(bundleName), md5);
+    //     G.LocalStoreageMgr.setItem(this.getLocalStorageMD5Key(bundleName), md5);
     // }
 
     // /**
@@ -220,7 +218,7 @@ export default class LangManager extends BaseManager {
     //  * @param json {object} 内容
     //  */
     // private setLocalStorageJson(bundleName: BundleDefine.Name, json: object): void {
-    //     LocalStorageManager.getInstance().setItem(this.getLocalStorageJsonKey(bundleName), json);
+    //     G.LocalStoreageMgr.setItem(this.getLocalStorageJsonKey(bundleName), json);
     // }
 
     // /**
@@ -258,9 +256,9 @@ export default class LangManager extends BaseManager {
     //         if (md5 === null) {
     //             resolve(false);
     //         } else {
-    //             let localStorageMD5: string = LocalStorageManager.getInstance().getItem(this.getLocalStorageMD5Key(bundleName)) as string;
+    //             let localStorageMD5: string = G.LocalStoreageMgr.getItem(this.getLocalStorageMD5Key(bundleName)) as string;
     //             if (localStorageMD5 === md5) {
-    //                 let localStorageJson: object = LocalStorageManager.getInstance().getItem(this.getLocalStorageJsonKey(bundleName)) as object;
+    //                 let localStorageJson: object = G.LocalStoreageMgr.getItem(this.getLocalStorageJsonKey(bundleName)) as object;
     //                 if (localStorageJson === null) {
     //                     this.loadJson(bundleName);
     //                 } else {

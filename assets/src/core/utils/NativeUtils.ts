@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-10-12 00:55:14
  * LastEditors  : ougato
- * LastEditTime : 2021-10-12 01:06:26
+ * LastEditTime : 2021-11-01 02:20:37
  * FilePath     : /client/assets/src/core/utils/NativeUtils.ts
  * Description  : 原生工具
  */
@@ -35,6 +35,76 @@ export default class MathUtils {
             value = cc.sys.getNetworkType();
         }
 
+        return value;
+    }
+
+    /**
+     * 存储设备唯一码
+     * @param uuid {string} 设备唯一码
+     */
+    public static saveUUID(uuid: string): void {
+        if (cc.sys.isNative) {
+            if (cc.sys.os === cc.sys.OS_ANDROID) {
+
+            } else if (cc.sys.os === cc.sys.OS_IOS) {
+
+            }
+        }
+
+        // TODO: 暂停使用本地存储，后面需要删除
+        G.LocalStorageMgr.setItem("LOCAL_UUID", uuid);
+        
+    }
+
+    /**
+     * 获取设备唯一码
+     * @returns {string} 设备唯一码
+     */
+    public static getUUID(): string {
+        let value: string = null;
+        if (cc.sys.isNative) {
+            if (cc.sys.os === cc.sys.OS_ANDROID) {
+
+            } else if (cc.sys.os === cc.sys.OS_IOS) {
+
+            }
+        }
+
+        // TODO: 暂停使用本地存储，后面需要删除
+        value = G.LocalStorageMgr.getItem("LOCAL_UUID") as string;
+
+        return value;
+    }
+
+    /**
+     * 获取系统
+     * @returns {string} 系统
+     */
+    public static getOS(): string {
+        let value: string = null;
+        if (cc.sys.isNative) {
+            if (cc.sys.os === cc.sys.OS_ANDROID) {
+
+            } else if (cc.sys.os === cc.sys.OS_IOS) {
+
+            }
+        }
+        return value;
+    }
+
+    /**
+     * 获取系统版本号
+     * @returns {string} 系统版本号
+     */
+    public static getOSVersion(): string {
+        let value: string = null;
+        if (cc.sys.isNative) {
+            if (cc.sys.os === cc.sys.OS_ANDROID) {
+
+            } else if (cc.sys.os === cc.sys.OS_IOS) {
+
+            }
+        }
         return value;
     }
 

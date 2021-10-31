@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-10-29 17:28:20
  * LastEditors  : ougato
- * LastEditTime : 2021-10-29 23:55:46
+ * LastEditTime : 2021-10-31 00:30:01
  * FilePath     : /client/assets/src/core/manager/data/DataManager.ts
  * Description  : 数据管理器
  */
@@ -37,11 +37,11 @@ export default class DataManager extends BaseManager {
 
         this.m_dataMap = new Map();
     }
-    
+
     /**
      * 销毁 清理所有数据
      */
-     protected destroy(): void {
+    protected destroy(): void {
         this.m_dataMap.forEach((value: BaseData, key: string, map: Map<string, BaseData>) => {
             value.destroy();
         });
@@ -54,11 +54,11 @@ export default class DataManager extends BaseManager {
      * @param dataClass 数据类
      * @returns {BaseData} 数据对象
      */
-    public get<T extends BaseData>(dataClass: DataInterface.DataClass<T>): BaseData {
+    public get<T extends BaseData>(dataClass: DataInterface.DataClass<T>): T {
         let className: string = cc.js.getClassName(dataClass);
-        let baseData: BaseData = this.m_dataMap.get(className);
-        if (baseData === undefined) {
-            baseData = null;
+        let baseData: T = this.m_dataMap.get(className) as T;
+        if (baseData === undefined || baseData === null) {
+            baseData = this.add(dataClass);
         }
         return baseData;
     }
@@ -85,5 +85,24 @@ export default class DataManager extends BaseManager {
         this.m_dataMap.set(className, baseData);
         return baseData;
     }
+
+    
+    /**
+     * 删除数据
+     */
+     public del<T extends BaseData>(dataClass: DataInterface.DataClass<T>): void {
+        let className: string = cc.js.getClassName(dataClass);
+
+        if (this.m_dataMap === null) {
+            return;
+        }
+
+        let baseData: T = this.m_dataMap.get(className) as T;
+        if (baseData) {
+            baseData.destroy();
+            this.m_dataMap.delete(className);
+        }
+    }
+
 
 }
