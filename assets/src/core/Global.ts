@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 01:43:20
  * LastEditors  : ougato
- * LastEditTime : 2021-11-01 00:45:26
+ * LastEditTime : 2021-11-01 15:58:36
  * FilePath     : /client/assets/src/core/Global.ts
  * Description  : 
  */
@@ -15,6 +15,7 @@ import LangManager from "./manager/lang/LangManager";
 import DataManager from "./manager/data/DataManager";
 import ControllerManager from "./manager/controller/ControllerManager";
 import LocalStorageManager from "./manager/localStorage/LocalStorageManager";
+import NetworkManager from "./manager/network/NetworkManager";
 
 export default class Global {
 
@@ -105,6 +106,13 @@ export default class Global {
      */
     public get LocalStorageMgr(): LocalStorageManager {
         return LocalStorageManager.getInstance()
+    }
+
+    /**
+     * 网络管理器
+     */
+    public get NetworkMgr(): NetworkManager {
+        return NetworkManager.getInstance();
     }
 
 }

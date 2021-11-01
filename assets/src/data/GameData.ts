@@ -8,7 +8,7 @@
  */
 
 import BaseData from "../core/base/BaseData";
-import * as WebSocketInterface from "../core/interface/WebSocketInterface";
+import * as NetworkInterface from "../core/interface/NetworkInterface";
 
 export default class GameData extends BaseData {
 
@@ -21,7 +21,7 @@ export default class GameData extends BaseData {
     // 渠道号
     public channel: string = null;
     // 游戏长连接服务器列表
-    public webSocketList: WebSocketInterface.PartInfo[] = null;
+    public webSocketList: NetworkInterface.WebSocketPart[] = null;
 
     constructor() {
         super();

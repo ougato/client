@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-10-30 23:12:46
  * LastEditors  : ougato
- * LastEditTime : 2021-11-01 15:45:07
+ * LastEditTime : 2021-11-01 16:11:15
  * FilePath     : /client/assets/src/controller/HallController.ts
  * Description  : 大厅控制器
  */
@@ -17,7 +17,6 @@ import HttpUtils from "../utils/HttpUtils";
 import * as APIConfig from "../config/APIConfig";
 import * as HttpInterface from "../core/interface/HttpInterface";
 import * as HttpParamInterface from "../interface/HttpParamInterface";
-import * as WebSocketInterface from "../core/interface/WebSocketInterface";
 
 // 请求登陆最大次数
 const LOGIN_MAX_COUNT: number = 3;
