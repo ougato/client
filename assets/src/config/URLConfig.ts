@@ -8,6 +8,6 @@
  */
 
 // 动态获取主机接口（主）
-export const DYNAMIC_GET_HOST_URL: string = "http://api.dev.xiuxian.pgtgame.com/home/config/xiuxian";
+export const GET_DYNAMIC_HOST_URL: string = "http://api.dev.xiuxian.pgtgame.com/home/config/xiuxian";
 // 动态获取主机接口（备用）
-export const DYNAMIC_GET_HOST_URL_BACKUP: string = "http://api.dev.xiuxian.pgtgame.com/home/config/xiuxian";
+export const GET_DYNAMIC_HOST_URL_BACKUP: string = "http://api.dev.xiuxian.pgtgame.com/home/config/xiuxian";

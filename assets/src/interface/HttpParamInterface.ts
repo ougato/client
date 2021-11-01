@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-11-06 01:47:10
  * LastEditors  : ougato
- * LastEditTime : 2021-11-01 02:42:09
+ * LastEditTime : 2021-11-01 15:41:23
  * FilePath     : /client/assets/src/interface/HttpParamInterface.ts
  * @Description  : Http 的请求和响应接口
  */
@@ -18,6 +18,8 @@ export interface HttpResponse {
 export interface HttpDynamicHostResponse {
     // 登陆主机
     loginURL: string,
+    // 游戏主机
+    gameURL: string,
     // 下载 APP 主机
     appURL: string,
     // 热更主机
@@ -72,11 +74,4 @@ export interface HttpGetWebSocketHeader {
     channel?: string,
     // 设备系统
     os?: string,
-}
-
-/**
- * 获取长链接响应
- */
-export interface HttpGetWebSocketResponse {
-
 }

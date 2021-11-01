@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-10-30 22:43:02
  * LastEditors  : ougato
- * LastEditTime : 2021-10-31 00:29:36
+ * LastEditTime : 2021-11-01 11:10:21
  * FilePath     : /client/assets/src/core/manager/controller/ControllerManager.ts
  * Description  : 控制管理器
  */
@@ -82,6 +82,8 @@ export default class ControllerManager extends BaseManager {
         }
 
         baseController = new controllerClass();
+        baseController.register();
+        
         this.m_controllerMap.set(className, baseController);
         return baseController;
     }

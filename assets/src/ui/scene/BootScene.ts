@@ -2,32 +2,32 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2021-11-01 02:18:10
+ * LastEditTime : 2021-11-01 14:58:08
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
 
 import BaseScene from "../../core/base/BaseScene";
 import LoginScene from "../view/LoginScene";
-import * as URLConfig from "../../config/URLConfig";
-import * as HttpInterface from "../../core/interface/HttpInterface";
 import HttpRequest from "../../core/http/HttpRequest";
 import LockScreenPersist from "../persist/LockScreenPersist";
 import LoadingPersist from "../persist/LoadingPersist";
 import WaitingPersist from "../persist/WaitingPersist";
 import DialogPersist from "../persist/DialogPersist";
-import * as HttpDefine from "../../core/define/HttpDefine";
-import * as HttpParamInterface from "../../interface/HttpParamInterface";
 import HostData from "../../data/HostData";
-import HttpController from "../../controller/HttpController";
 import NativeUtils from "../../core/utils/NativeUtils";
 import DeviceData from "../../data/DeviceData";
+import HttpUtils from "../../utils/HttpUtils";
+import HallController from "../../controller/HallController";
+import * as URLConfig from "../../config/URLConfig";
+import * as HttpInterface from "../../core/interface/HttpInterface";
+import * as HttpParamInterface from "../../interface/HttpParamInterface";
 
-// 请求动态主机最大次数
+// 请求获取动态主机最大次数
 const GET_DYNAMIC_HOST_MAX_COUNT: number = 3;
-// 请求动态备用主机最大次数
+// 请求获取动态备用主机最大次数
 const GET_DYNAMIC_HOST_BACKUP_MAX_COUNT: number = 3;
-// 请求设备唯一码最大次数
+// 请求获取设备唯一码最大次数
 const GET_UUID_MAX_COUNT = 3;
 
 const { ccclass, property } = cc._decorator;
@@ -76,11 +76,11 @@ export default class BootScene extends BaseScene {
              */
             let getDynamicHost: Function = (url: string) => {
                 HttpRequest.get(url).then((responseInfo: HttpInterface.ResponseInfo) => {
-                    if (responseInfo.state === HttpDefine.StateType.OK &&
-                        responseInfo.body.code === 0) {
+                    if (HttpUtils.isOK(responseInfo)) {
                         let responseData: HttpParamInterface.HttpDynamicHostResponse = responseInfo.body.data;
                         let hostData: HostData = G.DataMgr.add(HostData);
                         hostData.loginHost = responseData.loginURL;
+                        hostData.gameHost = responseData.gameURL;
                         hostData.appHost = responseData.appURL;
                         hostData.hotUpdateHost = responseData.hotUpdateURL;
                         hostData.payHost = responseData.payURL;
@@ -89,9 +89,9 @@ export default class BootScene extends BaseScene {
                         resolve();
                     } else {
                         if (++count < GET_DYNAMIC_HOST_MAX_COUNT) {
-                            return getDynamicHost(URLConfig.DYNAMIC_GET_HOST_URL);
+                            return getDynamicHost(URLConfig.GET_DYNAMIC_HOST_URL);
                         } else if (count >= GET_DYNAMIC_HOST_MAX_COUNT && count < GET_DYNAMIC_HOST_MAX_COUNT + GET_DYNAMIC_HOST_BACKUP_MAX_COUNT) {
-                            return getDynamicHost(URLConfig.DYNAMIC_GET_HOST_URL_BACKUP);
+                            return getDynamicHost(URLConfig.GET_DYNAMIC_HOST_URL_BACKUP);
                         } else {
                             // TODO: 弹窗重试
                             G.LogMgr.error("获取动态主机失败");
@@ -100,7 +100,7 @@ export default class BootScene extends BaseScene {
                 });
             }
 
-            getDynamicHost(URLConfig.DYNAMIC_GET_HOST_URL);
+            getDynamicHost(URLConfig.GET_DYNAMIC_HOST_URL);
         });
     }
 
@@ -116,9 +116,8 @@ export default class BootScene extends BaseScene {
                 // 获取设备唯一码次数
                 let count: number = 0
                 let getUUID: Function = () => {
-                    G.ControllerMgr.get(HttpController).uuidRequest().then((responseInfo: HttpInterface.ResponseInfo) => {
-                        if (responseInfo.state === HttpDefine.StateType.OK &&
-                            responseInfo.body.code === 0) {
+                    G.ControllerMgr.get(HallController).uuidRequest().then((responseInfo: HttpInterface.ResponseInfo) => {
+                        if (HttpUtils.isOK(responseInfo)) {
                             count = 0;
                             let responseData: HttpParamInterface.HttpGetUUIDResponse = responseInfo.body.data;
                             resolve(responseData.deviceId);
@@ -127,7 +126,7 @@ export default class BootScene extends BaseScene {
                                 return getUUID();
                             } else {
                                 // TODO: 弹窗重试
-                                G.LogMgr.error("获取社别唯一码失败");
+                                G.LogMgr.error("获取设备唯一码失败");
                             }
                         }
                     });

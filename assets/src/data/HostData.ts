@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-10-29 17:39:28
  * LastEditors  : ougato
- * LastEditTime : 2021-10-30 01:20:22
+ * LastEditTime : 2021-11-01 11:22:04
  * FilePath     : /client/assets/src/data/HostData.ts
  * Description  : 主机数据
  */
@@ -13,6 +13,8 @@ export default class HostData extends BaseData {
 
     // 登陆主机
     public loginHost: string = null;
+    // 游戏主机
+    public gameHost: string = null;
     // 下载 APP 主机
     public appHost: string = null;
     // 热更主机
@@ -29,6 +31,7 @@ export default class HostData extends BaseData {
 
     public destroy(): void {
         this.loginHost = null;
+        this.gameHost = null;
         this.appHost = null;
         this.hotUpdateHost = null;
         this.payHost = null;
