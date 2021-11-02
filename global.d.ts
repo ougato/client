@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 01:38:17
  * LastEditors  : ougato
- * LastEditTime : 2021-07-10 02:34:27
+ * LastEditTime : 2021-11-02 11:29:46
  * FilePath     : /client/global.d.ts
  * Description  : 全局申明
  */
@@ -19,4 +19,6 @@ declare global {
 
     // 资源类型
     type AssetsType = typeof cc.Asset;
+    // 长连接协议
+    type WebSocketProtocol = "ws" | "wss";
 }

@@ -15,7 +15,7 @@
       "ver": "1.0.4",
       "uuid": "f125a86b-50c3-4af3-9285-9c33db7a8bd4",
       "rawTextureUuid": "e45aa15a-31c4-4b1b-b2d3-3d3161bfc1bd",
-      "trimType": "auto",
+      "trimType": "none",
       "trimThreshold": 1,
       "rotated": false,
       "offsetX": 0,
@@ -26,10 +26,10 @@
       "height": 81,
       "rawWidth": 86,
       "rawHeight": 81,
-      "borderTop": 0,
-      "borderBottom": 0,
-      "borderLeft": 0,
-      "borderRight": 0,
+      "borderTop": 36,
+      "borderBottom": 35,
+      "borderLeft": 35,
+      "borderRight": 36,
       "subMetas": {}
     }
   }

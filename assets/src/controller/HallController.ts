@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-10-30 23:12:46
  * LastEditors  : ougato
- * LastEditTime : 2021-11-01 16:11:15
+ * LastEditTime : 2021-11-02 15:50:18
  * FilePath     : /client/assets/src/controller/HallController.ts
  * Description  : 大厅控制器
  */
@@ -17,6 +17,9 @@ import HttpUtils from "../utils/HttpUtils";
 import * as APIConfig from "../config/APIConfig";
 import * as HttpInterface from "../core/interface/HttpInterface";
 import * as HttpParamInterface from "../interface/HttpParamInterface";
+import * as NetworkInterface from "../core/interface/NetworkInterface";
+import WebSocketData from "../data/WebSocketData";
+import * as EventDefine from "../core/define/EventDefine";
 
 // 请求登陆最大次数
 const LOGIN_MAX_COUNT: number = 3;
@@ -33,6 +36,7 @@ export default class HallController extends BaseController {
     public register(): void {
         super.register();
 
+        G.EventMgr.on(EventDefine.NetEvent.NET_WS_CONNECTED, this, this.onNetWsConnected);
     }
 
     public unregister(): void {
@@ -97,23 +101,22 @@ export default class HallController extends BaseController {
      * 获取长链接请求
      * @returns {Promise<HttpInterface.ResponseInfo>} 响应数据
      */
-    public async getWebSocketRequest(header: HttpParamInterface.HttpGetWebSocketHeader): Promise<HttpInterface.ResponseInfo> {
+    public async getWebSocketRequest(headerData: HttpParamInterface.HttpGetWebSocketHeader): Promise<HttpInterface.ResponseInfo> {
         return new Promise((resolve: (value: HttpInterface.ResponseInfo | PromiseLike<HttpInterface.ResponseInfo>) => void, reject: (reason?: any) => void) => {
             // 获取长链接次数
             let count: number = 0
             let getWebSocketRequest: Function = () => {
                 let requestHeader: Map<string, string> = new Map();
-                requestHeader.set("Jy-Game-Access-Token", header.token);
-                if (header.clientVersion === null) {
+                requestHeader.set("Jy-Game-Access-Token", headerData.token);
+                if (headerData.clientVersion === null) {
                     requestHeader.set("Jy-Game-Version", "");
                 }
-                if (header.channel === null) {
+                if (headerData.channel === null) {
                     requestHeader.set("Jy-Game-Utm-Source", "");
                 }
-                if (header.os === null) {
+                if (headerData.os === null) {
                     requestHeader.set("Jy-Game-Os", "");
                 }
-
 
                 let requestParam: HttpInterface.RequestParam = {
                     requestHeader: requestHeader,
@@ -124,8 +127,8 @@ export default class HallController extends BaseController {
                 HttpRequest.get(url, requestParam).then((responseInfo: HttpInterface.ResponseInfo) => {
                     if (HttpUtils.isOK(responseInfo)) {
                         count = 0;
-                        let gameData: GameData = G.DataMgr.get(GameData);
-                        gameData.webSocketList = responseInfo.body.data;
+                        let webSocketData: WebSocketData = G.DataMgr.get(WebSocketData);
+                        webSocketData.webSocketPartList = responseInfo.body.data;
                         resolve(responseInfo);
                     } else {
                         if (++count < GET_WEBSOCKET_MAX_COUNT) {
@@ -142,5 +145,34 @@ export default class HallController extends BaseController {
         });
     }
 
+    /**
+     * 连接游戏服务器
+     * @param isSwitchWebSocket {boolean} 是否更换线路
+     */
+    public connect(isSwitchWebSocket: boolean = false): void {
+        let webSocketData: WebSocketData = G.DataMgr.get(WebSocketData);
+        let webSocketPart: NetworkInterface.WebSocketPart = null;
 
+        if (isSwitchWebSocket) {
+            webSocketPart = webSocketData.switchWebSocketPart();
+        } else {
+            webSocketPart = webSocketData.getWebSocketPart();
+        }
+
+        if (webSocketPart === null) {
+            // TODO: 错误弹窗
+            G.LogMgr.error(`没有可连接的 WebSocket 地址`);
+            return;
+        }
+
+        G.NetworkMgr.connect(webSocketPart.protocol, webSocketPart.host, webSocketPart.port);
+    }
+
+    /**
+     * 网络连接成功
+     */
+    private onNetWsConnected(): void {
+
+    }
+    
 }

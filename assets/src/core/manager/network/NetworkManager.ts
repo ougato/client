@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-11-01 15:57:27
  * LastEditors  : ougato
- * LastEditTime : 2021-11-01 16:17:23
+ * LastEditTime : 2021-11-02 16:43:03
  * FilePath     : /client/assets/src/core/manager/network/NetworkManager.ts
  * Description  : 网络管理器
  */
@@ -11,6 +11,8 @@ import BaseManager from "../../base/BaseManager";
 import NetworkMessageTimer from "./NetworkMessageTimer";
 import * as NetworkInterface from "../../../core/interface/NetworkInterface";
 import * as NetworkDefine from "../../define/NetworkDefine";
+import * as EventDefine from "../../../core/define/EventDefine";
+import Proto = require("../../../protobuf/Proto");
 
 // 序列号 占用字节大小（4 byte）
 const SERIAL_LENGTH_BYTE_SIZE: number = 1;
@@ -21,9 +23,9 @@ const MSG_RESPONSE_TIMEOUT_SEC: number = 1;
 // 消息超时等待时间（单位：秒）
 const MSG_WAIT_TIMEOUT_SEC: number = 3;
 // 心跳超时时间（单位：秒）
-const PONG_TIMEOUT_SEC: number = 10;
-// 起始消息发送序列号
-const START_SERIAL: number = 1;
+const PING_TIMEOUT_SEC: number = 10;
+// 最大序列号
+const MAX_SERIAL: number = 254;
 
 export default class NetworkManager extends BaseManager {
 
@@ -36,15 +38,15 @@ export default class NetworkManager extends BaseManager {
     // 消息响应超时定时器
     private m_networkMessageTimer: NetworkMessageTimer = null;
     // 心跳超时定时器 ID
-    private m_pongTimerId: NodeJS.Timeout = null;
+    private m_pingTimerId: NodeJS.Timeout = null;
     // 消息超时等待定时器 ID
     private m_messageWaitTimerId: NodeJS.Timeout = null;
-    // 发送累加序列号（服务器主动推送序列号为 0）
+    // 发送累加序列号
     private m_serial: number = 0;
     // 请求数据列表 Map<序列号, 网络数据结构>
-    private m_requestDataMap: Map<number, NetworkInterface.TransmitData> = null;
+    private m_requestDataMap: Map<number, NetworkInterface.TransferData> = null;
     // 网络消息超时 Map<序列号, 网络数据结构>
-    private m_messageTimeoutMap: Map<number, NetworkInterface.TransmitData> = null;
+    private m_messageTimeoutMap: Map<number, NetworkInterface.TransferData> = null;
     // 网络断开状态
     private m_closeState: NetworkDefine.CloseState = null;
 
@@ -138,11 +140,11 @@ export default class NetworkManager extends BaseManager {
      */
     private onMessageTimeout(serial: number): void {
         if (this.m_messageTimeoutMap.size <= 0) {
-            EventManager.getInstance().emit(EventDefine.WS_MESSAGE_TIMEOUT);
+            G.EventMgr.emit(EventDefine.NetEvent.NET_WS_MESSAGE_TIMEOUT);
             this.startMessageWait();
         }
 
-        let networkData: NetworkDataInterface | undefined = this.m_requestDataMap.get(serial);
+        let networkData: NetworkInterface.TransferData | undefined = this.m_requestDataMap.get(serial);
 
         if (networkData === undefined) {
             G.LogMgr.error(`网络超时数据不存在，由于没有任何地方可以删除数据，所以在这里必须有数据`);
@@ -157,12 +159,12 @@ export default class NetworkManager extends BaseManager {
     /**
      * 心跳超时回调
      */
-    private onPongTimeout(): void {
-        EventManager.getInstance().emit(EventDefine.WS_PONG_TIMEOUT);
+    private onPingTimeout(): void {
+        G.EventMgr.emit(EventDefine.NetEvent.NET_WS_PING_TIMEOUT);
         this.stopAllTimer();
         this.close();
 
-        G.LogMgr.warn(`心跳超时，消息名：[${Proto.Pong.name}]`);
+        G.LogMgr.warn(`心跳超时，消息名：[${Proto.PingRequest.name}]`);
 
     }
 
@@ -170,30 +172,30 @@ export default class NetworkManager extends BaseManager {
      * 连接成功回调
      */
     private onOpen(ev: Event): void {
-        EventManager.getInstance().emit(EventDefine.WS_CONNECTED);
-
         G.LogMgr.log(`网络连接成功`);
+        this.sendPing();
+        G.EventMgr.emit(EventDefine.NetEvent.NET_WS_CONNECTED);
     }
 
     /**
      * 接收数据回调
      */
     private onMessage(ev: MessageEvent): void {
-        let responseData: NetworkDataInterface = this.decodeData(ev.data);
+        let responseData: NetworkInterface.TransferData = this.decodeData(ev.data);
 
         // 处理弱网超时消息
         if (this.m_messageTimeoutMap.has(responseData.serial)) {
             this.m_messageTimeoutMap.delete(responseData.serial);
             if (this.m_messageTimeoutMap.size <= 0) {
                 this.stopMessageWait();
-                EventManager.getInstance().emit(EventDefine.WS_MESSAGE_NORMAL);
+                G.EventMgr.emit(EventDefine.NetEvent.NET_WS_MESSAGE_NORMAL);
             }
         }
 
         G.LogMgr.log(`消息接收，序列号：[${responseData.serial}] 消息名：[${responseData.msgName}] 数据：[${JSON.stringify(responseData.msgData)}]`);
 
-        if (responseData.msgName === Proto.Pong.name) {
-            this.resetPong();
+        if (responseData.msgName === Proto.PingResponse.name) {
+            this.resetPing();
             return;
         }
 
@@ -205,7 +207,7 @@ export default class NetworkManager extends BaseManager {
         let listenMap: Map<any, Function> | undefined = this.m_messageCallbackMap.get(responseData.msgName);
         if (listenMap !== undefined) {
             listenMap.forEach((callback: Function, caller: any) => {
-                callback.call(caller, responseData.msgData);
+                callback.call(caller, responseData.msgName);
             });
         }
     }
@@ -220,7 +222,7 @@ export default class NetworkManager extends BaseManager {
 
         let closeState: NetworkDefine.CloseState = this.m_closeState;
         this.initClose();
-        EventManager.getInstance().emit(EventDefine.WS_CLOSED, closeState);
+        G.EventMgr.emit(EventDefine.NetEvent.NET_WS_CLOSED, closeState);
         G.LogMgr.log(`网络断开连接`);
     }
 
@@ -229,7 +231,7 @@ export default class NetworkManager extends BaseManager {
      */
     private onError(ev: Event): void {
         this.m_closeState = NetworkDefine.CloseState.ERROR_CLOSE;
-        EventManager.getInstance().emit(EventDefine.WS_ERROR);
+        G.EventMgr.emit(EventDefine.NetEvent.NET_WS_ERROR);
         G.LogMgr.log(`网络连接错误`);
     }
 
@@ -237,11 +239,11 @@ export default class NetworkManager extends BaseManager {
      * 建立连接
      * @param protocol {WebSocketProtocol} 协议
      * @param host {string} 地址
-     * @param port {number} 端口
+     * @param port {string} 端口
      * 
      * @param wsURL {string} 连接地址
      */
-    public connect(protocol: WebSocketProtocol, host: string, port: number): void;
+    public connect(protocol: WebSocketProtocol, host: string, port: string): void;
     public connect(wsURL: string): void;
     public connect(...args: any[]): void {
         if (this.m_websocket !== null && this.m_websocket.readyState !== WebSocket.CLOSED) {
@@ -249,10 +251,10 @@ export default class NetworkManager extends BaseManager {
             return;
         }
 
-        EventManager.getInstance().emit(SystemEventDefine.WS_CONNECTING);
+        G.EventMgr.emit(EventDefine.NetEvent.NET_WS_CONNECTING);
 
         let url: string = null;
-        if (args.length === 3 && typeof (args[0]) === "string" && typeof (args[1]) === "string" && typeof (args[2]) === "number") {
+        if (args.length === 3 && typeof (args[0]) === "string" && typeof (args[1]) === "string" && typeof (args[2]) === "string") {
             url = `${args[0]}://${args[1]}:${args[2]}`;
         } else if (args.length === 1 && typeof (args[0]) === "string") {
             url = args[0];
@@ -290,7 +292,7 @@ export default class NetworkManager extends BaseManager {
      * @param msgClass {any} 协议类
      * @param msgData {any} 协议数据
      */
-    public send(msgClass: any, msgData: any): void {
+    public send<T extends NetworkInterface.ProtoClass>(msgClass: T, msgData: any): void {
         if (this.m_websocket === null || this.m_websocket === undefined) {
             G.LogMgr.warn(`网络发送失败，未建立网络连接`);
             return;
@@ -301,21 +303,25 @@ export default class NetworkManager extends BaseManager {
             return;
         }
 
-        this.addSerial();
-        let requestData: ArrayBuffer = this.encodeData(msgClass, msgData);
-        this.m_websocket.send(requestData);
+        let requestData: NetworkInterface.TransmitData = this.encodeData(msgClass, msgData);
+        let baseData: Proto.IBase = {
+            action: requestData.action,
+            serial: requestData.serial,
+            packet: requestData.packet,
+        }
+        this.m_websocket.send(Proto.Base.encode(Proto.Base.create(baseData)).finish());
         // 留作输出请求数据的二进制流
         // G.LogMgr.log(new Uint8Array(requestData.slice(0, requestData.byteLength)));
 
         try {
-            G.LogMgr.log(`消息发送，序列号：[${this.m_serial}] 消息名：[${msgClass.name}] 数据：[${JSON.stringify(msgData)}]`);
+            G.LogMgr.log(`消息发送 序列号：[${this.m_serial}] 消息名：[${msgClass.name}] 数据：[${JSON.stringify(msgData)}]`);
         } catch (e) {
-            G.LogMgr.log(`消息发送，序列号：[${this.m_serial}] 消息名：[${msgClass.name}] 数据：[${msgData}]`);
+            G.LogMgr.log(`消息发送 序列号：[${this.m_serial}] 消息名：[${msgClass.name}] 数据：[${msgData}]`);
         }
 
         this.m_networkMessageTimer.on(this.m_serial, MSG_RESPONSE_TIMEOUT_SEC);
         this.m_requestDataMap.set(this.m_serial, {
-            serial: this.m_serial,
+            serial: this.m_serial++ % (MAX_SERIAL + 1),
             msgName: msgClass.name,
             msgData: msgData,
         });
@@ -332,7 +338,7 @@ export default class NetworkManager extends BaseManager {
 
         this.m_closeState = NetworkDefine.CloseState.CLIENT_CLOSE;
 
-        EventManager.getInstance().emit(SystemEventDefine.WS_CLOSING);
+        G.EventMgr.emit(EventDefine.NetEvent.NET_WS_CLOSING);
         G.LogMgr.log("网络正在断开");
         this.m_websocket.close();
     }
@@ -343,15 +349,6 @@ export default class NetworkManager extends BaseManager {
      */
     public getCloseState(): NetworkDefine.CloseState | null {
         return this.m_closeState;
-    }
-
-    /**
-     * 累加序列号
-     */
-    private addSerial(): void {
-        if (++this.m_serial > 255) {
-            this.m_serial = START_SERIAL;
-        }
     }
 
     /**
@@ -380,30 +377,38 @@ export default class NetworkManager extends BaseManager {
     /**
      * 启动心跳
      */
-    public startPong(): void {
-        if (this.m_pongTimerId === null || this.m_pongTimerId === undefined) {
-            this.m_pongTimerId = setTimeout(() => {
-                this.onPongTimeout();
-                this.m_pongTimerId = null;
-            }, PONG_TIMEOUT_SEC * 1000);
+    public startPing(): void {
+        if (this.m_pingTimerId === null || this.m_pingTimerId === undefined) {
+            this.m_pingTimerId = setTimeout(() => {
+                this.onPingTimeout();
+                this.m_pingTimerId = null;
+            }, PING_TIMEOUT_SEC * 1000);
         }
+    }
+
+    /**
+     * 发送心跳
+     */
+    private sendPing(): void {
+        this.send(Proto.PingRequest, {});
     }
 
     /**
      * 重置心跳
      */
-    private resetPong(): void {
-        this.stopPong();
-        this.startPong();
+    private resetPing(): void {
+        this.stopPing();
+        this.sendPing();
+        this.startPing();
     }
 
     /**
      * 停止心跳
      */
-    private stopPong(): void {
-        if (this.m_pongTimerId !== null && this.m_pongTimerId !== undefined) {
-            clearTimeout(this.m_pongTimerId);
-            this.m_pongTimerId = null;
+    private stopPing(): void {
+        if (this.m_pingTimerId !== null && this.m_pingTimerId !== undefined) {
+            clearTimeout(this.m_pingTimerId);
+            this.m_pingTimerId = null;
         }
     }
 
@@ -411,78 +416,89 @@ export default class NetworkManager extends BaseManager {
      * 停止所有定时器
      */
     private stopAllTimer(): void {
-        this.stopPong();
+        this.stopPing();
         this.m_networkMessageTimer.offAll();
         this.stopMessageWait();
     }
 
     /**
      * 数据编码
-     * @param msgClass {any} 协议类
+     * @param msgClass {T} 协议类
      * @param msgData {any} 协议数据
-     * @return {ArrayBuffer} 编码后的二进制流数据
+     * @return {NetworkInterface.TransmitData} 传输消息
      */
-    private encodeData(msgClass: any, msgData?: any): ArrayBuffer {
-        let msgName: string = msgClass.name;
-        let msgNameUint8Array: Uint8Array = CodeUtil.stringToUint8Array(msgName);
-        let msgNameLen: number = msgNameUint8Array.byteLength;
-        let instance: any = msgClass.create(msgData);
-        let msgDataBuffer: Uint8Array = msgClass.encode(instance).finish();
-        let msgDataLen: number = msgDataBuffer.byteLength;
+    private encodeData<T extends NetworkInterface.ProtoClass>(msgClass: T, msgData: any): NetworkInterface.TransmitData {
+        let transmitData: NetworkInterface.TransmitData = {
+            action: msgClass.name,
+            serial: this.m_serial,
+            packet: msgClass.encode(msgClass.create(msgData)).finish(),
+        }
 
-        let bodyLen: number = SERIAL_LENGTH_BYTE_SIZE + MSG_NAME_LENGTH_BYTE_SIZE + msgNameLen + msgDataLen;
-        let dataLen: number = bodyLen;
-        let dataBuffer: ArrayBuffer = new ArrayBuffer(dataLen);
-        let dataView: DataView = new DataView(dataBuffer);
+        return transmitData;
+        // let msgNameUint8Array: Uint8Array = CodeUtil.stringToUint8Array(msgName);
+        // let msgNameLen: number = msgNameUint8Array.byteLength;
+        // let instance: any = msgClass.create(msgData);
+        // let msgDataBuffer: Uint8Array = msgClass.encode(instance).finish();
+        // let msgDataLen: number = msgDataBuffer.byteLength;
 
-        let bufferOffset: number = 0;
+        // let bodyLen: number = SERIAL_LENGTH_BYTE_SIZE + MSG_NAME_LENGTH_BYTE_SIZE + msgNameLen + msgDataLen;
+        // let dataLen: number = bodyLen;
+        // let dataBuffer: ArrayBuffer = new ArrayBuffer(dataLen);
+        // let dataView: DataView = new DataView(dataBuffer);
 
-        // 序列号
-        dataView.setUint8(bufferOffset, this.m_serial);
-        bufferOffset += SERIAL_LENGTH_BYTE_SIZE;
-        // 协议名长度
-        dataView.setUint8(bufferOffset, msgNameLen);
-        bufferOffset += MSG_NAME_LENGTH_BYTE_SIZE;
-        // 协议名
-        let nameBuffer: Uint8Array = new Uint8Array(dataBuffer, bufferOffset, msgNameLen);
-        nameBuffer.set(CodeUtil.stringToUint8Array(msgName), 0);
-        bufferOffset += msgNameLen;
-        // 协议数据
-        (new Uint8Array(dataBuffer, bufferOffset, msgDataLen)).set(msgDataBuffer, 0);
-        bufferOffset += msgDataLen;
+        // let bufferOffset: number = 0;
 
-        return dataBuffer;
+        // // 序列号
+        // dataView.setUint8(bufferOffset, this.m_serial);
+        // bufferOffset += SERIAL_LENGTH_BYTE_SIZE;
+        // // 协议名长度
+        // dataView.setUint8(bufferOffset, msgNameLen);
+        // bufferOffset += MSG_NAME_LENGTH_BYTE_SIZE;
+        // // 协议名
+        // let nameBuffer: Uint8Array = new Uint8Array(dataBuffer, bufferOffset, msgNameLen);
+        // nameBuffer.set(CodeUtil.stringToUint8Array(msgName), 0);
+        // bufferOffset += msgNameLen;
+        // // 协议数据
+        // (new Uint8Array(dataBuffer, bufferOffset, msgDataLen)).set(msgDataBuffer, 0);
+        // bufferOffset += msgDataLen;
     }
 
     /**
      * 数据解码
-     * @param bufffer {ArrayBuffer} 字节流
-     * @return {NetworkDataInterface} 网络数据结构
+     * @param transmitData {NetworkInterface.TransmitData} 传输数据
+     * @return {NetworkInterface.TransferData} 转换数据
      */
-    private decodeData(bufffer: ArrayBuffer): NetworkDataInterface {
-        let dataView: DataView = new DataView(bufffer);
-
-        let bufferOffset: number = 0;
-
-        // 序列号
-        let serial: number = dataView.getUint8(bufferOffset);
-        bufferOffset += SERIAL_LENGTH_BYTE_SIZE;
-        // 协议名长度
-        let msgNameLen: number = dataView.getUint8(bufferOffset);
-        bufferOffset += MSG_NAME_LENGTH_BYTE_SIZE;
-        // 协议名字
-        let msgName: string = CodeUtil.uint8ArrayToString(new Uint8Array(bufffer.slice(bufferOffset, bufferOffset += msgNameLen)));
-        // 协议数据
-        let msgDataLen: number = bufffer.byteLength - bufferOffset;
-        let msgData: any = Proto[msgName].decode(new Uint8Array(bufffer.slice(bufferOffset, bufferOffset += msgDataLen)));
-
-        let data: NetworkDataInterface = {
-            serial: serial,
-            msgName: msgName,
-            msgData: msgData,
-        };
-
+    private decodeData(transmitData: NetworkInterface.TransmitData): NetworkInterface.TransferData {
+        let data: NetworkInterface.TransferData = {
+            msgName: transmitData.action,
+            serial: transmitData.serial,
+            msgData: Proto[transmitData.action].decode(transmitData.packet),
+        }
         return data;
+
+        // let dataView: DataView = new DataView(bufffer);
+
+        // let bufferOffset: number = 0;
+
+        // // 序列号
+        // let serial: number = dataView.getUint8(bufferOffset);
+        // bufferOffset += SERIAL_LENGTH_BYTE_SIZE;
+        // // 协议名长度
+        // let msgNameLen: number = dataView.getUint8(bufferOffset);
+        // bufferOffset += MSG_NAME_LENGTH_BYTE_SIZE;
+        // // 协议名字
+        // let msgName: string = CodeUtil.uint8ArrayToString(new Uint8Array(bufffer.slice(bufferOffset, bufferOffset += msgNameLen)));
+        // // 协议数据
+        // let msgDataLen: number = bufffer.byteLength - bufferOffset;
+        // let msgData: any = Proto[msgName].decode(new Uint8Array(bufffer.slice(bufferOffset, bufferOffset += msgDataLen)));
+
+        // let data: NetworkInterface.TransmitData = {
+        //     serial: serial,
+        //     msgName: msgName,
+        //     msgData: msgData,
+        // };
+
+        // return data;
     }
 
     /**

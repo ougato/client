@@ -2,13 +2,12 @@
  * Author       : ougato
  * Date         : 2021-10-29 17:37:24
  * LastEditors  : ougato
- * LastEditTime : 2021-11-01 15:16:26
+ * LastEditTime : 2021-11-02 15:23:09
  * FilePath     : /client/assets/src/data/GameData.ts
  * Description  : 游戏数据
  */
 
 import BaseData from "../core/base/BaseData";
-import * as NetworkInterface from "../core/interface/NetworkInterface";
 
 export default class GameData extends BaseData {
 
@@ -20,8 +19,6 @@ export default class GameData extends BaseData {
     public refreshToken: string = null;
     // 渠道号
     public channel: string = null;
-    // 游戏长连接服务器列表
-    public webSocketList: NetworkInterface.WebSocketPart[] = null;
 
     constructor() {
         super();
@@ -33,7 +30,6 @@ export default class GameData extends BaseData {
         this.token = null;
         this.refreshToken = null;
         this.channel = null;
-        this.webSocketList = null;
     }
 
 }

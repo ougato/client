@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2020-10-21 18:00:36
  * LastEditors  : ougato
- * LastEditTime : 2021-10-30 02:51:42
+ * LastEditTime : 2021-11-02 14:25:17
  * FilePath     : /client/assets/src/core/http/HttpXmlRequest.ts
  * Description  : 原生上不支持 fetch 的写法，只有默认使用 XMLHttpRequest
  */
@@ -79,7 +79,9 @@ export default class HttpXmlRequest implements HttpInterface.Http {
 
         return new Promise((resolve, reject) => {
             G.LogMgr.log(`${this.m_method} 请求 ${this.m_url}`);
-            G.LogMgr.log(body);
+            if(body !== null) {
+                G.LogMgr.log(body);
+            }
 
             this.m_requestResolve = resolve;
 

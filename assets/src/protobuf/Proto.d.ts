@@ -5,14 +5,14 @@ declare namespace Proto {
 
 
     interface IBase {
-        msg?: (string|null);
+        action?: (string|null);
         serial?: (number|null);
         packet?: (Uint8Array|null);
     }
 
     class Base implements IBase {
         constructor(p?: IBase);
-        public msg: string;
+        public action: string;
         public serial: number;
         public packet: Uint8Array;
         public static create(properties?: IBase): Base;
@@ -130,6 +130,51 @@ declare namespace Proto {
         public static encodeDelimited(message: ISignInResponse, writer?: $protobuf.Writer): $protobuf.Writer;
         public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): SignInResponse;
         public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): SignInResponse;
+        public static verify(m: { [k: string]: any }): (string|null);
+    }
+
+    interface IPingRequest {
+    }
+
+    class PingRequest implements IPingRequest {
+        constructor(p?: IPingRequest);
+        public static create(properties?: IPingRequest): PingRequest;
+        public static encode(m: IPingRequest, w?: $protobuf.Writer): $protobuf.Writer;
+        public static encodeDelimited(message: IPingRequest, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): PingRequest;
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): PingRequest;
+        public static verify(m: { [k: string]: any }): (string|null);
+    }
+
+    interface IPingResponse {
+        timestamp?: (number|Long|null);
+    }
+
+    class PingResponse implements IPingResponse {
+        constructor(p?: IPingResponse);
+        public timestamp: (number|Long);
+        public static create(properties?: IPingResponse): PingResponse;
+        public static encode(m: IPingResponse, w?: $protobuf.Writer): $protobuf.Writer;
+        public static encodeDelimited(message: IPingResponse, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): PingResponse;
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): PingResponse;
+        public static verify(m: { [k: string]: any }): (string|null);
+    }
+
+    interface IErrorNotify {
+        code?: (number|null);
+        msg?: (string|null);
+    }
+
+    class ErrorNotify implements IErrorNotify {
+        constructor(p?: IErrorNotify);
+        public code: number;
+        public msg: string;
+        public static create(properties?: IErrorNotify): ErrorNotify;
+        public static encode(m: IErrorNotify, w?: $protobuf.Writer): $protobuf.Writer;
+        public static encodeDelimited(message: IErrorNotify, writer?: $protobuf.Writer): $protobuf.Writer;
+        public static decode(r: ($protobuf.Reader|Uint8Array), l?: number): ErrorNotify;
+        public static decodeDelimited(reader: ($protobuf.Reader|Uint8Array)): ErrorNotify;
         public static verify(m: { [k: string]: any }): (string|null);
     }
 }

@@ -15,7 +15,7 @@ export const Base = $root.Base = (() => {
      * Properties of a Base.
      * @exports IBase
      * @interface IBase
-     * @property {string|null} [msg] Base msg
+     * @property {string|null} [action] Base action
      * @property {number|null} [serial] Base serial
      * @property {Uint8Array|null} [packet] Base packet
      */
@@ -36,12 +36,12 @@ export const Base = $root.Base = (() => {
     }
 
     /**
-     * Base msg.
-     * @member {string} msg
+     * Base action.
+     * @member {string} action
      * @memberof Base
      * @instance
      */
-    Base.prototype.msg = "";
+    Base.prototype.action = "";
 
     /**
      * Base serial.
@@ -83,8 +83,8 @@ export const Base = $root.Base = (() => {
     Base.encode = function encode(m, w) {
         if (!w)
             w = $Writer.create();
-        if (m.msg != null && Object.hasOwnProperty.call(m, "msg"))
-            w.uint32(10).string(m.msg);
+        if (m.action != null && Object.hasOwnProperty.call(m, "action"))
+            w.uint32(10).string(m.action);
         if (m.serial != null && Object.hasOwnProperty.call(m, "serial"))
             w.uint32(16).int32(m.serial);
         if (m.packet != null && Object.hasOwnProperty.call(m, "packet"))
@@ -124,7 +124,7 @@ export const Base = $root.Base = (() => {
             var t = r.uint32();
             switch (t >>> 3) {
             case 1:
-                m.msg = r.string();
+                m.action = r.string();
                 break;
             case 2:
                 m.serial = r.int32();
@@ -167,9 +167,9 @@ export const Base = $root.Base = (() => {
     Base.verify = function verify(m) {
         if (typeof m !== "object" || m === null)
             return "object expected";
-        if (m.msg != null && m.hasOwnProperty("msg")) {
-            if (!$util.isString(m.msg))
-                return "msg: string expected";
+        if (m.action != null && m.hasOwnProperty("action")) {
+            if (!$util.isString(m.action))
+                return "action: string expected";
         }
         if (m.serial != null && m.hasOwnProperty("serial")) {
             if (!$util.isInteger(m.serial))
@@ -1252,6 +1252,426 @@ export const SignInResponse = $root.SignInResponse = (() => {
     };
 
     return SignInResponse;
+})();
+
+export const PingRequest = $root.PingRequest = (() => {
+
+    /**
+     * Properties of a PingRequest.
+     * @exports IPingRequest
+     * @interface IPingRequest
+     */
+
+    /**
+     * Constructs a new PingRequest.
+     * @exports PingRequest
+     * @classdesc Represents a PingRequest.
+     * @implements IPingRequest
+     * @constructor
+     * @param {IPingRequest=} [p] Properties to set
+     */
+    function PingRequest(p) {
+        if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                if (p[ks[i]] != null)
+                    this[ks[i]] = p[ks[i]];
+    }
+
+    /**
+     * Creates a new PingRequest instance using the specified properties.
+     * @function create
+     * @memberof PingRequest
+     * @static
+     * @param {IPingRequest=} [properties] Properties to set
+     * @returns {PingRequest} PingRequest instance
+     */
+    PingRequest.create = function create(properties) {
+        return new PingRequest(properties);
+    };
+
+    /**
+     * Encodes the specified PingRequest message. Does not implicitly {@link PingRequest.verify|verify} messages.
+     * @function encode
+     * @memberof PingRequest
+     * @static
+     * @param {IPingRequest} m PingRequest message or plain object to encode
+     * @param {$protobuf.Writer} [w] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    PingRequest.encode = function encode(m, w) {
+        if (!w)
+            w = $Writer.create();
+        return w;
+    };
+
+    /**
+     * Encodes the specified PingRequest message, length delimited. Does not implicitly {@link PingRequest.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof PingRequest
+     * @static
+     * @param {IPingRequest} message PingRequest message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    PingRequest.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a PingRequest message from the specified reader or buffer.
+     * @function decode
+     * @memberof PingRequest
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} r Reader or buffer to decode from
+     * @param {number} [l] Message length if known beforehand
+     * @returns {PingRequest} PingRequest
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    PingRequest.decode = function decode(r, l) {
+        if (!(r instanceof $Reader))
+            r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l, m = new $root.PingRequest();
+        while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+            default:
+                r.skipType(t & 7);
+                break;
+            }
+        }
+        return m;
+    };
+
+    /**
+     * Decodes a PingRequest message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof PingRequest
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {PingRequest} PingRequest
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    PingRequest.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a PingRequest message.
+     * @function verify
+     * @memberof PingRequest
+     * @static
+     * @param {Object.<string,*>} m Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    PingRequest.verify = function verify(m) {
+        if (typeof m !== "object" || m === null)
+            return "object expected";
+        return null;
+    };
+
+    return PingRequest;
+})();
+
+export const PingResponse = $root.PingResponse = (() => {
+
+    /**
+     * Properties of a PingResponse.
+     * @exports IPingResponse
+     * @interface IPingResponse
+     * @property {number|Long|null} [timestamp] PingResponse timestamp
+     */
+
+    /**
+     * Constructs a new PingResponse.
+     * @exports PingResponse
+     * @classdesc Represents a PingResponse.
+     * @implements IPingResponse
+     * @constructor
+     * @param {IPingResponse=} [p] Properties to set
+     */
+    function PingResponse(p) {
+        if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                if (p[ks[i]] != null)
+                    this[ks[i]] = p[ks[i]];
+    }
+
+    /**
+     * PingResponse timestamp.
+     * @member {number|Long} timestamp
+     * @memberof PingResponse
+     * @instance
+     */
+    PingResponse.prototype.timestamp = $util.Long ? $util.Long.fromBits(0,0,true) : 0;
+
+    /**
+     * Creates a new PingResponse instance using the specified properties.
+     * @function create
+     * @memberof PingResponse
+     * @static
+     * @param {IPingResponse=} [properties] Properties to set
+     * @returns {PingResponse} PingResponse instance
+     */
+    PingResponse.create = function create(properties) {
+        return new PingResponse(properties);
+    };
+
+    /**
+     * Encodes the specified PingResponse message. Does not implicitly {@link PingResponse.verify|verify} messages.
+     * @function encode
+     * @memberof PingResponse
+     * @static
+     * @param {IPingResponse} m PingResponse message or plain object to encode
+     * @param {$protobuf.Writer} [w] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    PingResponse.encode = function encode(m, w) {
+        if (!w)
+            w = $Writer.create();
+        if (m.timestamp != null && Object.hasOwnProperty.call(m, "timestamp"))
+            w.uint32(8).uint64(m.timestamp);
+        return w;
+    };
+
+    /**
+     * Encodes the specified PingResponse message, length delimited. Does not implicitly {@link PingResponse.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof PingResponse
+     * @static
+     * @param {IPingResponse} message PingResponse message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    PingResponse.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes a PingResponse message from the specified reader or buffer.
+     * @function decode
+     * @memberof PingResponse
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} r Reader or buffer to decode from
+     * @param {number} [l] Message length if known beforehand
+     * @returns {PingResponse} PingResponse
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    PingResponse.decode = function decode(r, l) {
+        if (!(r instanceof $Reader))
+            r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l, m = new $root.PingResponse();
+        while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+            case 1:
+                m.timestamp = r.uint64();
+                break;
+            default:
+                r.skipType(t & 7);
+                break;
+            }
+        }
+        return m;
+    };
+
+    /**
+     * Decodes a PingResponse message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof PingResponse
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {PingResponse} PingResponse
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    PingResponse.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies a PingResponse message.
+     * @function verify
+     * @memberof PingResponse
+     * @static
+     * @param {Object.<string,*>} m Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    PingResponse.verify = function verify(m) {
+        if (typeof m !== "object" || m === null)
+            return "object expected";
+        if (m.timestamp != null && m.hasOwnProperty("timestamp")) {
+            if (!$util.isInteger(m.timestamp) && !(m.timestamp && $util.isInteger(m.timestamp.low) && $util.isInteger(m.timestamp.high)))
+                return "timestamp: integer|Long expected";
+        }
+        return null;
+    };
+
+    return PingResponse;
+})();
+
+export const ErrorNotify = $root.ErrorNotify = (() => {
+
+    /**
+     * Properties of an ErrorNotify.
+     * @exports IErrorNotify
+     * @interface IErrorNotify
+     * @property {number|null} [code] ErrorNotify code
+     * @property {string|null} [msg] ErrorNotify msg
+     */
+
+    /**
+     * Constructs a new ErrorNotify.
+     * @exports ErrorNotify
+     * @classdesc Represents an ErrorNotify.
+     * @implements IErrorNotify
+     * @constructor
+     * @param {IErrorNotify=} [p] Properties to set
+     */
+    function ErrorNotify(p) {
+        if (p)
+            for (var ks = Object.keys(p), i = 0; i < ks.length; ++i)
+                if (p[ks[i]] != null)
+                    this[ks[i]] = p[ks[i]];
+    }
+
+    /**
+     * ErrorNotify code.
+     * @member {number} code
+     * @memberof ErrorNotify
+     * @instance
+     */
+    ErrorNotify.prototype.code = 0;
+
+    /**
+     * ErrorNotify msg.
+     * @member {string} msg
+     * @memberof ErrorNotify
+     * @instance
+     */
+    ErrorNotify.prototype.msg = "";
+
+    /**
+     * Creates a new ErrorNotify instance using the specified properties.
+     * @function create
+     * @memberof ErrorNotify
+     * @static
+     * @param {IErrorNotify=} [properties] Properties to set
+     * @returns {ErrorNotify} ErrorNotify instance
+     */
+    ErrorNotify.create = function create(properties) {
+        return new ErrorNotify(properties);
+    };
+
+    /**
+     * Encodes the specified ErrorNotify message. Does not implicitly {@link ErrorNotify.verify|verify} messages.
+     * @function encode
+     * @memberof ErrorNotify
+     * @static
+     * @param {IErrorNotify} m ErrorNotify message or plain object to encode
+     * @param {$protobuf.Writer} [w] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    ErrorNotify.encode = function encode(m, w) {
+        if (!w)
+            w = $Writer.create();
+        if (m.code != null && Object.hasOwnProperty.call(m, "code"))
+            w.uint32(8).int32(m.code);
+        if (m.msg != null && Object.hasOwnProperty.call(m, "msg"))
+            w.uint32(18).string(m.msg);
+        return w;
+    };
+
+    /**
+     * Encodes the specified ErrorNotify message, length delimited. Does not implicitly {@link ErrorNotify.verify|verify} messages.
+     * @function encodeDelimited
+     * @memberof ErrorNotify
+     * @static
+     * @param {IErrorNotify} message ErrorNotify message or plain object to encode
+     * @param {$protobuf.Writer} [writer] Writer to encode to
+     * @returns {$protobuf.Writer} Writer
+     */
+    ErrorNotify.encodeDelimited = function encodeDelimited(message, writer) {
+        return this.encode(message, writer).ldelim();
+    };
+
+    /**
+     * Decodes an ErrorNotify message from the specified reader or buffer.
+     * @function decode
+     * @memberof ErrorNotify
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} r Reader or buffer to decode from
+     * @param {number} [l] Message length if known beforehand
+     * @returns {ErrorNotify} ErrorNotify
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    ErrorNotify.decode = function decode(r, l) {
+        if (!(r instanceof $Reader))
+            r = $Reader.create(r);
+        var c = l === undefined ? r.len : r.pos + l, m = new $root.ErrorNotify();
+        while (r.pos < c) {
+            var t = r.uint32();
+            switch (t >>> 3) {
+            case 1:
+                m.code = r.int32();
+                break;
+            case 2:
+                m.msg = r.string();
+                break;
+            default:
+                r.skipType(t & 7);
+                break;
+            }
+        }
+        return m;
+    };
+
+    /**
+     * Decodes an ErrorNotify message from the specified reader or buffer, length delimited.
+     * @function decodeDelimited
+     * @memberof ErrorNotify
+     * @static
+     * @param {$protobuf.Reader|Uint8Array} reader Reader or buffer to decode from
+     * @returns {ErrorNotify} ErrorNotify
+     * @throws {Error} If the payload is not a reader or valid buffer
+     * @throws {$protobuf.util.ProtocolError} If required fields are missing
+     */
+    ErrorNotify.decodeDelimited = function decodeDelimited(reader) {
+        if (!(reader instanceof $Reader))
+            reader = new $Reader(reader);
+        return this.decode(reader, reader.uint32());
+    };
+
+    /**
+     * Verifies an ErrorNotify message.
+     * @function verify
+     * @memberof ErrorNotify
+     * @static
+     * @param {Object.<string,*>} m Plain object to verify
+     * @returns {string|null} `null` if valid, otherwise the reason why it is not
+     */
+    ErrorNotify.verify = function verify(m) {
+        if (typeof m !== "object" || m === null)
+            return "object expected";
+        if (m.code != null && m.hasOwnProperty("code")) {
+            if (!$util.isInteger(m.code))
+                return "code: integer expected";
+        }
+        if (m.msg != null && m.hasOwnProperty("msg")) {
+            if (!$util.isString(m.msg))
+                return "msg: string expected";
+        }
+        return null;
+    };
+
+    return ErrorNotify;
 })();
 
 module.exports = $root;
