@@ -1,6 +1,7 @@
 {
-  "ver": "2.3.5",
+  "ver": "2.3.7",
   "uuid": "f13397f5-dd5d-4c1b-870a-dd3428e7f9af",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
@@ -12,8 +13,9 @@
   "platformSettings": {},
   "subMetas": {
     "login-captcha-icon": {
-      "ver": "1.0.4",
+      "ver": "1.0.6",
       "uuid": "266a5c9a-6f09-4b3b-a337-275b0263e9ab",
+      "importer": "sprite-frame",
       "rawTextureUuid": "f13397f5-dd5d-4c1b-870a-dd3428e7f9af",
       "trimType": "auto",
       "trimThreshold": 1,

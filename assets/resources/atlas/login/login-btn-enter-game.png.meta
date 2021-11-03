@@ -1,6 +1,7 @@
 {
-  "ver": "2.3.5",
+  "ver": "2.3.7",
   "uuid": "592861e9-d273-4382-88c1-c04b7806a388",
+  "importer": "texture",
   "type": "sprite",
   "wrapMode": "clamp",
   "filterMode": "bilinear",
@@ -12,8 +13,9 @@
   "platformSettings": {},
   "subMetas": {
     "login-btn-enter-game": {
-      "ver": "1.0.4",
+      "ver": "1.0.6",
       "uuid": "dbeca13e-141f-45d6-96bf-9215b55f382a",
+      "importer": "sprite-frame",
       "rawTextureUuid": "592861e9-d273-4382-88c1-c04b7806a388",
       "trimType": "auto",
       "trimThreshold": 1,
