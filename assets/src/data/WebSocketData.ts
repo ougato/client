@@ -2,14 +2,16 @@
  * Author       : ougato
  * Date         : 2021-11-02 15:15:06
  * LastEditors  : ougato
- * LastEditTime : 2021-11-02 15:42:27
+ * LastEditTime : 2021-11-09 14:37:42
  * FilePath     : /client/assets/src/data/WebSocketData.ts
  * Description  : 网络长连接数据
  */
 
 import BaseData from "../core/base/BaseData";
 import * as NetworkInterface from "../core/interface/NetworkInterface";
+import ClassDecorator from "../core/decorator/ClassDecorator";
 
+@ClassDecorator.classname
 export default class WebSocketData extends BaseData {
 
     // 当前游戏长连接服务器下标
@@ -21,6 +23,17 @@ export default class WebSocketData extends BaseData {
     constructor() {
         super();
 
+        // 测试代码，正式删除
+        if (CC_DEV) {
+            // this.webSocketPartList = [
+            //     {
+            //         protocol: "ws",
+            //         // host: "192.168.11.239",
+            //         host: "192.168.11.213",
+            //         port: "9403",
+            //     }
+            // ]
+        }
     }
 
     public getWebSocketPart(): NetworkInterface.WebSocketPart {
@@ -28,7 +41,7 @@ export default class WebSocketData extends BaseData {
         if (this.webSocketPartList === null) {
             return webSocketPart;
         }
-        
+
         if (this.webSocketPartList.length <= 0) {
             return webSocketPart;
         }

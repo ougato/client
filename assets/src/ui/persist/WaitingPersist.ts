@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-04 23:07:17
  * LastEditors  : ougato
- * LastEditTime : 2021-10-22 01:26:32
+ * LastEditTime : 2021-11-15 10:33:25
  * FilePath     : /client/assets/src/ui/persist/WaitingPersist.ts
  * @Description  : 等待常驻（菊花转）
  */
@@ -40,19 +40,16 @@ export default class WaitingPersist extends BasePersist {
 
     private playWaitingTurn(): void {
         this.waitingTween = cc.tween(this.imgWaiting.node)
-            .repeatForever(
-                cc.tween(this.imgWaiting.node)
-                    .to(PLAY_ROUND_TIME, { angle: -360 })
-                    .set({ angle: 0 })
-            )
+            .by(PLAY_ROUND_TIME, { angle: -360 })
+            .repeatForever()
             .start();
     }
 
     private stopWaitingTurn(): void {
         if (this.waitingTween !== null) {
-            this.imgWaiting.node.angle = 0;
             this.waitingTween.stop();
             this.waitingTween = null;
+            this.imgWaiting.node.angle = 0;
         }
     }
 }

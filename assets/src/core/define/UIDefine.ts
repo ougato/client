@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:56:31
  * LastEditors  : ougato
- * LastEditTime : 2021-09-05 01:49:57
+ * LastEditTime : 2021-12-01 17:27:04
  * FilePath     : /client/assets/src/core/define/UIDefine.ts
  * Description  : 界面定义
  */
@@ -30,10 +30,10 @@ export enum ViewLayer {
     BOTTOM = 0,
     // 视图层
     VIEW = 1 * LAYER_INTERVAL,
-    // 弹窗层
-    POPUP = 2 * LAYER_INTERVAL,
     // 顶层
-    TOP = 3 * LAYER_INTERVAL,
+    TOP = 2 * LAYER_INTERVAL,
+    // 弹窗层
+    POPUP = 3 * LAYER_INTERVAL,
     // 系统层
     SYSTEM = 4 * LAYER_INTERVAL,
 }
@@ -48,4 +48,12 @@ export enum PersistLayer {
     WAITING,
     // 加载
     LOADING,
+}
+
+// 对话框模式
+export enum DialogMode {
+    // 队列（如果当前有对话框显示，则当前加入的排到队列后面）
+    REAR = 0,
+    // 插入（挂起当前对话框，把现在插入的展示出来）
+    FRONT = 1,
 }

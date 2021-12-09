@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-15 23:51:40
  * LastEditors  : ougato
- * LastEditTime : 2021-10-29 16:57:37
+ * LastEditTime : 2021-11-03 01:22:17
  * FilePath     : /client/assets/src/core/http/HttpFetch.ts
  * @Description  : HttpFetch 请求对象
  */
@@ -13,19 +13,19 @@ import * as HttpInterface from "../interface/HttpInterface";
 export default class HttpFetch implements HttpInterface.Http {
 
     // 取消控制器
-    private m_abortController: AbortController = null;
+    private _abortController: AbortController = null;
     // 请求信息
-    private m_requestInfo: RequestInit = null;
+    private _requestInfo: RequestInit = null;
     // 超时定时器
-    private m_timer: NodeJS.Timeout = null;
+    private _timer: NodeJS.Timeout = null;
     // 请求链接
-    private m_url: string = null;
+    private _url: string = null;
     // 请求方法
-    private m_method: HttpDefine.Method = null;
+    private _method: HttpDefine.Method = null;
 
     constructor() {
-        this.m_abortController = new AbortController();
-        this.m_requestInfo = {};
+        this._abortController = new AbortController();
+        this._requestInfo = {};
         this.initRequestInfo();
     }
 
@@ -34,20 +34,20 @@ export default class HttpFetch implements HttpInterface.Http {
      * 继承需重写此方法
      */
     protected initRequestInfo(): void {
-        this.m_requestInfo.body = null;
-        this.m_requestInfo.cache = "default"; // https://developer.mozilla.org/zh-CN/docs/Web/API/Request/cache
-        this.m_requestInfo.credentials = "omit"; // https://developer.mozilla.org/zh-CN/docs/Web/API/Request/credentials
-        this.m_requestInfo.headers = {
+        this._requestInfo.body = null;
+        this._requestInfo.cache = "default"; // https://developer.mozilla.org/zh-CN/docs/Web/API/Request/cache
+        this._requestInfo.credentials = "omit"; // https://developer.mozilla.org/zh-CN/docs/Web/API/Request/credentials
+        this._requestInfo.headers = {
             "Content-Type": HttpDefine.ContentType.JSON
         };
-        // this.m_requestInfo.integrity = "";
-        this.m_requestInfo.keepalive = false;
-        this.m_requestInfo.method = HttpDefine.Method.GET;
-        this.m_requestInfo.mode = "cors";
-        this.m_requestInfo.redirect = "follow"; // follow (自动重定向), error (如果产生重定向将自动终止并且抛出一个错误), 或者 manual (手动处理重定向). 在Chrome中，Chrome 47 之前的默认值是 follow，从 Chrome 47 开始是 manual。
-        this.m_requestInfo.referrer = ""; // https://javascript.info/fetch-api
-        this.m_requestInfo.referrerPolicy = "no-referrer-when-downgrade"; // https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Referrer-Policy
-        this.m_requestInfo.signal = this.m_abortController.signal; // https://davidwalsh.name/cancel-fetch （android 无法使用所以注释此功能）
+        // this._requestInfo.integrity = "";
+        this._requestInfo.keepalive = false;
+        this._requestInfo.method = HttpDefine.Method.GET;
+        this._requestInfo.mode = "cors";
+        this._requestInfo.redirect = "follow"; // follow (自动重定向), error (如果产生重定向将自动终止并且抛出一个错误), 或者 manual (手动处理重定向). 在Chrome中，Chrome 47 之前的默认值是 follow，从 Chrome 47 开始是 manual。
+        this._requestInfo.referrer = ""; // https://javascript.info/fetch-api
+        this._requestInfo.referrerPolicy = "no-referrer-when-downgrade"; // https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Headers/Referrer-Policy
+        this._requestInfo.signal = this._abortController.signal; // https://davidwalsh.name/cancel-fetch （android 无法使用所以注释此功能）
     }
 
     /**
@@ -59,8 +59,8 @@ export default class HttpFetch implements HttpInterface.Http {
      * @return {Promise<HttpInterface.ResponseInfo>}
      */
     public async request(url: string, method: HttpDefine.Method, body?: BodyInit, param?: HttpInterface.RequestParam): Promise<HttpInterface.ResponseInfo> {
-        this.m_url = url;
-        this.m_method = method;
+        this._url = url;
+        this._method = method;
 
         if (!param) {
             param = {};
@@ -85,11 +85,11 @@ export default class HttpFetch implements HttpInterface.Http {
         }
 
         return new Promise((resolve: (data: HttpInterface.ResponseInfo) => void) => {
-            G.LogMgr.log(`${this.m_method} 请求 ${this.m_url}`);
+            G.LogMgr.log(`${this._method} 请求 ${this._url}`);
             G.LogMgr.log(body);
-            this.m_requestInfo.method = method;
+            this._requestInfo.method = method;
             if (body !== null || body !== undefined) {
-                this.m_requestInfo.body = body;
+                this._requestInfo.body = body;
             }
 
             let data: HttpInterface.ResponseInfo = {
@@ -98,9 +98,9 @@ export default class HttpFetch implements HttpInterface.Http {
             };
 
             this.startTimer();
-            fetch(url, this.m_requestInfo).then(async (response: Response) => {
+            fetch(url, this._requestInfo).then(async (response: Response) => {
                 this.stopTimer();
-                G.LogMgr.log(`${this.m_method} 响应 ${response.status}`);
+                G.LogMgr.log(`${this._method} 响应 ${response.status}`);
                 if (response.ok) {
                     data.state = HttpDefine.StateType.OK;
                     data.body = await this.getBodyByResponse(param.responseType, response) as any;
@@ -150,11 +150,11 @@ export default class HttpFetch implements HttpInterface.Http {
      * 开始定时器
      */
     private startTimer(): void {
-        if (this.m_timer === null) {
-            this.m_timer = setTimeout(() => {
-                G.LogMgr.warn(`${this.m_method} 超时 ${this.m_url}`);
-                this.m_abortController.abort();
-                this.m_timer = null;
+        if (this._timer === null) {
+            this._timer = setTimeout(() => {
+                G.LogMgr.warn(`${this._method} 超时 ${this._url}`);
+                this._abortController.abort();
+                this._timer = null;
             }, HttpDefine.TIMEOUT * 1000);
         }
     }
@@ -163,9 +163,9 @@ export default class HttpFetch implements HttpInterface.Http {
      * 停止定时器
      */
     private stopTimer(): void {
-        if (this.m_timer !== null) {
-            clearTimeout(this.m_timer);
-            this.m_timer = null;
+        if (this._timer !== null) {
+            clearTimeout(this._timer);
+            this._timer = null;
         }
     }
 

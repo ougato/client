@@ -1,22 +1,22 @@
 /*
  * @Author       : ougato
  * @Date         : 2020-10-11 01:00:54
- * @LastEditors  : ougato
- * @LastEditTime : 2020-10-15 17:31:58
- * @FilePath     : \client242\assets\src\core\manager\network\NetworkMessageTimer.ts
+ * LastEditors  : ougato
+ * LastEditTime : 2021-11-03 01:22:34
+ * FilePath     : /client/assets/src/core/manager/network/NetworkMessageTimer.ts
  * @Description  : 网络超时器
  */
 
 export default class NetworkMessageTimer {
 
     // 定时器 Map<序列号, 定时器ID>
-    private m_timerMap: Map<number, NodeJS.Timeout> = null;
+    private _timerMap: Map<number, NodeJS.Timeout> = null;
     // 消息超时回调
-    private m_messageTimeoutCallback: (serial: number) => void = null;
+    private _messageTimeoutCallback: (serial: number) => void = null;
 
     constructor(timeoutCallback: (serial: number) => void) {
-        this.m_timerMap = new Map();
-        this.m_messageTimeoutCallback = timeoutCallback;
+        this._timerMap = new Map();
+        this._messageTimeoutCallback = timeoutCallback;
     }
 
     /**
@@ -25,13 +25,13 @@ export default class NetworkMessageTimer {
      * @param timeout {number} 超时时间（单位：秒）
      */
     public on(serial: number, timeout: number): void {
-        let timerId: NodeJS.Timeout | undefined = this.m_timerMap.get(serial);
+        let timerId: NodeJS.Timeout | undefined = this._timerMap.get(serial);
         if (timerId === undefined || timerId === null) {
             timerId = setTimeout(() => {
-                this.m_messageTimeoutCallback(serial);
-                this.m_timerMap.delete(serial);
+                this._messageTimeoutCallback(serial);
+                this._timerMap.delete(serial);
             }, timeout * 1000);
-            this.m_timerMap.set(serial, timerId);
+            this._timerMap.set(serial, timerId);
         }
     }
 
@@ -40,10 +40,10 @@ export default class NetworkMessageTimer {
      * @param serial {number} 序列号
      */
     public off(serial: number): void {
-        let timerId: NodeJS.Timeout | undefined = this.m_timerMap.get(serial);
+        let timerId: NodeJS.Timeout | undefined = this._timerMap.get(serial);
         if (timerId !== undefined && timerId !== null) {
             clearTimeout(timerId);
-            this.m_timerMap.delete(serial);
+            this._timerMap.delete(serial);
         }
     }
 
@@ -51,9 +51,9 @@ export default class NetworkMessageTimer {
      * 关闭所有超时监听
      */
     public offAll(): void {
-        this.m_timerMap.forEach((timerId: NodeJS.Timeout, serial: number) => {
+        this._timerMap.forEach((timerId: NodeJS.Timeout, serial: number) => {
             clearTimeout(timerId);
-            this.m_timerMap.delete(serial);
+            this._timerMap.delete(serial);
         });
     }
 

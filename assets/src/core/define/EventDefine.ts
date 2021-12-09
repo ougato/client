@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-08-04 01:27:48
  * LastEditors  : ougato
- * LastEditTime : 2021-08-04 01:40:02
+ * LastEditTime : 2021-11-19 16:34:39
  * FilePath     : /client/assets/src/core/define/EventDefine.ts
  * Description  : 事件定义
  */
@@ -23,6 +23,8 @@ export enum NetEvent {
     NET_WS_CONNECTING = "NET_WS_CONNECTING",
     // 网络连接成功
     NET_WS_CONNECTED = "NET_WS_CONNECTED",
+    // 网络连接超时
+    NET_WS_CONNECT_TIMEOUT = "NET_WS_CONNECT_TIMEOUT",
     // 网络连接错误
     NET_WS_ERROR = "NET_WS_ERROR",
     // 网络正在断开
@@ -41,4 +43,10 @@ export enum NetEvent {
     NET_HTTP_ERROR = "NET_HTTP_ERROR",
     // Http 请求结果错误
     NET_HTTP_CODE_ERROR = "NET_HTTP_CODE_ERROR",
+}
+
+// 更新事件
+export enum UpdateEvent {
+    // 更新进度
+    UPDATE_PROGRESS = "UPDATE_PROGRESS",
 }

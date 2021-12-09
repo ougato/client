@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-15 23:51:40
  * LastEditors  : ougato
- * LastEditTime : 2021-10-29 16:37:41
+ * LastEditTime : 2021-12-09 11:08:37
  * FilePath     : /client/assets/src/core/http/HttpRequest.ts
  * @Description  : Http 对外接口
  */
@@ -11,8 +11,9 @@ import * as HttpInterface from "../interface/HttpInterface";
 import * as HttpDefine from "../define/HttpDefine";
 import HttpXmlRequest from "./HttpXmlRequest";
 
-export default class HttpRequest {
 
+export default class HttpRequest {
+    
     /**
      * 检测 URL 是否合法
      * @param url {string} 请求地址

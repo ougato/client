@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-08 23:31:28
  * LastEditors  : ougato
- * LastEditTime : 2021-09-05 02:10:33
+ * LastEditTime : 2021-11-03 01:43:04
  * FilePath     : /client/assets/src/core/manager/res/ResManager.ts
  * Description  : 资源管理器、所有游戏中用到的资源操作、由 ResManager 进行统一管理
  */
@@ -44,6 +44,7 @@ export default class ResManager extends BaseManager {
         this._buffer = new ResBuffer();
         this._loader = new ResLoader();
 
+        this._buffer.releasedCallback = this.onReleased;
         this._loader.loadedCallback = this.onLoaded;
     }
 
@@ -167,11 +168,11 @@ export default class ResManager extends BaseManager {
     }
 
     private onLoaded(resCache: ResCache): void {
-        G.LogMgr.log(`加载后 ${resCache.base}`);
+
     }
 
     private onReleased(base: string, bundleName: BundleDefine.Name): void {
-
+        G.LogMgr.log(`释放资源 ${base}`);
     }
 
     public print(): void {

@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-08-26 01:00:54
  * LastEditors  : ougato
- * LastEditTime : 2021-09-05 02:53:29
+ * LastEditTime : 2021-11-04 14:09:29
  * FilePath     : /client/assets/src/core/manager/ui/UIBase.ts
  * Description  : 场景缓存
  */
@@ -10,6 +10,7 @@
 import BaseComponent from "../../base/BaseComponent";
 import ResCache from "../res/ResCache";
 import * as UIInterface from "../../interface/UIInterface";
+import UIUtils from "../../utils/UIUtils";
 
 export default class UIBase {
 
@@ -29,31 +30,9 @@ export default class UIBase {
     /**
      * 挂载根节点脚本组件
      */
-    public addScript<T extends BaseComponent>(node: cc.Node, uiClass: UIInterface.UIClass<T>): BaseComponent | null {
-        let script: BaseComponent = null;
-
-        if (!node) {
-            G.LogMgr.warn(`挂载脚本失败 ${cc.js.getClassName(uiClass)}、节点为空`);
-            return null;
-        }
-
-        if (!uiClass) {
-            G.LogMgr.warn(`挂载脚本失败 ${cc.js.getClassName(uiClass)}、脚本类为空`);
-            return null;
-        }
-
-        script = node.getComponent(uiClass);
-        if (!script) {
-            script = node.addComponent(uiClass);
-            if (script) {
-                this.script = script;
-            } else {
-                G.LogMgr.warn(`挂载脚本失败 ${cc.js.getClassName(uiClass)}`);
-                script = null;
-            }
-        }
-
-        return script;
+    public setScript<T extends BaseComponent>(node: cc.Node, uiClass: UIInterface.UIClass<T>): BaseComponent | null {
+        this.script = UIUtils.addScript(node, uiClass);
+        return this.script;
     }
 
     /**
@@ -61,11 +40,9 @@ export default class UIBase {
      */
     public release(): void {
         this.className = null;
-        this.node.destroyAllChildren();
-        this.node.removeFromParent();
+        this.node.destroy();
         this.node = null;
         this.script = null;
-        this.resCache.decCache();
         this.resCache = null;
     }
 

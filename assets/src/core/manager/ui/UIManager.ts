@@ -2,15 +2,12 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:36:55
  * LastEditors  : ougato
- * LastEditTime : 2021-10-30 00:46:54
+ * LastEditTime : 2021-12-03 16:07:49
  * FilePath     : /client/assets/src/core/manager/ui/UIManager.ts
  * Description  : 界面管理器、所有的视图和场景、都由 UIManager 统一管理、包括打开视图|关闭视图|切换场景等等
  */
 
 import BaseManager from "../../base/BaseManager";
-import * as UIInterface from "../../interface/UIInterface";
-import * as BundleDefine from "../../define/BundleDefine";
-import * as UIDefine from "../../define/UIDefine";
 import BaseScene from "../../base/BaseScene";
 import BaseComponent from "../../base/BaseComponent";
 import UIScene from "./UIScene";
@@ -23,6 +20,14 @@ import LoadingPersist from "../../../ui/persist/LoadingPersist";
 import WaitingPersist from "../../../ui/persist/WaitingPersist";
 import DialogPersist from "../../../ui/persist/DialogPersist";
 import BasePersist from "../../base/BasePersist";
+import BaseItem from "../../base/BaseItem";
+import UIUtils from "../../utils/UIUtils";
+import * as UIInterface from "../../interface/UIInterface";
+import * as BundleDefine from "../../define/BundleDefine";
+import * as UIDefine from "../../define/UIDefine";
+
+// 打开视图等待常驻几秒后显示时间（单位：毫秒）
+const OPEN_VIEW_WAITING_TIME: number = 500;
 
 export default class UIManager extends BaseManager {
 
@@ -38,6 +43,8 @@ export default class UIManager extends BaseManager {
     private _currScene: UIScene = null;
     // 场景最高层级
     private _sceneTopZIndex: number = null;
+    // 对话框队列
+    private _dialogQueue: UIInterface.DialogParam[] = null;
 
     public static getInstance(): UIManager {
         if (this.s_instance === null) {
@@ -59,6 +66,7 @@ export default class UIManager extends BaseManager {
         this._sceneMap = new Map();
         this._sceneTopZIndex = 0;
         this._persistMap = new Map();
+        this._dialogQueue = [];
     }
 
     protected destroy(): void {
@@ -105,7 +113,7 @@ export default class UIManager extends BaseManager {
         }
 
         if (param.delay === null || param.delay === undefined || typeof (param.delay) !== "number" || param.delay < 0) {
-            param.delay = 0;
+            param.delay = OPEN_VIEW_WAITING_TIME;
         }
 
         if (param.layer === null || param.layer === undefined) {
@@ -120,27 +128,41 @@ export default class UIManager extends BaseManager {
         this._currScene.addView(param, data);
     }
 
+
     /**
      * 关闭视图（仅关闭当前场景内的视图，其他场景的视图不管，但是删除的时候会有多个，从最顶层的那个开始关闭，只关一个）
+     * 
+     * @param viewName {string} 视图名
+     * 
      * @param viewClass {UIInterface.UIClass<T>} 视图类
      */
-    public closeView<T extends BaseView>(viewClass: UIInterface.UIClass<T>): void {
-        if (viewClass === null || viewClass === undefined) {
-            G.LogMgr.warn(`视图类不能为空`);
-            return;
+    public closeView(viewName: string, isReleaseRes?: boolean): void;
+    public closeView<T extends BaseView>(viewClass: UIInterface.UIClass<T>, isReleaseRes?: boolean): void;
+    public closeView(): void {
+        let name: string = null;
+        if (typeof (arguments[0]) === "string") {
+            let viewName: string = arguments[0];
+            name = viewName;
+        } else {
+            let viewClass: UIInterface.UIClass<BaseView> = arguments[0];
+            if (viewClass === null || viewClass === undefined) {
+                G.LogMgr.warn(`视图类不能为空`);
+                return;
+            }
+            if (!(viewClass.prototype instanceof BaseView)) {
+                G.LogMgr.warn(`视图必须继承 BaseView 类`);
+                return;
+            }
+            if (!this._currScene) {
+                G.LogMgr.warn(`当前没有可使用的场景，需要加载一个场景并打开视图`);
+                return;
+            }
+            name = cc.js.getClassName(viewClass)
         }
 
-        if (!(viewClass.prototype instanceof BaseView)) {
-            G.LogMgr.warn(`视图必须继承 BaseView 类`);
-            return;
-        }
+        let isReleaseRes: boolean = !!arguments[1];
 
-        if (!this._currScene) {
-            G.LogMgr.warn(`当前没有可使用的场景，需要加载一个场景并打开视图`);
-            return;
-        }
-
-        this._currScene.delView(cc.js.getClassName(viewClass));
+        this._currScene.delView(name, isReleaseRes);
     }
 
     /**
@@ -187,6 +209,8 @@ export default class UIManager extends BaseManager {
             return;
         }
 
+        G.LogMgr.color("打开场景", className);
+
         this.startSceneTimer(param.delay);
 
         if (this.isSceneExist(param.bundleName, className)) {
@@ -227,13 +251,13 @@ export default class UIManager extends BaseManager {
                         }
                         this._sceneMap.set(param.bundleName, newScene);
                         let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
-                        let script: BaseComponent = newScene.addScript(node, param.sceneClass);
+                        let script: BaseComponent = newScene.setScript(node, param.sceneClass);
                         this.addToCanvas(node);
                         this._currScene.resCache = resCache;
                         this._currScene.node = node;
                         this._currScene.script = script;
                         if (param.onComplete) param.onComplete();
-                        if (script.onLoaded) script.onLoaded.apply(script, data);
+                        if (script.onShow) script.onShow.apply(script, data);
                     } else {
                         if (!this._currScene.resCache) {
                             this._currScene = null;
@@ -306,16 +330,52 @@ export default class UIManager extends BaseManager {
 
     /**
      * 打开对话框
+     * @param param {UIInterface.DialogParam} 对话框参数
      */
-    public openDialog(): void {
-        
+    public async openDialog(param: UIInterface.DialogParam): Promise<void> {
+        if (param.showMode === null || param.showMode === undefined) {
+            param.showMode = UIDefine.DialogMode.REAR;
+        }
+
+        if (param.showMode === UIDefine.DialogMode.FRONT) {
+            this._dialogQueue.unshift(param);
+        } else if (param.showMode === UIDefine.DialogMode.REAR) {
+            this._dialogQueue.push(param);
+        }
+
+        let persist: UIPersist = this._persistMap.get(cc.js.getClassName(DialogPersist));
+        (persist.script as DialogPersist).closeCallback = this.onDialogNext.bind(this);
+        if (!persist.script.node.parent || !persist.script.node.active || param.showMode === UIDefine.DialogMode.FRONT) {
+            this.openPersist(DialogPersist, UIDefine.PersistLayer.DIALOG, param);
+        }
     }
 
     /**
      * 关闭对话框
+     * @param isClear {boolean} 是否清理所有对话框（false 时就是关闭当前，队列里面的继续弹出，true 时关闭当前，清理队列不再弹出）
      */
-    public closeDialog(): void {
-        this.closePersist(DialogPersist);
+    public closeDialog(isClear: boolean = false): void {
+        if (isClear) {
+            this._dialogQueue = [];
+        }
+        let persist: UIPersist = this._persistMap.get(cc.js.getClassName(DialogPersist));
+        (persist.script as DialogPersist).playCloseAnimation();
+    }
+
+    /**
+     * 当前对话框关闭后执行
+     * @param param {UIInterface.DialogParam} 对话框参数（通过参数找到要删除的队列项）
+     */
+    private onDialogNext(param: UIInterface.DialogParam): void {
+        let index: number = this._dialogQueue.indexOf(param);
+        if (index !== -1) {
+            this._dialogQueue.splice(index, 1);
+        }
+
+        let frontParam: UIInterface.DialogParam = this._dialogQueue.shift();
+        if (frontParam) {
+            this.openPersist(DialogPersist, UIDefine.PersistLayer.DIALOG, frontParam);
+        }
     }
 
     /**
@@ -348,6 +408,55 @@ export default class UIManager extends BaseManager {
     }
 
     /**
+     * 添加节点
+     * @param param {UIInterface.NodeParam<T>} 节点参数
+     */
+    public addItem<T extends BaseItem>(param: UIInterface.ItemParam<T>, ...data: any[]): void {
+        if (param.itemClass === null || param.itemClass === undefined) {
+            G.LogMgr.warn(`节点类不能为空`);
+            return;
+        }
+
+        if (!(param.itemClass.prototype instanceof BaseItem)) {
+            G.LogMgr.warn(`节点必须继承 BaseItem 类`);
+            return;
+        }
+
+        if (param.bundleName === null || param.bundleName === undefined) {
+            param.bundleName = BundleDefine.Name.RESOURCES;
+        }
+
+        if (param.layer === null || param.layer === undefined) {
+            param.layer = 0;
+        }
+
+        if (param.parentNode === null || param.parentNode === undefined) {
+            param.parentNode = this.getScene().node;
+        }
+
+        G.ResMgr.load({
+            base: param.itemClass.prefabPath,
+            bundleName: param.bundleName,
+            assetType: cc.Prefab,
+            progressCallback: (finish: number, total: number, item?: cc.AssetManager.RequestItem) => {
+                if (param.onProgress) param.onProgress(finish, total, item);
+            },
+            completeCallback: (resCache: ResCache | null) => {
+                if (resCache !== null && resCache.asset !== null) {
+                    let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
+                    let script: BaseComponent = UIUtils.addScript(node, param.itemClass);
+                    param.parentNode.addChild(node, param.layer);
+                    if (param.onComplete) param.onComplete(node);
+                    if (script.onShow) script.onShow.apply(script, data);
+                } else {
+                    if (param.onError) param.onError();
+                }
+
+            },
+        })
+    }
+
+    /**
      * 添加常驻
      */
     public async addPersist(persistClass: UIInterface.UIClass<BasePersist>): Promise<void> {
@@ -360,7 +469,7 @@ export default class UIManager extends BaseManager {
                     if (resCache !== null && resCache.asset !== null) {
                         let persist: UIPersist = new UIPersist();
                         let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
-                        let script: BasePersist = persist.addScript(node, persistClass) as BasePersist;
+                        let script: BasePersist = persist.setScript(node, persistClass) as BasePersist;
                         persist.className = cc.js.getClassName(persistClass);;
                         persist.script = script;
                         persist.resCache = resCache;
@@ -375,17 +484,18 @@ export default class UIManager extends BaseManager {
         });
     }
 
-    private async openPersist(persistClass: UIInterface.UIClass<BasePersist>, layer: UIDefine.PersistLayer): Promise<void> {
+    private async openPersist(persistClass: UIInterface.UIClass<BasePersist>, layer: UIDefine.PersistLayer, ...data: any[]): Promise<void> {
         let persist: UIPersist = this._persistMap.get(cc.js.getClassName(persistClass));
         if (!persist) {
             await this.addPersist(persistClass);
         }
 
-        if (persist.node.parent) {
-            persist.script.show();
-        } else {
+        if (!persist.node.parent) {
             this.addToCanvas(persist.node, layer);
         }
+
+        persist.script.show();
+        persist.script.onShow.apply(persist.script, data);
     }
 
     private closePersist(persistClass: UIInterface.UIClass<BasePersist>): void {

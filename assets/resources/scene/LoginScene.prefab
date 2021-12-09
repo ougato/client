@@ -31,10 +31,13 @@
       },
       {
         "__id__": 62
+      },
+      {
+        "__id__": 63
       }
     ],
     "_prefab": {
-      "__id__": 63
+      "__id__": 64
     },
     "_opacity": 255,
     "_color": {
@@ -625,7 +628,6 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_useOriginalSize": false,
     "_string": "手机登陆",
     "_N$string": "手机登陆",
     "_fontSize": 32,
@@ -925,7 +927,7 @@
     },
     "component": "",
     "_componentId": "de144aApv1L3rj5sVpU707G",
-    "handler": "onClickLoginGuest",
+    "handler": "onClickLoginPhone",
     "customEventData": ""
   },
   {
@@ -1160,7 +1162,6 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_useOriginalSize": false,
     "_string": "快速游戏",
     "_N$string": "快速游戏",
     "_fontSize": 32,
@@ -1848,7 +1849,6 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_useOriginalSize": false,
     "_string": "我已详细阅读并同意",
     "_N$string": "我已详细阅读并同意",
     "_fontSize": 24,
@@ -2162,7 +2162,6 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_useOriginalSize": false,
     "_string": "《用户协议》《隐私政策》",
     "_N$string": "《用户协议》《隐私政策》",
     "_fontSize": 24,
@@ -2395,6 +2394,16 @@
     "_id": ""
   },
   {
+    "__type__": "cc.BlockInputEvents",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
+    "_id": ""
+  },
+  {
     "__type__": "cc.PrefabInfo",
     "root": {
       "__id__": 1
@@ -2402,7 +2411,7 @@
     "asset": {
       "__uuid__": "3b8b8789-fe81-4ab9-9150-6847631986dc"
     },
-    "fileId": "83/jh4hEZDka8D2yQoyX7M",
+    "fileId": "",
     "sync": false
   }
 ]

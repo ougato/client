@@ -1,0 +1,61 @@
+{
+    "inNet": {
+        "explain": "内网相关",
+        "routerUrl": "http://192.168.6.210:8088/",
+        "hotUpdatePath": "http://192.168.6.210/hotUpdate",
+        "debug": true,
+        "uploadBatPath": "../upload/inNet/uploadPop.bat",
+        "shSginPem": "",
+        "uploadType": "commit",
+        "serverAddress": "Administrator@192.168.6.210",
+        "staticPath": "/Users/Administrator/Desktop/worke/client/static/",
+        "romoteResFileName": {
+            "web": "web-mobile",
+            "hots": "hotUpdate",
+            "app": "app"
+        }
+    },
+    "outNet": {
+        "explain": "外网相关",
+        "routerUrl": "http://login-parkour.ng888.cyou/",
+        "hotUpdatePath": "http://parkour.ng888.cyou/hotUpdate/",
+        "debug": false,
+        "shSginPem": "../upload/outNet/parkour.pem",
+        "uploadBatPath": "../upload/outNet/uploadPop.bat",
+        "uploadType": "oss",
+        "serverAddress": "",
+        "staticPath": "",
+        "romoteResFileName": {
+            "web": "h5",
+            "hots": "hotUpdate",
+            "app": "app"
+        }
+    },
+    "outNet_linux": {
+        "explain": "外网相关 linux 环境，没用了",
+        "routerUrl": "http://login-parkour.bingthy.xyz/",
+        "hotUpdatePath": "http://parkour.bingthy.xyz/hotUpdate",
+        "debug": false,
+        "shSginPem": "../upload/outNet/parkour.pem",
+        "uploadBatPath": "../upload/outNet/uploadPop.sh",
+        "uploadType": "zip",
+        "serverAddress": "liuyunqi@8.211.132.38",
+        "staticPath": "/home/liuyunqi/static/",
+        "romoteResFileName": {
+            "web": "h5",
+            "hots": "hotUpdate",
+            "app": "app"
+        }
+    },
+    "local": {
+        "explain": "本地调试用",
+        "routerUrl": "http://192.168.6.210:8088/",
+        "hotUpdatePath": "http://192.168.6.56:8111/hotUpdate",
+        "debug": true,
+        "remoteHotResPath": "",
+        "uploadType": "bat",
+        "remoteWebPath": "",
+        "shSginPem": "",
+        "isZip": false
+    }
+}

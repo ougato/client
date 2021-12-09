@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-08-26 01:00:54
  * LastEditors  : ougato
- * LastEditTime : 2021-10-21 20:57:05
+ * LastEditTime : 2021-12-03 16:14:02
  * FilePath     : /client/assets/src/core/manager/ui/UIScene.ts
  * Description  : 场景缓存
  */
@@ -58,8 +58,8 @@ export default class UIScene extends UIBase {
             if (view.resCache.state === ResDefine.ResState.LOADING) {
                 G.LogMgr.warn(`不能重复加载 ${className} 视图`);
             } else if (view.resCache.state === ResDefine.ResState.LOADED) {
-                if (view.script && view.script.onLoaded) view.script.onLoaded.apply(view.script, data);
                 this.addToScene(view, param.layer);
+                if (view.script && view.script.onShow) view.script.onShow.apply(view.script, data);
             }
             return;
         }
@@ -82,14 +82,16 @@ export default class UIScene extends UIBase {
             },
             completeCallback: (resCache: ResCache | null) => {
                 if (resCache !== null && resCache.asset !== null) {
+                    G.LogMgr.color("打开视图", className);
                     let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
-                    let script: BaseComponent = view.addScript(node, param.viewClass);
+                    let script: BaseComponent = view.setScript(node, param.viewClass);
                     view.resCache = resCache;
                     view.node = node;
                     this.addToScene(view, param.layer);
                     if (param.onComplete) param.onComplete();
-                    if (script.onLoaded) script.onLoaded.apply(script, data);
+                    if (script.onShow) script.onShow.apply(script, data);
                 } else {
+                    G.LogMgr.warn(`打开视图失败：${className}`);
                     this._viewMap.delete(className);
                     if (param.onError) param.onError();
                 }
@@ -101,18 +103,23 @@ export default class UIScene extends UIBase {
     }
 
     /**
-     * 删除并释放视图
-     * @param className 
+     * 删除并销毁视图
+     * @param className {string} 类名
+     * @param isReleaseRes {boolean} 释放资源
      */
-    public delView(className: string): void {
+    public delView(className: string, isReleaseRes: boolean = false): void {
         let view: UIView = this._viewMap.get(className)
         if (!view) {
             G.LogMgr.warn(`没有找到 ${className} 的视图删除`);
             return;
         }
-
+        if (isReleaseRes) {
+            while (view.resCache.decCache() > 0);
+            G.ResMgr.release(view.resCache);
+        }
         view.release();
         this._viewMap.delete(className);
+        G.LogMgr.color("关闭视图", className);
     }
 
     /**
@@ -174,9 +181,15 @@ export default class UIScene extends UIBase {
             zIndex = this.resetZIndex(layer) + 1;
         }
 
-        if (this.node.getChildByName(view.node.name)) {
+        if (view.node.isChildOf(this.node)) {
             view.node.zIndex = zIndex;
         } else {
+            // view 在没有 widget 组件的情况下，自动添加全屏撑满，有则不处理
+            let widget: cc.Widget = view.node.getComponent(cc.Widget);
+            if (!widget) {
+                widget = view.node.addComponent(cc.Widget);
+                widget.isAlignLeft = widget.isAlignRight = widget.isAlignTop = widget.isAlignBottom = true;
+            }
             this.node.addChild(view.node, zIndex);
         }
 
@@ -213,7 +226,7 @@ export default class UIScene extends UIBase {
                 topZIndex = zIndex;
             } else {
                 G.LogMgr.warn(`${UIDefine.ViewLayer[layer]} 层已经超过了最大层级数量、请增加 UIDefine 里面 LAYER_INTERVAL 的容量大小、所有超出的视图将会被释放丢弃`);
-                this.delView(layerViewCache.className);
+                this.delView(layerViewCache.className, true);
             }
         }
 

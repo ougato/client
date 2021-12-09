@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:21:20
  * LastEditors  : ougato
- * LastEditTime : 2021-09-05 02:54:54
+ * LastEditTime : 2021-12-09 11:10:49
  * FilePath     : /client/assets/src/core/base/BaseComponent.ts
  * Description  : 组件 基类、是 BaseView 和 BaseScene 的父类
  */
@@ -17,7 +17,7 @@ export default class BaseComponent extends cc.Component {
     // 加载资源列表
     private _loadList: ResCache[] = null;
     // 监听事件列表
-    private _eventList: any = null;
+    private _eventList: string[] = null;
 
     /**
      * 如果该组件启用，则每帧调用 update。
@@ -39,8 +39,8 @@ export default class BaseComponent extends cc.Component {
      * 当附加到一个激活的节点上或者其节点第一次激活时候调用。onLoad 总是会在任何 start 方法调用前执行，这能用于安排脚本的初始化顺序。
      */
     protected onLoad(): void {
-        this.register();
         this.initData();
+        this.register();
         this.initUI();
     }
 
@@ -95,10 +95,10 @@ export default class BaseComponent extends cc.Component {
     }
 
     /**
-     * 加载完成回调 数据带入
+     * 准备显示时回调 数据带入
      * @param data {...any[]} 多个数据参数
      */
-    public onLoaded(...data: any[]): void {
+    public onShow(...data: any[]): void {
 
     }
 
@@ -112,6 +112,7 @@ export default class BaseComponent extends cc.Component {
     /**
      * 注册事件
      */
+
     protected register(): void {
 
     }
@@ -133,16 +134,20 @@ export default class BaseComponent extends cc.Component {
 
     /**
      * 监听事件
+     * @param event {string} 事件名
+     * @param callback {Function} 监听回调函数
      */
-    protected on(): void {
-
+    protected on(event: string, callback: Function): void {
+        G.EventMgr.on(event, this, callback);
+        this._eventList.push(event);
     }
 
     /**
      * 手动移除事件
+     * @param event {string} 事件名
      */
-    protected off(): void {
-
+    protected off(event: string): void {
+        G.EventMgr.off(event, this);
     }
 
     /**
@@ -150,8 +155,10 @@ export default class BaseComponent extends cc.Component {
      * 由 UI 销毁后自动删除注册过的事件
      */
     private autoOff(): void {
-
-
+        for (let i: number = 0; i < this._eventList.length; ++i) {
+            let event: string = this._eventList[i];
+            G.EventMgr.off(event, this);
+        }
         this._eventList = [];
     }
 
@@ -162,7 +169,7 @@ export default class BaseComponent extends cc.Component {
     protected load(param: ResInterface.LoadResParam): void {
         let completeCallback: (resCache: ResCache | null) => void = param.completeCallback;
         param.completeCallback = (resCache: ResCache | null) => {
-            if (resCache) {
+            if (resCache && this._loadList) {
                 this._loadList.push(resCache);
             }
             completeCallback(resCache);

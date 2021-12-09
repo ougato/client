@@ -2,10 +2,12 @@
  * Author       : ougato
  * Date         : 2021-11-01 16:09:58
  * LastEditors  : ougato
- * LastEditTime : 2021-11-02 16:16:34
+ * LastEditTime : 2021-11-08 11:04:36
  * FilePath     : /client/assets/src/core/interface/NetworkInterface.ts
  * Description  : 网络接口
  */
+
+import ClassDecorator from "../decorator/ClassDecorator";
 
 export interface WebSocketPart {
     // 协议
@@ -38,6 +40,7 @@ export interface TransferData {
 
 // 消息类
 export interface ProtoClass {
+    prototype?: any,
     name: string,
     create: (properties?: any) => any;
     encode: (m: any, w?: any) => any;

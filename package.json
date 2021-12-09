@@ -10,7 +10,9 @@
   },
   "author": "ougato",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "shelljs": "^0.8.4"
+  },
   "devDependencies": {
     "@types/js-md5": "^0.4.2",
     "fetch-ponyfill": "^6.1.1",

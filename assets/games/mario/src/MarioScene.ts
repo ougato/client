@@ -8,7 +8,7 @@
  */
 
 import BaseScene from "../../../src/core/base/BaseScene";
-import HallScene from "../../../src/ui/view/HallScene";
+import HallScene from "../../../src/ui/scene/HallScene";
 
 const { ccclass, property } = cc._decorator;
 

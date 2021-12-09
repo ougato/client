@@ -2,13 +2,13 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2021-11-01 14:58:08
+ * LastEditTime : 2021-11-19 17:48:30
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
 
 import BaseScene from "../../core/base/BaseScene";
-import LoginScene from "../view/LoginScene";
+import LoginScene from "../scene/LoginScene";
 import HttpRequest from "../../core/http/HttpRequest";
 import LockScreenPersist from "../persist/LockScreenPersist";
 import LoadingPersist from "../persist/LoadingPersist";
@@ -22,6 +22,9 @@ import HallController from "../../controller/HallController";
 import * as URLConfig from "../../config/URLConfig";
 import * as HttpInterface from "../../core/interface/HttpInterface";
 import * as HttpParamInterface from "../../interface/HttpParamInterface";
+import * as UpdateInterface from "../../core/interface/UpdateInterface";
+import * as UpdateDefine from "../../core/define/UpdateDefine";
+import UnitUtils from "../../core/utils/UnitUtils";
 
 // 请求获取动态主机最大次数
 const GET_DYNAMIC_HOST_MAX_COUNT: number = 3;
@@ -37,7 +40,7 @@ export default class BootScene extends BaseScene {
 
     protected onLoad(): void {
         super.onLoad();
-
+        cc.debug.setDisplayStats(false)
     }
 
     protected start(): void {
@@ -50,7 +53,7 @@ export default class BootScene extends BaseScene {
      * 初始化常驻
      * @returns {Promise<void>}
      */
-    public async initPersist(): Promise<void> {
+    private async initPersist(): Promise<void> {
         return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
             Promise.all([G.UIMgr.addPersist(LockScreenPersist), G.UIMgr.addPersist(LoadingPersist), G.UIMgr.addPersist(WaitingPersist), G.UIMgr.addPersist(DialogPersist)]).then(() => {
                 resolve();
@@ -65,7 +68,7 @@ export default class BootScene extends BaseScene {
      * 初始化游戏中用到的动态主机配置
      * @returns {Promise<void>}
      */
-    public async initHost(): Promise<void> {
+    private async initHost(): Promise<void> {
         return new Promise(async (resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
             // 获取动态主机次数
             let count: number = 0;
@@ -105,9 +108,163 @@ export default class BootScene extends BaseScene {
     }
 
     /**
+     * 初始化更新
+     */
+    private async initUpdate(): Promise<void> {
+        if (!cc.sys.isNative) {
+            G.LogMgr.log("非原生平台不进行文件热更新");
+            return;
+        }
+
+        return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
+            /**
+             * 闭包错误
+             * @param state 
+             */
+            let error: (state: UpdateDefine.ErrorState) => void = (state: UpdateDefine.ErrorState) => {
+                let strError: string = "";
+                switch (state) {
+                    case UpdateDefine.ErrorState.LOAD_LOCAL_MANIFEST:
+                    case UpdateDefine.ErrorState.DOWNLOAD_MANIFEST:
+                    case UpdateDefine.ErrorState.PARSE_MANIFEST:
+                    case UpdateDefine.ErrorState.DECOMPRESS_FILE:
+                    case UpdateDefine.ErrorState.DOWNLOAD_FILE:
+                    case UpdateDefine.ErrorState.VERIFY_FILE:
+                    case UpdateDefine.ErrorState.RETRY:
+                        strError = "下载失败，是否重试？"
+                        break;
+                    default:
+                        return;
+                }
+
+                // TODO: 弹窗
+                // G.ViewMgr.openPopups("错误", strError, this.node, async () => {
+                //     let updateResult: UpdateInterface.UpdateResult = await G.UpdateMgr.retry();
+                //     if (updateResult.error !== null && updateResult.error !== undefined) {
+                //         return error(updateResult.error);
+                //     }
+
+                //     if (updateResult.state === null || updateResult.state === undefined) {
+                //         reject("热更重试结果异常");
+                //     }
+
+                //     switch (updateResult.state) {
+                //         case UpdateDefine.UpdateState.UPDATE_FINISH:
+                //             cc.game.restart();
+                //             break;
+                //         case UpdateDefine.UpdateState.ALREADY_NEW:
+                //             resolve();
+                //             break;
+                //         case UpdateDefine.UpdateState.AGENT:
+                //             check();
+                //             break;
+                //         default:
+                //             console.warn("重试返回状态异常");
+                //             break;
+                //     }
+                // });
+            }
+
+            /**
+             * 闭包更新
+             */
+            let update: Function = async () => {
+                G.LogMgr.log("正在下载资源");
+                // G.UIMgr.openView(ViewDefine.UpdateView);
+
+                let updateResult: UpdateInterface.UpdateResult = await G.UpdateMgr.update();
+                if (updateResult.error !== null && updateResult.error !== undefined) {
+                    return error(updateResult.error);
+                }
+
+                if (updateResult.state === null || updateResult.state === undefined) {
+                    reject("热更更新结果异常");
+                }
+
+                switch (updateResult.state) {
+                    case UpdateDefine.UpdateState.UPDATE_FINISH:
+                        cc.game.restart();
+                        break;
+                    case UpdateDefine.UpdateState.ALREADY_NEW:
+                        resolve();
+                        break;
+                    case UpdateDefine.UpdateState.AGENT:
+                        check();
+                        break;
+                    default:
+                        console.warn("更新返回状态异常");
+                        break;
+                }
+            }
+
+            /**
+             * 闭包检查
+             */
+            let check: Function = async () => {
+                G.LogMgr.log("正在检测版本信息");
+
+                if (cc.sys.getNetworkType() === cc.sys.NetworkType.NONE) {
+                    G.LogMgr.warn("网络错误");
+                    // TODO: 弹窗
+                    // return G.ViewMgr.openPopups("错误", `网络异常，请检查网络后重试`, this.node, () => {
+                    //     check();
+                    // });
+                }
+
+                let checkResult: UpdateInterface.CheckResult = await G.UpdateMgr.check();
+
+                if (checkResult.error !== null && checkResult.error !== undefined) {
+                    return error(checkResult.error);
+                }
+
+                if (checkResult.state === null || checkResult.state === undefined) {
+                    reject("热更检测结果异常");
+                }
+
+                switch (checkResult.state) {
+                    case UpdateDefine.CheckState.NOT:
+                        resolve();
+                        break;
+                    case UpdateDefine.CheckState.QUIET: {
+                        update();
+                    }
+                        break;
+                    case UpdateDefine.CheckState.PROMPT: {
+                        // TODO: 弹窗
+                        // G.ViewMgr.openPopups("资源下载", `当前使用流量下载: ${UnitUtils.bytesToFileUnit(checkResult.downloadBytes)}`, this.node, () => {
+                        //     update();
+                        // });
+                    }
+                        break;
+                    case UpdateDefine.CheckState.URL: {
+                        G.LogMgr.log("正在下载安装包");
+                        cc.sys.openURL(G.DataMgr.get(HostData).getAppURL());
+                    }
+                        break;
+                    case UpdateDefine.CheckState.STORE: {
+                        G.LogMgr.log("需要商店下载");
+                        // TODO: 弹窗
+                        // G.ViewMgr.openPopups("版本下载", `需要到商店下载 APP`, this.node, () => {
+                        //     cc.sys.openURL(G.DataMgr.get(HostData).getAppStoreURL());
+                        // });
+                    }
+                        break;
+                    default: {
+                        console.warn(`无法找到热更检测结果 ${checkResult.state}`);
+                    }
+                        break;
+                }
+            }
+
+            check();
+        })
+
+    }
+
+    /**
      * 初始化设备数据
      */
-    public async initDevice(): Promise<void> {
+    private async initDevice(): Promise<void> {
         /**
          * 初始化设备唯一码
          */
@@ -154,6 +311,7 @@ export default class BootScene extends BaseScene {
     private async launch(): Promise<void> {
         await this.initPersist();
         await this.initHost();
+        // await this.initUpdate();
         await this.initDevice();
 
         this.into();

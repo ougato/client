@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-"""
+'''
 Author       : ougato
-Date         : 2020-10-23 18:12:27
+Date         : 2021-07-14 10:36:31
 LastEditors  : ougato
-LastEditTime : 2020-10-23 18:56:02
-FilePath     : \client242\tools\protobuf\pb2ts.py
+LastEditTime : 2021-11-19 17:43:22
+FilePath     : /client/tools/update/build2native.py
 Description  : 热更新构建本地原生文件，并生成热更文件到 ./version/ 文件夹内存档
-"""
+'''
 
 import os
 import json
@@ -17,23 +17,19 @@ import getopt
 import webbrowser
 import shutil
 import functools
-import hashlib
 
 COMMAND_PATH = os.getcwd()
 CURRENT_PATH = os.path.dirname(os.path.realpath(__file__))
 
 os.chdir(CURRENT_PATH)
 
-BUILD_CONFIG_PATH = os.path.join(CURRENT_PATH, "config.json")
+CONFIG_PATH = os.path.join(CURRENT_PATH, "config.json")
 DOCUMENT_PATH = os.path.abspath(os.path.join(CURRENT_PATH, "README.md"))
 PROJECT_PATH = os.path.abspath(os.path.join(CURRENT_PATH, "..", ".."))
-GAME_CONFIG_PATH = os.path.join(PROJECT_PATH, "assets", "res", "json", "GameConfig.json")
 BUILD_PATH = os.path.abspath(os.path.join(PROJECT_PATH, "build"))
 JSB_DEFAULT_PATH = os.path.join(BUILD_PATH, "jsb-default")
 GENERATOR_PATH = os.path.join(CURRENT_PATH, "VersionGenerator.js")
 MANIFEST_TAG_PATH = os.path.join(CURRENT_PATH, "tag")
-MANIFEST_BUILD_PATH = os.path.join(
-    JSB_DEFAULT_PATH, "assets")
 MANIFEST_FILENAME = "project.manifest"
 NATIVE_RES_PATH = os.path.join(JSB_DEFAULT_PATH, "assets")
 NATIVE_SRC_PATH = os.path.join(JSB_DEFAULT_PATH, "src")
@@ -43,31 +39,27 @@ DEFAULT_PHONE_OS = "android"
 MANIFEST_SUFFIX = ".manifest"
 BUILD_COMMAND = "%s --path %s --build \"%s\""
 GENERATOR_COMMAND = "node %s -v %s -u %s -s %s -d %s"
-build_config = None
-game_config = None
+# JSON 对象
+config = None
 
 
 def init_config():
-    global build_config
-    global game_config
+    global config
 
-    if not os.path.exists(BUILD_CONFIG_PATH):
-        print("%s 配置文件不存在，请检查再执行" % (BUILD_CONFIG_PATH))
+    if not os.path.exists(CONFIG_PATH):
+        print("./config.json 配置文件不存在，请检查再执行")
         exit(-1)
 
-    with open(BUILD_CONFIG_PATH, "r") as fd:
+    if not os.path.isfile(CONFIG_PATH):
+        print("./config.json 不是文件类型，请确认再执行")
+        exit(-1)
+
+    with open(CONFIG_PATH, "r") as fd:
         content = fd.read()
         try:
-            build_config = json.loads(content)
+            config = json.loads(content)
         except Exception:
-            print("%s 文件解析失败" % (BUILD_CONFIG_PATH))
-            exit(-1)
-    with open(GAME_CONFIG_PATH, "r") as fd:
-        content = fd.read()
-        try:
-            game_config = json.loads(content)
-        except Exception:
-            print("%s 文件解析失败" % (GAME_CONFIG_PATH))
+            print("./config.json 文件解析失败")
             exit(-1)
 
 
@@ -84,9 +76,9 @@ def build_assets(phone_os):
     creator_path = None
 
     if sys.platform.startswith("win32") or sys.platform.startswith("cygwin"):
-        creator_path = build_config["build"]["creatorWinPath"]
+        creator_path = config["build"]["creatorWinPath"]
     elif sys.platform.startswith("darwin"):
-        creator_path = build_config["build"]["creatorMacPath"]
+        creator_path = config["build"]["creatorMacPath"]
     else:
         print("不支持操作平台")
         exit(-1)
@@ -99,7 +91,7 @@ def build_assets(phone_os):
     # engine 中需要排除的模块
     # build_args["excludedModules"] = ""
     # 项目名
-    build_args["title"] = build_config["build"]["title"]
+    build_args["title"] = config["build"]["title"]
     # 构建的平台 [web-mobile、web-desktop、android、win32、ios、mac、wechatgame、wechatgame-subcontext、baidugame、baidugame-subcontext、xiaomi、alipay、qgame、quickgame、huawei、cocosplay、fb-instant-games、android-instant]
     build_args["platform"] = phone_os
     # 构建目录
@@ -119,11 +111,11 @@ def build_assets(phone_os):
     # 是否内联所有 SpriteFrame
     # build_args["inlineSpriteFrames"] = "true"
     # 是否合并初始场景依赖的所有 JSON
-    build_args["mergeStartScene"] = "false"
+    # build_args["mergeStartScene"] = "false"
     # 是否将图集中的全部 SpriteFrame 合并到同一个包中
     build_args["optimizeHotUpdate"] = "true"
     # 包名
-    build_args["packageName"] = "com.ougato.game"
+    build_args["packageName"] = "com.sanguowanzhuan.game"
     # 是否使用 debug keystore
     build_args["useDebugKeystore"] = "true"
     # keystore 路径
@@ -138,23 +130,24 @@ def build_assets(phone_os):
     build_args["orientation"] = "{'portrait': true, 'upsideDown': true}"
     # native 平台下的模板选项 [default、link]
     build_args["template"] = "default"
-    # 设置编译 android 使用的 api 版本
-    build_args["apiLevel"] = "android-30"
-    # 设置 android 需要支持的 cpu 类型，可以选择一个或多个选项 [armeabi-v7a、arm64-v8a、x86]
-    build_args["appABIs"] = "['armeabi-v7a','arm64-v8a']"
+
+    if phone_os == "android":
+        # 设置编译 android 使用的 api 版本
+        build_args["apiLevel"] = "android-28"
+        # 设置 android 需要支持的 cpu 类型，可以选择一个或多个选项 [armeabi-v7a、arm64-v8a、x86]
+        build_args["appABIs"] = "['armeabi-v7a','arm64-v8a']"
     # 是否在 web 平台下插入 vConsole 调试插件
     # build_args["embedWebDebugger"] = ""
-    if phone_os == "android":
-        # 是否开启 md5 缓存
-        build_args["md5Cache"] = "false"
-        # 是否在发布 native 平台时加密 js 文件
-        build_args["encryptJs"] = "false"
+    # 是否开启 md5 缓存
+    # build_args["md5Cache"] = "false"
+    # 是否在发布 native 平台时加密 js 文件
+    # build_args["encryptJs"] = "false"
     # 加密 js 文件时使用的密钥
     # build_args["xxteaKey"] = "123456"
     # 加密 js 文件后是否进一步压缩 js 文件
     # build_args["zipCompressJs"] = "false"
     # 是否在构建完成后自动进行编译项目，默认为 否。
-    build_args["autoCompile"] = "false"
+    # build_args["autoCompile"] = "false"
     # 参数文件路径。如果定义了这个字段，那么构建时将会按照 json 文件格式来加载这个数据，并作为构建参数
     # build_args["configPath"] = ""
 
@@ -172,10 +165,10 @@ def copy_manifest_to_build(origin_dir):
         exit(-1)
 
     origin_path = os.path.join(origin_dir, MANIFEST_FILENAME)
-    target_path = os.path.join(MANIFEST_BUILD_PATH, MANIFEST_FILENAME)
+    target_path = os.path.join(NATIVE_RES_PATH, MANIFEST_FILENAME)
 
-    if not os.path.exists(MANIFEST_BUILD_PATH):
-        os.makedirs(MANIFEST_BUILD_PATH)
+    if not os.path.exists(NATIVE_RES_PATH):
+        os.makedirs(NATIVE_RES_PATH)
     if os.path.exists(target_path):
         os.remove(target_path)
 
@@ -238,8 +231,8 @@ def find_file_path_by_suffix(search_path, file_suffix):
 
 def generator_manifest():
     print("正在生成 manifest")
-    version = game_config["version"]
-    remote_manifest_url = build_config["generator"]["remoteManifestURL"]
+    version = config["generator"]["version"]
+    remote_manifest_url = config["generator"]["remoteManifestURL"]
     
     if not os.path.exists(JSB_DEFAULT_PATH):
         print("找不到 %s 下的 assets 文件夹" % (JSB_DEFAULT_PATH))
@@ -301,11 +294,11 @@ def main():
             sys.exit(-1)
 
     init_config()
-    build_assets(phone_os)
+    # build_assets(phone_os)
     generator_manifest()
     insert_search_head_to_mainjs()
 
-    print("版本号：%s" % (game_config["version"]))
+    print("版本号：%s" % (config["generator"]["version"]))
 
 
 if __name__ == "__main__":

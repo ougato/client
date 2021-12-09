@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-08 23:37:00
  * LastEditors  : ougato
- * LastEditTime : 2021-08-15 22:47:16
+ * LastEditTime : 2021-11-03 01:39:15
  * FilePath     : /client/assets/src/core/manager/res/ResBuffer.ts
  * Description  : 资源缓存器、用于缓存加载过的资源
  */
@@ -14,6 +14,8 @@ export default class ResBuffer {
 
     // 缓存表 Map<"包名称", Map<本地资源路径、远程资源链接, ResCache>>
     private _cacheMap: Map<string, Map<string, ResCache>> = null;
+    // 释放后回调
+    public releasedCallback: (base: string, bundleName: BundleDefine.Name) => void = null;
 
     constructor() {
         this._cacheMap = new Map();
@@ -91,6 +93,8 @@ export default class ResBuffer {
         if (baseCacheMap.size <= 0) {
             this._cacheMap.delete(bundleName);
         }
+
+        this.releasedCallback && this.releasedCallback(base, bundleName);
     }
 
     public print(): void {

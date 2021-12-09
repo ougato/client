@@ -2,9 +2,9 @@
  * Author       : ougato
  * Date         : 2021-07-07 01:43:20
  * LastEditors  : ougato
- * LastEditTime : 2021-11-01 15:58:36
+ * LastEditTime : 2021-12-08 18:22:10
  * FilePath     : /client/assets/src/core/Global.ts
- * Description  : 
+ * Description  : 全局控制
  */
 
 import EventManager from "./manager/event/EventManager";
@@ -16,6 +16,8 @@ import DataManager from "./manager/data/DataManager";
 import ControllerManager from "./manager/controller/ControllerManager";
 import LocalStorageManager from "./manager/localStorage/LocalStorageManager";
 import NetworkManager from "./manager/network/NetworkManager";
+import UpdateManager from "./manager/update/UpdateManager";
+
 
 export default class Global {
 
@@ -113,6 +115,13 @@ export default class Global {
      */
     public get NetworkMgr(): NetworkManager {
         return NetworkManager.getInstance();
+    }
+
+    /**
+     * 更新管理器
+     */
+    public get UpdateMgr():UpdateManager {
+        return UpdateManager.getInstance();
     }
 
 }

@@ -1,10 +1,11 @@
 {
     "generator":{
-        "remoteManifestURL": "https://static.sswanv.com:8443/hot-update/"
+        "version": "1.0.0",
+        "remoteManifestURL": "http://192.168.101.119:9988/hot-update/"
     },
     "build": {
         "creatorMacPath": "/Applications/CocosCreator/Creator/2.4.3/CocosCreator.app/Contents/MacOS/CocosCreator",
-        "creatorWinPath": "D:\\cocos\\creator\\Creator\\2.4.3\\CocosCreator.exe",
-        "title": "hello_world"
+        "creatorWinPath": "D:\\dev\\cocos\\resources\\.editors\\Creator\\2.4.6\\CocosCreator.exe",
+        "title": "client"
     }
 }

@@ -1,0 +1,9 @@
+用户登录名称 liuyunqi@5218828172183120.onaliyun.com
+AccessKey ID LTAI5t6Fa6zYGiK2DyhMLkxJ
+AccessKey Secret 2Wf2vjwRjbV3AH9VYQYRKITxCBjqan
+
+oss-accelerate.aliyuncs.com
+
+parkour-pre
+
+浏览器登录key: GWoYO7%ynm{2AUut{kfUODi4eNy2fZ%Y

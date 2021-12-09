@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-11-06 01:47:10
  * LastEditors  : ougato
- * LastEditTime : 2021-11-01 15:41:23
+ * LastEditTime : 2021-12-07 17:44:03
  * FilePath     : /client/assets/src/interface/HttpParamInterface.ts
  * @Description  : Http 的请求和响应接口
  */
@@ -50,6 +50,11 @@ export interface HttpLoginRequest {
     game?: string,
 }
 
+// 登陆头
+export interface HttpLoginHeader {
+    uuid: string,
+}
+
 // 登陆响应
 export interface HttpLoginResponse {
     // 用户id
@@ -74,4 +79,20 @@ export interface HttpGetWebSocketHeader {
     channel?: string,
     // 设备系统
     os?: string,
+}
+
+/**
+ * 刷新校验码请求
+ */
+export interface HttpRefreshTokenReuqest {
+    // 静态校验码
+    refresh_token: string,
+}
+
+/**
+ * 刷新校验码响应
+ */
+export interface HttpRefreshTokenResponse {
+    // 动态校验码
+    token: string,
 }
