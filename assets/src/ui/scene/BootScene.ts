@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2021-11-19 17:48:30
+ * LastEditTime : 2021-12-13 15:08:42
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
@@ -25,6 +25,7 @@ import * as HttpParamInterface from "../../interface/HttpParamInterface";
 import * as UpdateInterface from "../../core/interface/UpdateInterface";
 import * as UpdateDefine from "../../core/define/UpdateDefine";
 import UnitUtils from "../../core/utils/UnitUtils";
+import ExampleScene from "./ExampleScene";
 
 // 请求获取动态主机最大次数
 const GET_DYNAMIC_HOST_MAX_COUNT: number = 3;
@@ -321,9 +322,18 @@ export default class BootScene extends BaseScene {
      * 进入游戏
      */
     private into(): void {
-        G.UIMgr.openScene({
-            sceneClass: LoginScene,
-        });
+        // G.UIMgr.openScene({
+        //     sceneClass: LoginScene,
+        // });
+        // G.UIMgr.openScene({
+        //     sceneClass: ExampleScene,
+        // });
+
+
+        let a = [1,2,3,4];
+        let b = [7,8,9];
+        G.LogMgr.log(a.concat(b));
+        G.LogMgr.log(a);
     }
 
 }
