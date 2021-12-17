@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-12-15 17:46:25
  * LastEditors  : ougato
- * LastEditTime : 2021-12-15 18:08:36
+ * LastEditTime : 2021-12-17 17:45:36
  * FilePath     : /client/assets/src/core/interface/ComponentInterface.ts
  * Description  : 列表滑动视图项接口类
  */
@@ -12,10 +12,18 @@
  */
 export interface ListViewItemClass {
 
+    // 点击回调
+    clickCallback: Function;
+
     /**
-     * 设置数据
+     * 准备显示时 | 数据刷新回调 数据带入
      * @param {T} 泛型数据
      */
-    set: <T>(data: T) => void;
+    onShow: <T>(data: T) => void;
+
+    /**
+     * 重置数据和节点
+     */
+    reset: () => void;
 
 } 
