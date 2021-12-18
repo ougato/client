@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2021-12-13 15:08:42
+ * LastEditTime : 2021-12-18 01:54:28
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
@@ -41,7 +41,7 @@ export default class BootScene extends BaseScene {
 
     protected onLoad(): void {
         super.onLoad();
-        cc.debug.setDisplayStats(false)
+
     }
 
     protected start(): void {
@@ -325,15 +325,10 @@ export default class BootScene extends BaseScene {
         // G.UIMgr.openScene({
         //     sceneClass: LoginScene,
         // });
-        // G.UIMgr.openScene({
-        //     sceneClass: ExampleScene,
-        // });
 
-
-        let a = [1,2,3,4];
-        let b = [7,8,9];
-        G.LogMgr.log(a.concat(b));
-        G.LogMgr.log(a);
+        G.UIMgr.openScene({
+            sceneClass: ExampleScene,
+        });
     }
 
 }
