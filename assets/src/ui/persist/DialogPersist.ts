@@ -9,6 +9,7 @@
 
 import BasePersist from "../../core/base/BasePersist";
 import * as UIInterface from "../../core/interface/UIInterface";
+import TypeUtils from "../../core/utils/TypeUtils";
 
 const { ccclass, property } = cc._decorator;
 
@@ -60,16 +61,16 @@ export default class DialogPersist extends BasePersist {
         super.onShow(data);
         this._data = data;
 
-        if (data.title === null || data.title === undefined) {
+        if (TypeUtils.isNull(data.title)) {
             // TODO: 多语言替换
             data.title = "提示";
         }
 
-        if (data.isShowCancel === null || data.isShowCancel === undefined) {
+        if (TypeUtils.isNull(data.isShowCancel)) {
             data.isShowCancel = true;
         }
 
-        if (data.isShowClose === null || data.isShowClose === undefined) {
+        if (TypeUtils.isNull(data.isShowClose)) {
             data.isShowClose = true;
         }
 

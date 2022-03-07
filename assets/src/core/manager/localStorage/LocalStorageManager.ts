@@ -8,6 +8,7 @@
  */
 
 import BaseManager from "../../base/BaseManager";
+import TypeUtils from "../../utils/TypeUtils";
 import LogManager from "../log/LogManager";
 
 export default class LocalStorageManager extends BaseManager {
@@ -41,7 +42,7 @@ export default class LocalStorageManager extends BaseManager {
     public getItem(key: string): string | number | boolean | object {
         let data: string = cc.sys.localStorage.getItem(key);
         let value: string | number | boolean | object = null;
-        if (data !== null && data !== undefined) {
+        if (!TypeUtils.isNull(data)) {
             value = JSON.parse(data);
         }
         return value;

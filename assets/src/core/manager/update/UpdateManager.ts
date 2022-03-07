@@ -14,6 +14,7 @@ import * as UpdateInterface from "../../interface/UpdateInterface";
 import * as UpdateConfig from "../../config/UpdateConfig";
 import * as EventDefine from "../../define/EventDefine";
 import * as LocalStorageDefine from "../../define/LocalStorageDefine";
+import TypeUtils from "../../utils/TypeUtils";
 
 // 原生热更新资源文件夹
 const NATIVE_UPDATE_ASSETS_FOLDER: string = "hot-update";
@@ -406,7 +407,7 @@ export default class UpdateManager {
                             G.EventMgr.emit(EventDefine.UpdateEvent.UPDATE_PROGRESS, this.m_percent);
                         }
 
-                        if (finishState !== null && finishState !== undefined) {
+                        if (!TypeUtils.isNull(finishState)) {
                             this.m_jsbAssetsManager.setEventCallback(null);
                             this.initData();
                             resolve({
@@ -414,7 +415,7 @@ export default class UpdateManager {
                             });
                         }
 
-                        if (failedState !== null && failedState !== undefined) {
+                        if (!TypeUtils.isNull(failedState)) {
                             this.m_jsbAssetsManager.setEventCallback(null);
                             this.initData();
                             this.m_errorState = failedState;

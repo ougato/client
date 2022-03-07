@@ -26,6 +26,7 @@ import * as UpdateInterface from "../../core/interface/UpdateInterface";
 import * as UpdateDefine from "../../core/define/UpdateDefine";
 import UnitUtils from "../../core/utils/UnitUtils";
 import ExampleScene from "./ExampleScene";
+import TypeUtils from "../../core/utils/TypeUtils";
 
 // 请求获取动态主机最大次数
 const GET_DYNAMIC_HOST_MAX_COUNT: number = 3;
@@ -141,11 +142,11 @@ export default class BootScene extends BaseScene {
                 // TODO: 弹窗
                 // G.ViewMgr.openPopups("错误", strError, this.node, async () => {
                 //     let updateResult: UpdateInterface.UpdateResult = await G.UpdateMgr.retry();
-                //     if (updateResult.error !== null && updateResult.error !== undefined) {
+                //     if (!TypeUtils.isNull(updateResult.error)) {
                 //         return error(updateResult.error);
                 //     }
 
-                //     if (updateResult.state === null || updateResult.state === undefined) {
+                //     if (TypeUtils.isNull(updateResult.state)) {
                 //         reject("热更重试结果异常");
                 //     }
 
@@ -174,11 +175,11 @@ export default class BootScene extends BaseScene {
                 // G.UIMgr.openView(ViewDefine.UpdateView);
 
                 let updateResult: UpdateInterface.UpdateResult = await G.UpdateMgr.update();
-                if (updateResult.error !== null && updateResult.error !== undefined) {
+                if (!TypeUtils.isNull(updateResult.error)) {
                     return error(updateResult.error);
                 }
 
-                if (updateResult.state === null || updateResult.state === undefined) {
+                if (TypeUtils.isNull(updateResult.state)) {
                     reject("热更更新结果异常");
                 }
 
@@ -214,11 +215,11 @@ export default class BootScene extends BaseScene {
 
                 let checkResult: UpdateInterface.CheckResult = await G.UpdateMgr.check();
 
-                if (checkResult.error !== null && checkResult.error !== undefined) {
+                if (!TypeUtils.isNull(checkResult.error)) {
                     return error(checkResult.error);
                 }
 
-                if (checkResult.state === null || checkResult.state === undefined) {
+                if (TypeUtils.isNull(checkResult.state)) {
                     reject("热更检测结果异常");
                 }
 

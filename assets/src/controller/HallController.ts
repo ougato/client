@@ -259,7 +259,7 @@ export default class HallController extends BaseController {
      * @param responseData 
      */
     private onPingResponse(responseData: Proto.IPingResponse): void {
-        let clientTimestamp: number = new Date().getTime();
+        let clientTimestamp: number = Date.now();
         let serverTimestamp: number = Number(responseData.timestamp);
 
         let gameData: GameData = G.DataMgr.get(GameData);

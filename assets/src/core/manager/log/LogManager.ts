@@ -93,7 +93,7 @@ export default class LogManager extends BaseManager {
         let serverTimestamp: number = null;
         let timeDifference: number = G.DataMgr.get(GameData).timeDifference;
         if (timeDifference !== null) {
-            serverTimestamp = new Date().getTime() + timeDifference;
+            serverTimestamp = Date.now() + timeDifference;
         }
         return DateUtils.timestampToFormat("hh:mm:ss.SSS", serverTimestamp);
     }

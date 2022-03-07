@@ -7,6 +7,8 @@
  * Description  : 公用工具
  */
 
+import TypeUtils from "./TypeUtils";
+
 export default class CommonUtils {
 
     /**
@@ -22,7 +24,7 @@ export default class CommonUtils {
         }
 
         let num: number = Number(value)
-        if (value === null || value === undefined || isNaN(num)) {
+        if (TypeUtils.isNull(value) || isNaN(num)) {
             return null;
         }
 

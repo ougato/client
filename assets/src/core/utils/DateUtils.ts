@@ -7,6 +7,8 @@
  * Description  : 日期时间工具
  */
 
+import TypeUtils from "./TypeUtils";
+
 export default class DateUtils {
 
     /**
@@ -18,7 +20,7 @@ export default class DateUtils {
     public static timestampToFormat(format: string = "YYYY-MM-DD hh:mm:ss.SSS", timestamp?: number): string {
         let date = new Date();
 
-        if (timestamp !== undefined && timestamp !== null) {
+        if (!TypeUtils.isNull(timestamp)) {
             date.setTime(timestamp);
         }
 

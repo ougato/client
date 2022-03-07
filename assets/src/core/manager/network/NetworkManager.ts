@@ -13,6 +13,7 @@ import * as NetworkInterface from "../../../core/interface/NetworkInterface";
 import * as NetworkDefine from "../../define/NetworkDefine";
 import * as EventDefine from "../../../core/define/EventDefine";
 import Proto = require("../../../protobuf/Proto");
+import TypeUtils from "../../utils/TypeUtils";
 
 // 序列号 占用字节大小（4 byte）
 const SERIAL_LENGTH_BYTE_SIZE: number = 1;
@@ -119,7 +120,7 @@ export default class NetworkManager extends BaseManager {
 
         let value: Function | undefined = listenMap.get(caller);
 
-        if (value !== undefined && value !== null) {
+        if (!TypeUtils.isNull(value)) {
             G.LogMgr.warn(`${caller.prototype.classname} 类中，重复注册网络 ${msgName}`);
             return;
         }
@@ -140,7 +141,7 @@ export default class NetworkManager extends BaseManager {
         }
 
         let listenMap: Map<any, Function> | undefined = this.m_messageCallbackMap.get(msgName);
-        if (listenMap === undefined || listenMap === null) {
+        if (TypeUtils.isNull(listenMap)) {
             return;
         }
 
@@ -347,7 +348,7 @@ export default class NetworkManager extends BaseManager {
      * @param msgData {any} 协议数据
      */
     public send<T extends NetworkInterface.ProtoClass>(msgClass: T, msgData?: any): void {
-        if (this.m_websocket === null || this.m_websocket === undefined) {
+        if (TypeUtils.isNull(this.m_websocket)) {
             G.LogMgr.warn(`网络发送失败，未建立网络连接`);
             return;
         }
@@ -357,7 +358,7 @@ export default class NetworkManager extends BaseManager {
             return;
         }
 
-        if (msgData === null || msgData === undefined) {
+        if (TypeUtils.isNull(msgData)) {
             msgData = {};
         }
 
@@ -413,7 +414,7 @@ export default class NetworkManager extends BaseManager {
      * 启动连接超时
      */
     private startConnectTimeout(): void {
-        if (this.m_connectTimeoutTimer === null || this.m_connectTimeoutTimer === undefined) {
+        if (TypeUtils.isNull(this.m_connectTimeoutTimer)) {
             this.m_connectTimeoutTimer = setTimeout(() => {
                 this.onConnectTimeout();
             }, CONNECT_TIMEOUT_SEC * 1000);
@@ -424,7 +425,7 @@ export default class NetworkManager extends BaseManager {
      * 停止连接超时
      */
     private stopConnectTimeout(): void {
-        if (this.m_connectTimeoutTimer !== null && this.m_connectTimeoutTimer !== undefined) {
+        if (!TypeUtils.isNull(this.m_connectTimeoutTimer)) {
             clearTimeout(this.m_connectTimeoutTimer);
             this.m_connectTimeoutTimer = null;
         }
@@ -434,7 +435,7 @@ export default class NetworkManager extends BaseManager {
      * 启动消息超时等待（提升弱网体验）
      */
     private startMessageWait(): void {
-        if (this.m_messageWaitTimer === null || this.m_messageWaitTimer === undefined) {
+        if (TypeUtils.isNull(this.m_messageWaitTimer)) {
             this.m_messageWaitTimer = setTimeout(() => {
                 this.stopAllTimer();
                 this.close();
@@ -447,7 +448,7 @@ export default class NetworkManager extends BaseManager {
      * 停止消息超时等待
      */
     private stopMessageWait(): void {
-        if (this.m_messageWaitTimer !== null && this.m_messageWaitTimer !== undefined) {
+        if (!TypeUtils.isNull(this.m_messageWaitTimer)) {
             clearTimeout(this.m_messageWaitTimer);
             this.m_messageWaitTimer = null;
         }
@@ -457,7 +458,7 @@ export default class NetworkManager extends BaseManager {
      * 启动心跳
      */
     public startPing(): void {
-        if (this.m_pingTimer === null || this.m_pingTimer === undefined) {
+        if (TypeUtils.isNull(this.m_pingTimer)) {
             this.m_pingTimer = setInterval(() => {
                 this.sendPing();
             }, PING_INTERVAL_TIME * 1000);
@@ -483,7 +484,7 @@ export default class NetworkManager extends BaseManager {
      * 停止心跳
      */
     private stopPing(): void {
-        if (this.m_pingTimer !== null && this.m_pingTimer !== undefined) {
+        if (!TypeUtils.isNull(this.m_pingTimer)) {
             clearTimeout(this.m_pingTimer);
             this.m_pingTimer = null;
         }

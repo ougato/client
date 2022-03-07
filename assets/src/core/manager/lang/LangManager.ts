@@ -117,7 +117,7 @@ export default class LangManager extends BaseManager {
     //             onComplete: (resCache: ResCache | null) => {
     //                 if (resCache.asset) {
     //                     let md5: string = (resCache.asset as cc.TextAsset).text;
-    //                     if (md5 !== null && md5 !== undefined) {
+    //                     if (!TypeUtils.isNull(md5)) {
     //                         resolve(md5);
     //                     } else {
     //                         resolve(null);
@@ -144,7 +144,7 @@ export default class LangManager extends BaseManager {
     //             onComplete: (resCache: ResCache | null) => {
     //                 if (resCache.asset) {
     //                     let json: object = (resCache.asset as cc.JsonAsset).json;
-    //                     if (json !== null && json !== undefined) {
+    //                     if (!TypeUtils.isNull(json)) {
     //                         this.setCacheJson(bundleName, json);
     //                         this.setLocalStorageJson(bundleName, json);
     //                         resolve(json);
@@ -173,7 +173,7 @@ export default class LangManager extends BaseManager {
     //             onComplete: (resCache: ResCache | null) => {
     //                 if (resCache.asset) {
     //                     let atlas: cc.SpriteAtlas = (resCache.asset as cc.SpriteAtlas);
-    //                     if (atlas !== null && atlas !== undefined) {
+    //                     if (!TypeUtils.isNull(atlas)) {
     //                         resolve();
     //                     } else {
     //                         reject();

@@ -14,6 +14,7 @@ import * as ResInterface from "../../interface/ResInterface";
 import ResCache from "./ResCache";
 import * as ResDefine from "../../define/ResDefine";
 import * as BundleDefine from "../../define/BundleDefine";
+import TypeUtils from "../../utils/TypeUtils";
 
 export default class ResManager extends BaseManager {
 
@@ -56,19 +57,19 @@ export default class ResManager extends BaseManager {
      * @param param {ResInterface.LoadResParam} 加载资源参数
      */
     public load(param: ResInterface.LoadResParam): void {
-        if (param.bundleName === null || param.bundleName === undefined) {
+        if (TypeUtils.isNull(param.bundleName)) {
             param.bundleName = BundleDefine.Name.RESOURCES;
         }
 
-        if (param.loadType === null || param.loadType === undefined) {
+        if (TypeUtils.isNull(param.loadType) ) {
             param.loadType = ResDefine.LoadType.ASSET;
         }
 
-        if (param.loadMode === null || param.loadMode === undefined) {
+        if (TypeUtils.isNull(param.loadMode)) {
             param.loadMode = ResDefine.LoadMode.LOCAL;
         }
 
-        if (param.progressCallback === null || param.progressCallback === undefined) {
+        if (TypeUtils.isNull(param.progressCallback)) {
             param.progressCallback = null;
         }
 
@@ -153,7 +154,7 @@ export default class ResManager extends BaseManager {
             let base: string = arguments[0];
             let bundleName: BundleDefine.Name = arguments[1];
 
-            if (bundleName === null || bundleName === undefined) {
+            if (TypeUtils.isNull(bundleName)) {
                 bundleName = BundleDefine.Name.RESOURCES;
             }
             resCache = this._buffer.getCache(base, bundleName);

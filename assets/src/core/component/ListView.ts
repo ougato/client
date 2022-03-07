@@ -9,21 +9,12 @@
 
 import * as ComponentDefine from "../define/ComponentDefine";
 import * as ComponentInterface from "../interface/ComponentInterface";
+import TypeUtils from "../utils/TypeUtils";
 
 // 每次执行协程分配的时间（单位：毫秒）
 const EXEC_GENERATOR_TIME: number = 8;
 
 const { ccclass, property } = cc._decorator;
-
-// 缓存数据接口
-interface CacheDataInterface {
-    // 下标
-    index: number;
-    // 删除数量
-    count: number;
-    // 增加数据
-    data: any | any[];
-};
 
 @ccclass
 export default class ListView extends cc.ScrollView {
@@ -36,15 +27,6 @@ export default class ListView extends cc.ScrollView {
         })
     })
     private directionType: ComponentDefine.DirectionType = ComponentDefine.DirectionType.HORIZONTAL;
-
-    @property({ type: cc.Prefab, tooltip: "列表项预制" })
-    private itemPrefab: cc.Prefab = null;
-
-    @property({ tooltip: "是否分帧加载" })
-    private isFraming: boolean = false;
-
-    @property({ tooltip: "是否无限列表" })
-    private isEndless: boolean = false;
 
     @property({ tooltip: "是否分页加载" })
     private isPaging: boolean = false;
@@ -63,6 +45,12 @@ export default class ListView extends cc.ScrollView {
 
     @property({ type: cc.SpriteFrame, tooltip: "刷新拉取等待图片", visible: (function () { return this.isPaging }) })
     private waitingImage: cc.SpriteFrame = null;
+
+    @property({ type: cc.Prefab, tooltip: "列表项预制" })
+    private itemPrefab: cc.Prefab = null;
+
+    @property({ type: cc.Enum(ComponentDefine.ListViewLoadMode), tooltip: "加载模式\nNONE 直接加载\nFRAME 分帧加载\nENDLESS 无限加载" })
+    public mode: ComponentDefine.ListViewLoadMode = ComponentDefine.ListViewLoadMode.NONE;
 
     @property({ type: cc.Enum(ComponentDefine.DirectionType), tooltip: "滑动方向\nHORIZONTAL 水平\nVERTICAL 垂直" })
     private get direction(): ComponentDefine.DirectionType {
@@ -111,7 +99,7 @@ export default class ListView extends cc.ScrollView {
     // 是否加载完成
     private _isLoaded: boolean = false;
     // 数据列表
-    private _itemDataList: any[] = [];
+    private _itemDataList: unknown[] = [];
     // 列表项节点池
     private _itemNodePool: cc.NodePool = new cc.NodePool();
     // 最后节点位置
@@ -123,7 +111,11 @@ export default class ListView extends cc.ScrollView {
     // 是否渲染中
     private _isRendering: boolean = false;
     // 缓存列表
-    private _itemCacheList: CacheDataInterface[] = [];
+    private _itemCacheDataList: unknown[] = [];
+    // 渲染中操作次数
+    private _renderingOperateCount: number = 0;
+    // 缓存渲染列表项起始下标
+    private _cacheRenderItemStartIndex: number = null;
 
     /**
      * 修改方向类型属性
@@ -144,8 +136,8 @@ export default class ListView extends cc.ScrollView {
     }
 
     onLoad() {
-        this.initData();
         this.register();
+        this.initData();
         this.initView();
     }
 
@@ -159,25 +151,34 @@ export default class ListView extends cc.ScrollView {
      * @param itemsData {T | T[]} 数据|数据列表
      */
     public set<T>(itemsData: T | T[]): void {
-        if (itemsData === null || itemsData === undefined) {
+        if (TypeUtils.isNull(itemsData)) {
             return;
         }
 
-        this._itemDataList = [];
-
-        if (Array.isArray(itemsData)) {
-            if (itemsData.length <= 0) {
-                return;
-            }
-            this._itemDataList = this._itemDataList.concat(itemsData);
-        } else {
-            this._itemDataList.push(itemsData);
+        if (TypeUtils.isArray(itemsData) && (itemsData as Array<T>).length <= 0) {
+            return;
         }
 
-        this._renderItemStartIndex = 0;
-        this._renderItemEndIndex = this._itemDataList.length - 1;
+        if (this._isRendering) {
+            this.setData(this._itemCacheDataList, itemsData);
+            this._cacheRenderItemStartIndex = 0;
+            ++this._renderingOperateCount;
+        } else {
+            this.setData(this._itemDataList, itemsData);
+            this._renderItemStartIndex = 0;
+            this._renderItemEndIndex = this._itemDataList.length - 1;
+            this.updateListItem();
+        }
+    }
 
-        this.updateListItem();
+    /**
+     * 设置数据项
+     * @param dataList {T[]} 设置列表
+     * @param itemsData {T | T[]} 数据|数据列表
+     */
+    public setData<T>(dataList: T[], itemsData: T | T[]): void {
+        dataList.length = 0;
+        this.insertData(dataList, itemsData, 0);
     }
 
     /**
@@ -186,44 +187,64 @@ export default class ListView extends cc.ScrollView {
      * @param index {number} 下标（默认：最后插入）
      */
     public insert<T>(itemsData: T | T[], index?: number): void {
-        if (itemsData === null || itemsData === undefined) {
+        if (TypeUtils.isNull(itemsData)) {
             return;
         }
 
-        if (index === null || index === undefined) {
-            index = this._itemDataList.length;
+        if (TypeUtils.isArray(itemsData) && (itemsData as Array<T>).length <= 0) {
+            return;
+        }
+
+        let dataList: unknown[] = null;
+        if (this._isRendering) {
+            if (this._renderingOperateCount <= 0) {
+                this._itemCacheDataList = [].concat(this._itemDataList);
+            }
+            dataList = this._itemCacheDataList;
+        } else {
+            dataList = this._itemDataList;
+        }
+
+        if (TypeUtils.isNull(index)) {
+            index = dataList.length;
         } else {
             if (index < 0) {
                 index = 0;
-            } else if (index > this._itemDataList.length) {
-                index = this._itemDataList.length;
+            } else if (index > dataList.length) {
+                index = dataList.length;
             }
         }
 
         if (this._isRendering) {
-            this._itemCacheList.push({
-                index: index,
-                count: 0,
-                data: itemsData,
-            });
-            return;
-        }
-
-        if (Array.isArray(itemsData)) {
-            if (itemsData.length <= 0) {
-                return;
+            this.insertData(dataList, itemsData, index);
+            if (TypeUtils.isNull(this._cacheRenderItemStartIndex)) {
+                this._cacheRenderItemStartIndex = index;
+            } else if (this._cacheRenderItemStartIndex > index) {
+                this._cacheRenderItemStartIndex = index;
             }
-            let spliceParam: any[] = [index, 0];
-            spliceParam = spliceParam.concat(itemsData);
-            this._itemDataList.splice.apply(this._itemDataList, spliceParam);
+            ++this._renderingOperateCount;
         } else {
-            this._itemDataList.splice(index, 0, itemsData);
+            this.insertData(dataList, itemsData, index);
+            this._renderItemStartIndex = index;
+            this._renderItemEndIndex = dataList.length - 1;
+            this.updateListItem();
         }
+    }
 
-        this._renderItemStartIndex = index;
-        this._renderItemEndIndex = this._itemDataList.length - 1;
-
-        this.updateListItem();
+    /**
+     * 插入数据项
+     * @param dataList {T[]} 插入列表
+     * @param itemsData {T | T[]} 数据|数据列表
+     * @param index {number} 下标
+     */
+    public insertData<T>(dataList: T[], itemsData: T | T[], index: number): void {
+        if (Array.isArray(itemsData)) {
+            let spliceParam: unknown[] = [index, 0];
+            spliceParam = spliceParam.concat(itemsData);
+            dataList.splice.apply(dataList, spliceParam);
+        } else {
+            dataList.splice(index, 0, itemsData);
+        }
     }
 
     /**
@@ -236,40 +257,48 @@ export default class ListView extends cc.ScrollView {
             return;
         }
 
-        if (index === null || index === undefined &&
-            count === null || count === undefined) {
+        let dataList: unknown[] = null;
+        if (this._isRendering) {
+            if (this._renderingOperateCount <= 0) {
+                this._itemCacheDataList = [].concat(this._itemDataList);
+            }
+            dataList = this._itemCacheDataList;
+        } else {
+            dataList = this._itemDataList;
+        }
+
+        if (TypeUtils.isNull(index) && TypeUtils.isNull(count)) {
             index = 0;
-            count = this._itemDataList.length;
-        } else if (index === null || index === undefined) {
-            index = this._itemDataList.length - count;
+            count = dataList.length;
+        } else if (TypeUtils.isNull(index)) {
+            index = dataList.length - count;
             if (index < 0) {
                 index = 0;
-                count = this._itemDataList.length;
+                count = dataList.length;
             }
-        } else if (count === null || count === undefined) {
+        } else if (TypeUtils.isNull(count)) {
             if (index < 0) {
                 index = 0;
-            } else if (index >= this._itemDataList.length) {
-                index = this._itemDataList.length - 1;
+            } else if (index >= dataList.length) {
+                index = dataList.length - 1;
             }
-            count = this._itemDataList.length - index;
+            count = dataList.length - index;
         }
 
         if (this._isRendering) {
-            this._itemCacheList.push({
-                index: index,
-                count: count,
-                data: null,
-            });
-            return;
+            dataList.splice(index, count);
+            if (TypeUtils.isNull(this._cacheRenderItemStartIndex)) {
+                this._cacheRenderItemStartIndex = index;
+            } else if (this._cacheRenderItemStartIndex > index) {
+                this._cacheRenderItemStartIndex = index;
+            }
+            ++this._renderingOperateCount;
+        } else {
+            dataList.splice(index, count);
+            this._renderItemStartIndex = index;
+            this._renderItemEndIndex = this.content.childrenCount - 1;
+            this.updateListItem();
         }
-
-        this._itemDataList.splice(index, count);
-
-        this._renderItemStartIndex = index;
-        this._renderItemEndIndex = this.content.childrenCount - 1;
-
-        this.updateListItem();
     }
 
     /**
@@ -280,65 +309,72 @@ export default class ListView extends cc.ScrollView {
             return;
         }
 
-        this._isRendering = true;
-        let isFrameLoad: boolean = false;
-        let putIndexList: number[] = [];
+        this.setRendering(true);
 
         this.content.setContentSize(this.getInnerEstimateSize());
 
-        for (let i: number = this._renderItemStartIndex; i <= this._renderItemEndIndex; ++i) {
-            let itemNode: cc.Node = this.content.children[i];
-            let itemData: any = this._itemDataList[i];
+        if (this.mode === ComponentDefine.ListViewLoadMode.ENDLESS) {
 
-            if (itemNode !== undefined && itemData !== undefined) {
-                if (this.clickItemEventHandler) {
-                    itemNode.getComponent(cc.Button).node.off("click");
-                    itemNode.getComponent(cc.Button).node.on("click", this.onClickItem.bind(this, itemNode, itemData));
-                }
-                let itemSrc: ComponentInterface.ListViewItemClass = itemNode.getComponent(itemNode.name);
-                itemSrc.onShow && itemSrc.onShow(itemData);
-            } else if (itemNode === undefined) {
-                let itemsData: any[] = this._itemDataList.slice(i, this._itemDataList.length);;
-                if (this.isFraming) {
-                    let nodePoolSize: number = this._itemNodePool.size();
-                    if (nodePoolSize > 0) {
-                        let directLoadEndIndex: number = i + (nodePoolSize - 1);
-                        itemsData = this._itemDataList.slice(i, directLoadEndIndex);
-                        this.directLoadItem(itemsData);
-                        if (directLoadEndIndex < this._renderItemEndIndex) {
-                            itemsData = this._itemDataList.slice(directLoadEndIndex, this._renderItemEndIndex);
+        } else {
+            let putIndexList: number[] = [];
+            for (let i: number = this._renderItemStartIndex; i <= this._renderItemEndIndex; ++i) {
+                let itemNode: cc.Node = this.content.children[i];
+                let itemData: unknown = this._itemDataList[i];
+
+                if (!TypeUtils.isNull(itemNode) && this._itemDataList.hasOwnProperty(i)) {
+                    if (this.clickItemEventHandler) {
+                        itemNode.getComponent(cc.Button).node.off("click");
+                        itemNode.getComponent(cc.Button).node.on("click", this.onClickItem.bind(this, itemNode, itemData));
+                    }
+                    let itemSrc: ComponentInterface.ListViewItemClass = itemNode.getComponent(itemNode.name);
+                    itemSrc.onShow && itemSrc.onShow(itemData);
+                } else if (TypeUtils.isNull(itemNode)) {
+                    let itemsData: unknown[] = this._itemDataList.slice(i, this._itemDataList.length);;
+                    if (this.mode === ComponentDefine.ListViewLoadMode.FRAME) {
+                        let nodePoolSize: number = this._itemNodePool.size();
+                        if (nodePoolSize > 0) {
+                            let directLoadEndIndex: number = i + (nodePoolSize - 1);
+                            itemsData = this._itemDataList.slice(i, directLoadEndIndex);
+                            this.directLoadItem(itemsData);
+                            if (directLoadEndIndex < this._renderItemEndIndex) {
+                                itemsData = this._itemDataList.slice(directLoadEndIndex, this._renderItemEndIndex);
+                                this.frameLoadItem(itemsData);
+                            }
+                        } else {
                             this.frameLoadItem(itemsData);
                         }
-                    } else {
-                        this.frameLoadItem(itemsData);
+                    } else if (this.mode === ComponentDefine.ListViewLoadMode.NONE) {
+                        this.directLoadItem(itemsData);
                     }
-                } else {
-                    this.directLoadItem(itemsData);
+                    break;
+                } else if (!this._itemDataList.hasOwnProperty(i)) {
+                    putIndexList.push(i);
                 }
-                break;
-            } else if (itemData === undefined) {
-                putIndexList.push(i);
             }
-        }
 
-        for (let i: number = putIndexList.length - 1; i >= 0; --i) {
-            let itemNode: cc.Node = this.content.children[putIndexList[i]];
-            if (this.clickItemEventHandler) {
-                itemNode.getComponent(cc.Button).node.off("click");
+            for (let i: number = putIndexList.length - 1; i >= 0; --i) {
+                let itemNode: cc.Node = this.content.children[putIndexList[i]];
+                if (this.clickItemEventHandler) {
+                    itemNode.getComponent(cc.Button).node.off("click");
+                }
+                this.putNode(itemNode);
             }
-            this.putNode(itemNode);
-        }
 
-        if (!isFrameLoad) {
-            this._isRendering = false;
+            if (this.mode === ComponentDefine.ListViewLoadMode.NONE) {
+                this.setRendering(false);
+            }
         }
     }
 
     /**
-     * 刷新队列内的列表项
+     * 刷新缓存数据列表项
      */
-    private updateCacheItemList(): void {
-
+    private updateCacheDataList(): void {
+        this.setData(this._itemDataList, this._itemCacheDataList);
+        this._itemCacheDataList.length = 0;
+        this._renderItemStartIndex = this._cacheRenderItemStartIndex;
+        this._renderItemEndIndex = this._itemDataList.length - 1;
+        this.updateListItem();
     }
 
     private initData(): void {
@@ -380,6 +416,8 @@ export default class ListView extends cc.ScrollView {
     }
 
     private initView(): void {
+        let poolNodeCount: number = 0;
+
         switch (this.direction) {
             case ComponentDefine.DirectionType.HORIZONTAL: {
                 if (this.content.anchorX === 0.5) {
@@ -387,6 +425,7 @@ export default class ListView extends cc.ScrollView {
                     this.content.x = this.content.x - (this.content.width * 0.5);
                 }
                 this.content.anchorY = 0.5;
+                poolNodeCount = Math.ceil((this.node.width - this.spacingX) / (this.itemPrefab.data.width + this.spacingX)) + 2;
             }
                 break;
             case ComponentDefine.DirectionType.VERTICAL: {
@@ -395,12 +434,30 @@ export default class ListView extends cc.ScrollView {
                     this.content.y = this.content.y + (this.content.height * 0.5);
                 }
                 this.content.anchorX = 0.5;
+                poolNodeCount = Math.ceil((this.node.height - this.spacingY) / (this.itemPrefab.data.height + this.spacingY)) + 2;
             }
                 break;
         }
 
+        if (this.mode === ComponentDefine.ListViewLoadMode.ENDLESS) {
+            for (let i: number = 0; i < poolNodeCount; ++i) {
+                this.putNode(this.getNode());
+            }
+        }
+
         if (this._itemDataList.length > 0) {
             this.updateListItem();
+        }
+    }
+
+    /**
+     * 设置渲染中状态
+     * @param isRendering {boolean} 是否正在渲染项
+     */
+    private setRendering(isRendering: boolean): void {
+        this._isRendering = isRendering;
+        if (!isRendering) {
+            this.onRendered();
         }
     }
 
@@ -450,27 +507,6 @@ export default class ListView extends cc.ScrollView {
     }
 
     private initItemPos(node: cc.Node): void {
-        // if (this.direction === ComponentDefine.DirectionType.HORIZONTAL) {
-        //     // 处理开头
-        //     if (this.content.childrenCount <= 1) {
-        //         this._lastPos.x += this.left;
-        //     }
-
-        //     node.setPosition(this._lastPos.x + (node.width * 0.5), this._lastPos.y);
-
-        //     // 处理结尾
-        //     this._lastPos.x += node.width + this.spacingX;
-        // } else if (this.direction === ComponentDefine.DirectionType.VERTICAL) {
-        //     // 处理开头
-        //     if (this.content.childrenCount <= 1) {
-        //         this._lastPos.y -= this.top;
-        //     }
-
-        //     node.setPosition(this._lastPos.x, this._lastPos.y - (node.height * 0.5));
-
-        //     // 处理结尾
-        //     this._lastPos.y -= node.height + this.spacingY;
-        // }
         let innerCount: number = this.content.childrenCount - 1;
         if (this.direction === ComponentDefine.DirectionType.HORIZONTAL) {
             node.setPosition(this.left + (this.itemPrefab.data.width * 0.5) + (innerCount * this.itemPrefab.data.width) + (innerCount * this.spacingX), 0);
@@ -487,7 +523,7 @@ export default class ListView extends cc.ScrollView {
         let itemNode: cc.Node = this.getNode();
         this.content.addChild(itemNode);
         let itemSrc: ComponentInterface.ListViewItemClass = itemNode.getComponent(itemNode.name);
-        if (itemSrc && itemData !== null && itemData !== undefined) {
+        if (itemSrc && !TypeUtils.isNull(itemData)) {
             if (this.clickItemEventHandler) {
                 itemNode.getComponent(cc.Button).node.on("click", this.onClickItem.bind(this, itemNode, itemData));
             }
@@ -512,17 +548,17 @@ export default class ListView extends cc.ScrollView {
     private async execGeneratorItem(generator: Generator, duration: number): Promise<void> {
         return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
             let exec: Function = () => {
-                let startTime = new Date().getTime();
+                let startTime = Date.now();
                 for (let iterator = generator.next(); ; iterator = generator.next()) {
                     if (iterator == null || iterator.done) {
                         resolve();
                         break;
                     }
 
-                    if (new Date().getTime() - startTime > duration) {
+                    if (Date.now() - startTime > duration) {
                         this.scheduleOnce(() => {
                             exec();
-                        }, 0.3);
+                        });
                         break;
                     }
                 }
@@ -539,7 +575,7 @@ export default class ListView extends cc.ScrollView {
      */
     private async frameLoadItem<T>(itemsData: T[]): Promise<void> {
         await this.execGeneratorItem(this.makeGeneratorItem(itemsData), EXEC_GENERATOR_TIME);
-        this._isRendering = false;
+        this.setRendering(false);
     }
 
     /**
@@ -812,6 +848,20 @@ export default class ListView extends cc.ScrollView {
 
     private onScrollBegan(target: ListView): void {
         // console.log("ScrollBegan");
+    }
+
+    /**
+     * 加载渲染完成 回调
+     */
+    private onRendered(): void {
+        this._renderingOperateCount = 0;
+
+        if (this._itemCacheDataList.length <= 0) {
+            this._cacheRenderItemStartIndex = null;
+            return;
+        }
+
+        this.updateCacheDataList();
     }
 
     update(dt: number) {

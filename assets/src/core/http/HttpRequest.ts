@@ -10,6 +10,7 @@
 import * as HttpInterface from "../interface/HttpInterface";
 import * as HttpDefine from "../define/HttpDefine";
 import HttpXmlRequest from "./HttpXmlRequest";
+import TypeUtils from "../utils/TypeUtils";
 
 
 export default class HttpRequest {
@@ -21,7 +22,7 @@ export default class HttpRequest {
      */
     private static checkLegal(url: string): boolean {
         let legal: boolean = true;
-        if (url === null || url === undefined || url === "") {
+        if (TypeUtils.isNull(url) || url === "") {
             legal = false;
         }
         return legal;
@@ -41,7 +42,7 @@ export default class HttpRequest {
         }
 
         let response: HttpInterface.ResponseInfo;
-        if (cls === null || cls === undefined) {
+        if (TypeUtils.isNull(cls)) {
             response = await (new HttpXmlRequest()).request(url, HttpDefine.Method.GET, null, param);
         } else {
             response = await (new cls()).request(url, HttpDefine.Method.GET, null, param);
@@ -65,7 +66,7 @@ export default class HttpRequest {
         }
 
         let response: HttpInterface.ResponseInfo;
-        if (cls === null || cls === undefined) {
+        if (TypeUtils.isNull(cls)) {
             response = await (new HttpXmlRequest()).request(url, HttpDefine.Method.POST, body, param);
         } else {
             response = await (new cls()).request(url, HttpDefine.Method.POST, body, param);

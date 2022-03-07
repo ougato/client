@@ -69,7 +69,7 @@ export default class ExampleScene extends BaseScene {
     }
 
     private onClickItem(node: cc.Node, data: string): void {
-        G.LogMgr.color("点击列表项", "数据", node, data);
+        G.LogMgr.color("点击列表项", "数据", data);
     }
 
     private pullLeft(): void {
