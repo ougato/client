@@ -214,7 +214,7 @@ export default class UIScene extends UIBase {
             }
         });
 
-        layerViewCacheList = layerViewCacheList.sort((a: UIView, b: UIView) => {
+        layerViewCacheList.sort((a: UIView, b: UIView) => {
             return a.node.zIndex - b.node.zIndex;
         });
 

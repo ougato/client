@@ -4,7 +4,7 @@
  * LastEditors  : ougato
  * LastEditTime : 2021-12-19 03:52:04
  * FilePath     : /client/assets/src/core/component/ListView.ts
- * Description  : 滑动列表（分帧加载、分页加载、无限列表）
+ * Description  : 滑动列表（分帧加载、分页加载、无限加载）
  */
 
 import * as ComponentDefine from "../define/ComponentDefine";
@@ -166,7 +166,7 @@ export default class ListView extends cc.ScrollView {
         } else {
             this.setData(this._itemDataList, itemsData);
             this._renderItemStartIndex = 0;
-            this._renderItemEndIndex = this._itemDataList.length - 1;
+            this._renderItemEndIndex = this._itemDataList.length;
             this.updateListItem();
         }
     }
@@ -226,7 +226,7 @@ export default class ListView extends cc.ScrollView {
         } else {
             this.insertData(dataList, itemsData, index);
             this._renderItemStartIndex = index;
-            this._renderItemEndIndex = dataList.length - 1;
+            this._renderItemEndIndex = dataList.length;
             this.updateListItem();
         }
     }
@@ -296,7 +296,7 @@ export default class ListView extends cc.ScrollView {
         } else {
             dataList.splice(index, count);
             this._renderItemStartIndex = index;
-            this._renderItemEndIndex = this.content.childrenCount - 1;
+            this._renderItemEndIndex = Math.max(this._itemDataList.length, this.content.childrenCount);
             this.updateListItem();
         }
     }
@@ -317,7 +317,7 @@ export default class ListView extends cc.ScrollView {
 
         } else {
             let putIndexList: number[] = [];
-            for (let i: number = this._renderItemStartIndex; i <= this._renderItemEndIndex; ++i) {
+            for (let i: number = this._renderItemStartIndex; i < this._renderItemEndIndex; ++i) {
                 let itemNode: cc.Node = this.content.children[i];
                 let itemData: unknown = this._itemDataList[i];
 
@@ -333,7 +333,7 @@ export default class ListView extends cc.ScrollView {
                     if (this.mode === ComponentDefine.ListViewLoadMode.FRAME) {
                         let nodePoolSize: number = this._itemNodePool.size();
                         if (nodePoolSize > 0) {
-                            let directLoadEndIndex: number = i + (nodePoolSize - 1);
+                            let directLoadEndIndex: number = i + nodePoolSize;
                             itemsData = this._itemDataList.slice(i, directLoadEndIndex);
                             this.directLoadItem(itemsData);
                             if (directLoadEndIndex < this._renderItemEndIndex) {
@@ -354,9 +354,6 @@ export default class ListView extends cc.ScrollView {
 
             for (let i: number = putIndexList.length - 1; i >= 0; --i) {
                 let itemNode: cc.Node = this.content.children[putIndexList[i]];
-                if (this.clickItemEventHandler) {
-                    itemNode.getComponent(cc.Button).node.off("click");
-                }
                 this.putNode(itemNode);
             }
 
@@ -373,7 +370,7 @@ export default class ListView extends cc.ScrollView {
         this.setData(this._itemDataList, this._itemCacheDataList);
         this._itemCacheDataList.length = 0;
         this._renderItemStartIndex = this._cacheRenderItemStartIndex;
-        this._renderItemEndIndex = this._itemDataList.length - 1;
+        this._renderItemEndIndex = Math.max(this._itemDataList.length, this.content.childrenCount);
         this.updateListItem();
     }
 
@@ -494,6 +491,10 @@ export default class ListView extends cc.ScrollView {
         if (!node || node.name !== this.itemPrefab.data.name) {
             G.LogMgr.warn(`请不要放入与 ${node.name} 不相关的节点`);
             return null;
+        }
+
+        if (this.clickItemEventHandler) {
+            node.getComponent(cc.Button).node.off("click");
         }
 
         node.removeFromParent();
@@ -803,7 +804,7 @@ export default class ListView extends cc.ScrollView {
         //     }
 
         // }
-        // console.log("Scrolling", target);
+        // G.LogMgr.log("Scrolling", target);
     }
 
     private onBounceBottom(target: ListView): void {
@@ -811,7 +812,7 @@ export default class ListView extends cc.ScrollView {
             return;
         }
 
-        // console.log("BounceBottom");
+        // G.LogMgr.log("BounceBottom");
     }
 
     private onBounceTop(target: ListView): void {
@@ -819,7 +820,7 @@ export default class ListView extends cc.ScrollView {
             return;
         }
 
-        // console.log("BounceTop");
+        // G.LogMgr.log("BounceTop");
     }
 
     private onBounceLeft(target: ListView): void {
@@ -827,7 +828,7 @@ export default class ListView extends cc.ScrollView {
             return;
         }
 
-        // console.log("BounceLeft");
+        // G.LogMgr.log("BounceLeft");
     }
 
     private onBounceRight(target: ListView): void {
@@ -835,19 +836,19 @@ export default class ListView extends cc.ScrollView {
             return;
         }
 
-        // console.log("BounceRight");
+        // G.LogMgr.log("BounceRight");
     }
 
     private onScrollEnded(target: ListView): void {
-        // console.log("ScrollEnded");
+        // G.LogMgr.log("ScrollEnded");
     }
 
     private onTouchUp(target: ListView): void {
-        // console.log("TouchUp");
+        // G.LogMgr.log("TouchUp");
     }
 
     private onScrollBegan(target: ListView): void {
-        // console.log("ScrollBegan");
+        // G.LogMgr.log("ScrollBegan");
     }
 
     /**
@@ -873,7 +874,6 @@ export default class ListView extends cc.ScrollView {
     }
 
     protected onDestroy(): void {
-        super.onDestroy();
 
         this.unregister();
     }

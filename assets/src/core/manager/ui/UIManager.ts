@@ -572,7 +572,7 @@ export default class UIManager extends BaseManager {
      */
     private resetSceneZIndex(): number {
         let sceneList: any[][] = Object.entries(this._sceneMap);
-        sceneList = sceneList.sort((a: any[], b: any[]) => {
+        sceneList.sort((a: any[], b: any[]) => {
             return a[1].node.zIndex - b[1].node.zIndex;
         });
 

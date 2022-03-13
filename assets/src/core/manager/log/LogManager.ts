@@ -54,7 +54,7 @@ export default class LogManager extends BaseManager {
      * @param data {...any[]} 数据
      */
     public sys(...data: any[]): void {
-        data.unshift(this.getDate());
+        data = [].concat(this.getDate()).concat(data);
         console.warn.apply(console, data);
     }
 
@@ -63,7 +63,7 @@ export default class LogManager extends BaseManager {
      * @param data {...any[]} 数据
      */
     public log(...data: any[]): void {
-        data.unshift(this.getDate());
+        data = [].concat(this.getDate()).concat(data);
         console.log.apply(console, data);
     }
 
@@ -72,7 +72,7 @@ export default class LogManager extends BaseManager {
      * @param data {...any[]} 数据
      */
     public error(...data: any[]): void {
-        data.unshift(this.getDate());
+        data = [].concat(this.getDate()).concat(data);
         console.error.apply(console, data);
     }
 
@@ -81,7 +81,7 @@ export default class LogManager extends BaseManager {
      * @param data {...any[]} 数据
      */
     public warn(...data: any[]): void {
-        data.unshift(this.getDate());
+        data = [].concat(this.getDate()).concat(data);
         console.warn.apply(console, data);
     }
 
