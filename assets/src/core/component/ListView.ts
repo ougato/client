@@ -328,6 +328,10 @@ export default class ListView extends cc.ScrollView {
                     }
                     let itemSrc: ComponentInterface.ListViewItemClass = itemNode.getComponent(itemNode.name);
                     itemSrc.onShow && itemSrc.onShow(itemData);
+                } else if (TypeUtils.isNull(itemNode) && !this._itemDataList.hasOwnProperty(i)) {
+                    continue;
+                } else if (!this._itemDataList.hasOwnProperty(i)) {
+                    putIndexList.push(i);
                 } else if (TypeUtils.isNull(itemNode)) {
                     let itemsData: unknown[] = this._itemDataList.slice(i, this._itemDataList.length);;
                     if (this.mode === ComponentDefine.ListViewLoadMode.FRAME) {
@@ -347,8 +351,6 @@ export default class ListView extends cc.ScrollView {
                         this.directLoadItem(itemsData);
                     }
                     break;
-                } else if (!this._itemDataList.hasOwnProperty(i)) {
-                    putIndexList.push(i);
                 }
             }
 
