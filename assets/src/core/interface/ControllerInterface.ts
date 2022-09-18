@@ -9,6 +9,10 @@
 
 import BaseController from "../base/BaseController";
 
-export interface ControllerClass<T extends BaseController> {
-    new(): T;
+export namespace ControllerInterface {
+
+    export interface ControllerClass<T extends BaseController> {
+        new(): T;
+    }
+
 }

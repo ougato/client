@@ -2,13 +2,13 @@
  * Author       : ougato
  * Date         : 2021-11-01 10:08:36
  * LastEditors  : ougato
- * LastEditTime : 2021-11-01 10:14:21
+ * LastEditTime : 2022-09-18 18:39:53
  * FilePath     : /client/assets/src/utils/HttpUtils.ts
  * Description  : Http 工具类
  */
 
-import * as HttpInterface from "../core/interface/HttpInterface";
-import * as HttpDefine from "../core/define/HttpDefine";
+import { HttpDefine } from "../core/define/HttpDefine";
+import { HttpInterface } from "../core/interface/HttpInterface";
 
 export default class HttpUtils {
 
@@ -16,5 +16,5 @@ export default class HttpUtils {
         return responseInfo && responseInfo.state === HttpDefine.StateType.OK &&
             responseInfo.body && responseInfo.body.code === 0;
     }
-    
+
 }

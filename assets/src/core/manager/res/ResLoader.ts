@@ -2,13 +2,13 @@
  * Author       : ougato
  * Date         : 2021-07-08 23:32:24
  * LastEditors  : ougato
- * LastEditTime : 2021-11-17 18:05:32
+ * LastEditTime : 2022-09-18 18:39:33
  * FilePath     : /client/assets/src/core/manager/res/ResLoader.ts
  * Description  : 资源加载器、用于动态加载资源
  */
 
-import * as ResInterface from "../../interface/ResInterface";
-import * as ResDefine from "../../define/ResDefine";
+import { ResDefine } from "../../define/ResDefine";
+import { ResInterface } from "../../interface/ResInterface";
 import ResCache from "./ResCache";
 
 export default class ResLoader {

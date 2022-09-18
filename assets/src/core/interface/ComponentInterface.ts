@@ -7,20 +7,24 @@
  * Description  : 列表滑动视图项接口类
  */
 
-/**
- * 滑动列表项的接口类约束
- */
-export interface ListViewItemClass {
+export namespace ComponentInterface {
 
     /**
-     * 准备显示时 | 数据刷新回调 数据带入
-     * @param {T} 泛型数据
+     * 滑动列表项的接口类约束
      */
-    onShow: (data: any) => void;
+    export interface ListViewItemClass {
 
-    /**
-     * 重置数据和节点
-     */
-    reset: () => void;
+        /**
+         * 准备显示时 | 数据刷新回调 数据带入
+         * @param {T} 泛型数据
+         */
+        onShow: (data: any) => void;
+
+        /**
+         * 重置数据和节点
+         */
+        reset: () => void;
+
+    }
 
 }

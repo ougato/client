@@ -2,13 +2,13 @@
  * Author       : ougato
  * Date         : 2021-12-18 01:55:27
  * LastEditors  : ougato
- * LastEditTime : 2021-12-19 01:04:53
+ * LastEditTime : 2022-09-18 18:39:47
  * FilePath     : /client/assets/src/ui/item/ListViewItem.ts
  * Description  : 
  */
 
 import BaseItem from "../../core/base/BaseItem";
-import * as ComponentInterface from "../../core/interface/ComponentInterface";
+import { ComponentInterface } from "../../core/interface/ComponentInterface";
 
 const { ccclass, property } = cc._decorator;
 

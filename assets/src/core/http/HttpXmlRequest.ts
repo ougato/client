@@ -7,9 +7,9 @@
  * Description  : 原生上不支持 fetch 的写法，只有默认使用 XMLHttpRequest
  */
 
-import * as EventDefine from "../define/EventDefine";
-import * as HttpDefine from "../define/HttpDefine";
-import * as HttpInterface from "../interface/HttpInterface";
+import { EventDefine } from "../define/EventDefine";
+import { HttpDefine } from "../define/HttpDefine";
+import { HttpInterface } from "../interface/HttpInterface";
 import TypeUtils from "../utils/TypeUtils";
 
 export default class HttpXmlRequest implements HttpInterface.Http {

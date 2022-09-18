@@ -7,6 +7,8 @@
  * Description  : 原生工具
  */
 
+import { LocalStorageDefine } from "../define/LocalStorageDefine";
+
 export default class MathUtils {
 
     /**
@@ -52,8 +54,8 @@ export default class MathUtils {
         }
 
         // TODO: 暂停使用本地存储，后面需要删除
-        G.LocalStorageMgr.setItem("LOCAL_UUID", uuid);
-        
+        G.LocalStorageMgr.setItem(LocalStorageDefine.Local.UUID, uuid);
+
     }
 
     /**
@@ -71,7 +73,7 @@ export default class MathUtils {
         }
 
         // TODO: 暂停使用本地存储，后面需要删除
-        value = G.LocalStorageMgr.getItem("LOCAL_UUID") as string;
+        value = G.LocalStorageMgr.getItem(LocalStorageDefine.Local.UUID) as string;
 
         return value;
     }

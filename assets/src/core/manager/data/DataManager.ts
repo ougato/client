@@ -9,7 +9,7 @@
 
 import BaseData from "../../base/BaseData";
 import BaseManager from "../../base/BaseManager";
-import * as DataInterface from "../../interface/DataInterface";
+import { DataInterface } from "../../interface/DataInterface";
 import TypeUtils from "../../utils/TypeUtils";
 
 export default class DataManager extends BaseManager {
@@ -87,11 +87,11 @@ export default class DataManager extends BaseManager {
         return baseData;
     }
 
-    
+
     /**
      * 删除数据
      */
-     public del<T extends BaseData>(dataClass: DataInterface.DataClass<T>): void {
+    public del<T extends BaseData>(dataClass: DataInterface.DataClass<T>): void {
         let className: string = cc.js.getClassName(dataClass);
 
         if (this.m_dataMap === null) {

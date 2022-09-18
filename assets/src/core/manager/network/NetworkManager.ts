@@ -2,18 +2,18 @@
  * Author       : ougato
  * Date         : 2021-11-01 15:57:27
  * LastEditors  : ougato
- * LastEditTime : 2021-12-03 16:50:58
+ * LastEditTime : 2022-09-18 18:38:05
  * FilePath     : /client/assets/src/core/manager/network/NetworkManager.ts
  * Description  : 网络管理器
  */
 
 import BaseManager from "../../base/BaseManager";
 import NetworkMessageTimer from "./NetworkMessageTimer";
-import * as NetworkInterface from "../../../core/interface/NetworkInterface";
-import * as NetworkDefine from "../../define/NetworkDefine";
-import * as EventDefine from "../../../core/define/EventDefine";
 import Proto = require("../../../protobuf/Proto");
 import TypeUtils from "../../utils/TypeUtils";
+import { EventDefine } from "../../define/EventDefine";
+import { NetworkDefine } from "../../define/NetworkDefine";
+import { NetworkInterface } from "../../interface/NetworkInterface";
 
 // 序列号 占用字节大小（4 byte）
 const SERIAL_LENGTH_BYTE_SIZE: number = 1;

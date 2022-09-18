@@ -7,12 +7,16 @@
  * Description  : 网络定义
  */
 
-// 网络断开状态
-export enum CloseState {
-    // 报错后断开
-    ERROR_CLOSE = 0,
-    // 客户端断开
-    CLIENT_CLOSE = 1,
-    // 服务器断开
-    SERVER_CLOSE = 2,
+export namespace NetworkDefine {
+
+    // 网络断开状态
+    export enum CloseState {
+        // 报错后断开
+        ERROR_CLOSE = 0,
+        // 客户端断开
+        CLIENT_CLOSE = 1,
+        // 服务器断开
+        SERVER_CLOSE = 2,
+    }
+
 }

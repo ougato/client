@@ -7,8 +7,8 @@
  * Description  : 滑动列表（分帧加载、分页加载、无限加载）
  */
 
-import * as ComponentDefine from "../define/ComponentDefine";
-import * as ComponentInterface from "../interface/ComponentInterface";
+import { ComponentDefine } from "../define/ComponentDefine";
+import { ComponentInterface } from "../interface/ComponentInterface";
 import TypeUtils from "../utils/TypeUtils";
 
 // 每次执行协程分配的时间（单位：毫秒）

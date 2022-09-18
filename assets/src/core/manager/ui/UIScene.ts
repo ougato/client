@@ -12,10 +12,10 @@ import UIBase from "./UIBase";
 import UIView from "./UIView";
 import ResCache from "../res/ResCache";
 import BaseComponent from "../../base/BaseComponent";
-import * as ResDefine from "../../define/ResDefine";
-import * as UIInterface from "../../interface/UIInterface";
-import * as UIDefine from "../../define/UIDefine";
 import TypeUtils from "../../utils/TypeUtils";
+import { UIDefine } from "../../define/UIDefine";
+import { ResDefine } from "../../define/ResDefine";
+import { UIInterface } from "../../interface/UIInterface";
 
 export default class UIScene extends UIBase {
 

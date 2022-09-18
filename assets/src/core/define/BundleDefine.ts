@@ -7,11 +7,15 @@
  * Description  : 包定义
  */
 
-export enum Name {
-    // 主包
-    RESOURCES = "resources",
-    // 坦克大战
-    TANK = "tank",
-    // 马里奥
-    MARIO = "mario",
-} 
+export namespace BundleDefine {
+
+    export enum Name {
+        // 主包
+        RESOURCES = "resources",
+        // 坦克大战
+        TANK = "tank",
+        // 马里奥
+        MARIO = "mario",
+    }
+
+}

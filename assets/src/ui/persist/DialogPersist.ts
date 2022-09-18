@@ -2,13 +2,13 @@
  * @Author       : ougato
  * @Date         : 2020-09-04 23:07:17
  * LastEditors  : ougato
- * LastEditTime : 2021-12-03 11:19:32
+ * LastEditTime : 2022-09-18 18:36:07
  * FilePath     : /client/assets/src/ui/persist/DialogPersist.ts
  * @Description  : 对话框（按钮自定义文字）
  */
 
 import BasePersist from "../../core/base/BasePersist";
-import * as UIInterface from "../../core/interface/UIInterface";
+import { UIInterface } from "../../core/interface/UIInterface";
 import TypeUtils from "../../core/utils/TypeUtils";
 
 const { ccclass, property } = cc._decorator;

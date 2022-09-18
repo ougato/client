@@ -2,13 +2,13 @@
  * @Author       : ougato
  * @Date         : 2020-09-15 23:51:40
  * LastEditors  : ougato
- * LastEditTime : 2021-11-03 01:22:17
+ * LastEditTime : 2022-09-18 18:38:56
  * FilePath     : /client/assets/src/core/http/HttpFetch.ts
  * @Description  : HttpFetch 请求对象
  */
 
-import * as HttpDefine from "../define/HttpDefine";
-import * as HttpInterface from "../interface/HttpInterface";
+import { HttpDefine } from "../define/HttpDefine";
+import { HttpInterface } from "../interface/HttpInterface";
 import TypeUtils from "../utils/TypeUtils";
 
 export default class HttpFetch implements HttpInterface.Http {

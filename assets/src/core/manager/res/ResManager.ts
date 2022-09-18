@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-08 23:31:28
  * LastEditors  : ougato
- * LastEditTime : 2021-11-03 01:43:04
+ * LastEditTime : 2022-09-18 18:39:38
  * FilePath     : /client/assets/src/core/manager/res/ResManager.ts
  * Description  : 资源管理器、所有游戏中用到的资源操作、由 ResManager 进行统一管理
  */
@@ -10,11 +10,11 @@
 import BaseManager from "../../base/BaseManager";
 import ResBuffer from "./ResBuffer";
 import ResLoader from "./ResLoader";
-import * as ResInterface from "../../interface/ResInterface";
 import ResCache from "./ResCache";
-import * as ResDefine from "../../define/ResDefine";
-import * as BundleDefine from "../../define/BundleDefine";
 import TypeUtils from "../../utils/TypeUtils";
+import { BundleDefine } from "../../define/BundleDefine";
+import { ResDefine } from "../../define/ResDefine";
+import { ResInterface } from "../../interface/ResInterface";
 
 export default class ResManager extends BaseManager {
 
@@ -61,7 +61,7 @@ export default class ResManager extends BaseManager {
             param.bundleName = BundleDefine.Name.RESOURCES;
         }
 
-        if (TypeUtils.isNull(param.loadType) ) {
+        if (TypeUtils.isNull(param.loadType)) {
             param.loadType = ResDefine.LoadType.ASSET;
         }
 

@@ -2,13 +2,12 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2021-12-18 01:54:28
+ * LastEditTime : 2022-09-18 18:44:32
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
 
 import BaseScene from "../../core/base/BaseScene";
-import LoginScene from "../scene/LoginScene";
 import HttpRequest from "../../core/http/HttpRequest";
 import LockScreenPersist from "../persist/LockScreenPersist";
 import LoadingPersist from "../persist/LoadingPersist";
@@ -19,14 +18,13 @@ import NativeUtils from "../../core/utils/NativeUtils";
 import DeviceData from "../../data/DeviceData";
 import HttpUtils from "../../utils/HttpUtils";
 import HallController from "../../controller/HallController";
-import * as URLConfig from "../../config/URLConfig";
-import * as HttpInterface from "../../core/interface/HttpInterface";
-import * as HttpParamInterface from "../../interface/HttpParamInterface";
-import * as UpdateInterface from "../../core/interface/UpdateInterface";
-import * as UpdateDefine from "../../core/define/UpdateDefine";
-import UnitUtils from "../../core/utils/UnitUtils";
 import ExampleScene from "./ExampleScene";
 import TypeUtils from "../../core/utils/TypeUtils";
+import { URLConfig } from "../../config/URLConfig";
+import { HttpParamInterface } from "../../interface/HttpParamInterface";
+import { UpdateDefine } from "../../core/define/UpdateDefine";
+import { HttpInterface } from "../../core/interface/HttpInterface";
+import { UpdateInterface } from "../../core/interface/UpdateInterface";
 
 // 请求获取动态主机最大次数
 const GET_DYNAMIC_HOST_MAX_COUNT: number = 3;

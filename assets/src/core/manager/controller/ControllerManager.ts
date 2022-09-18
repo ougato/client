@@ -9,7 +9,7 @@
 
 import BaseController from "../../base/BaseController";
 import BaseManager from "../../base/BaseManager";
-import * as ControllerInterface from "../../interface/ControllerInterface";
+import { ControllerInterface } from "../../interface/ControllerInterface";
 import TypeUtils from "../../utils/TypeUtils";
 
 export default class ControllerManager extends BaseManager {
@@ -83,7 +83,7 @@ export default class ControllerManager extends BaseManager {
         }
 
         baseController = new controllerClass();
-        
+
         this._controllerMap.set(className, baseController);
         return baseController;
     }

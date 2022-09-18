@@ -22,10 +22,10 @@ import DialogPersist from "../../../ui/persist/DialogPersist";
 import BasePersist from "../../base/BasePersist";
 import BaseItem from "../../base/BaseItem";
 import UIUtils from "../../utils/UIUtils";
-import * as UIInterface from "../../interface/UIInterface";
-import * as BundleDefine from "../../define/BundleDefine";
-import * as UIDefine from "../../define/UIDefine";
 import TypeUtils from "../../utils/TypeUtils";
+import { BundleDefine } from "../../define/BundleDefine";
+import { UIInterface } from "../../interface/UIInterface";
+import { UIDefine } from "../../define/UIDefine";
 
 // 打开视图等待常驻几秒后显示时间（单位：毫秒）
 const OPEN_VIEW_WAITING_TIME: number = 500;

@@ -2,14 +2,14 @@
  * Author       : ougato
  * Date         : 2021-11-02 15:15:06
  * LastEditors  : ougato
- * LastEditTime : 2021-11-09 14:37:42
+ * LastEditTime : 2022-09-18 18:38:13
  * FilePath     : /client/assets/src/data/WebSocketData.ts
  * Description  : 网络长连接数据
  */
 
 import BaseData from "../core/base/BaseData";
-import * as NetworkInterface from "../core/interface/NetworkInterface";
 import ClassDecorator from "../core/decorator/ClassDecorator";
+import { NetworkInterface } from "../core/interface/NetworkInterface";
 
 @ClassDecorator.classname
 export default class WebSocketData extends BaseData {

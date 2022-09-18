@@ -7,15 +7,19 @@
  * Description  : 热更新接口
  */
 
-import * as UpdateDefine from "../define/UpdateDefine";
+import { UpdateDefine } from "../define/UpdateDefine";
 
-export interface CheckResult {
-    error?: UpdateDefine.ErrorState,
-    state?: UpdateDefine.CheckState,
-    downloadBytes?: number,
-}
 
-export interface UpdateResult {
-    error?: UpdateDefine.ErrorState,
-    state?: UpdateDefine.UpdateState,
+export namespace UpdateInterface {
+    export interface CheckResult {
+        error?: UpdateDefine.ErrorState,
+        state?: UpdateDefine.CheckState,
+        downloadBytes?: number,
+    }
+
+    export interface UpdateResult {
+        error?: UpdateDefine.ErrorState,
+        state?: UpdateDefine.UpdateState,
+    }
+
 }

@@ -6,8 +6,8 @@
  * FilePath     : /client/assets/src/core/utils/LangUtils.ts
  * Description  : 多语言工具
  */
- 
-import * as LangDefine from "../define/LangDefine";
+
+import { LangDefine } from "../define/LangDefine";
 
 export default class LangUtils {
 

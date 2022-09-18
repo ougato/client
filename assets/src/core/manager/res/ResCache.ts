@@ -2,14 +2,14 @@
  * Author       : ougato
  * Date         : 2021-07-10 00:39:14
  * LastEditors  : ougato
- * LastEditTime : 2021-12-09 11:07:58
+ * LastEditTime : 2022-09-18 18:39:27
  * FilePath     : /client/assets/src/core/manager/res/ResCache.ts
  * Description  : 资源缓存
  */
 
-import * as ResDefine from "../../define/ResDefine";
-import * as BundleDefine from "../../define/BundleDefine";
-import * as ResInterface from "../../interface/ResInterface";
+import { BundleDefine } from "../../define/BundleDefine";
+import { ResDefine } from "../../define/ResDefine";
+import { ResInterface } from "../../interface/ResInterface";
 
 export default class ResCache {
 
