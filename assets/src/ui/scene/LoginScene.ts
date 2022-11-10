@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-09-04 23:39:20
  * LastEditors  : ougato
- * LastEditTime : 2021-12-09 11:49:26
+ * LastEditTime : 2022-11-09 14:46:09
  * FilePath     : /client/assets/src/ui/scene/LoginScene.ts
  * Description  : 登陆场景
  */
@@ -19,7 +19,7 @@ const { ccclass, property } = cc._decorator;
 export default class LoginScene extends BaseScene {
 
     // 预制路径
-    public static prefabPath: string = "scene/LoginScene";
+    public static prefabPath: string = "prefab/scene/LoginScene";
 
     @property(cc.Toggle)
     private togAgreement: cc.Toggle = null;

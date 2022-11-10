@@ -2,11 +2,12 @@
  * Author       : ougato
  * Date         : 2021-07-08 23:32:24
  * LastEditors  : ougato
- * LastEditTime : 2022-09-18 18:39:33
+ * LastEditTime : 2022-11-09 15:55:42
  * FilePath     : /client/assets/src/core/manager/res/ResLoader.ts
  * Description  : 资源加载器、用于动态加载资源
  */
 
+import { ColorDefine } from "../../define/ColorDefine";
 import { ResDefine } from "../../define/ResDefine";
 import { ResInterface } from "../../interface/ResInterface";
 import ResCache from "./ResCache";
@@ -54,7 +55,7 @@ export default class ResLoader {
                 G.LogMgr.sys(`加载资源 失败 ${param.path}`);
                 resCache.mode = null;
             } else {
-                G.LogMgr.log(`加载资源 ${param.path}`);
+                G.LogMgr.log(`加载资源`, param.path);
                 resCache.asset = assets;
                 resCache.state = ResDefine.ResState.LOADED;
                 resCache.addCache();

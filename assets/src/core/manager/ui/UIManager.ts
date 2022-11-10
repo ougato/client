@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:36:55
  * LastEditors  : ougato
- * LastEditTime : 2021-12-03 16:07:49
+ * LastEditTime : 2022-11-09 15:37:16
  * FilePath     : /client/assets/src/core/manager/ui/UIManager.ts
  * Description  : 界面管理器、所有的视图和场景、都由 UIManager 统一管理、包括打开视图|关闭视图|切换场景等等
  */
@@ -26,6 +26,7 @@ import TypeUtils from "../../utils/TypeUtils";
 import { BundleDefine } from "../../define/BundleDefine";
 import { UIInterface } from "../../interface/UIInterface";
 import { UIDefine } from "../../define/UIDefine";
+import { ColorDefine } from "../../define/ColorDefine";
 
 // 打开视图等待常驻几秒后显示时间（单位：毫秒）
 const OPEN_VIEW_WAITING_TIME: number = 500;
@@ -210,7 +211,7 @@ export default class UIManager extends BaseManager {
             return;
         }
 
-        G.LogMgr.color("打开场景", className);
+        G.LogMgr.color("打开场景", className, ColorDefine.LogColor.SKY);
 
         this.startSceneTimer(param.delay);
 

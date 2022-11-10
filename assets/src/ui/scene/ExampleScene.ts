@@ -2,13 +2,14 @@
  * Author       : ougato
  * Date         : 2021-12-13 10:31:14
  * LastEditors  : ougato
- * LastEditTime : 2021-12-19 03:14:14
+ * LastEditTime : 2022-11-10 13:51:47
  * FilePath     : /client/assets/src/ui/scene/ExampleScene.ts
  * Description  : 演示例子场景
  */
 
 import BaseScene from "../../core/base/BaseScene";
 import ListView from "../../core/component/ListView";
+import NativeUtils from "../../core/utils/NativeUtils";
 
 const { ccclass, property } = cc._decorator;
 
@@ -16,7 +17,7 @@ const { ccclass, property } = cc._decorator;
 export default class ExampleScene extends BaseScene {
 
     // 预制路径
-    public static prefabPath: string = "scene/ExampleScene";
+    public static prefabPath: string = "prefab/scene/ExampleScene";
 
     @property({ type: ListView })
     private lsvExample: ListView = null;
@@ -52,6 +53,8 @@ export default class ExampleScene extends BaseScene {
             listData.push((this.index++).toString());
         }
         this.lsvExample.insert(listData, index);
+
+        NativeUtils.getClipboard();
     }
 
     private onClickRemove(): void {
@@ -66,6 +69,8 @@ export default class ExampleScene extends BaseScene {
             return;
         }
         this.lsvExample.remove(index, count);
+
+        NativeUtils.setClipboard(this.edbCount.string);
     }
 
     private onClickItem(node: cc.Node, data: string): void {

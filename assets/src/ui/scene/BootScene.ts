@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2022-09-18 18:44:32
+ * LastEditTime : 2022-11-10 15:08:13
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
@@ -25,6 +25,7 @@ import { HttpParamInterface } from "../../interface/HttpParamInterface";
 import { UpdateDefine } from "../../core/define/UpdateDefine";
 import { HttpInterface } from "../../core/interface/HttpInterface";
 import { UpdateInterface } from "../../core/interface/UpdateInterface";
+import { ColorDefine } from "../../core/define/ColorDefine";
 
 // 请求获取动态主机最大次数
 const GET_DYNAMIC_HOST_MAX_COUNT: number = 3;
@@ -45,6 +46,8 @@ export default class BootScene extends BaseScene {
 
     protected start(): void {
         super.start();
+
+        cc.sys.dump();
 
         this.launch();
     }
@@ -310,9 +313,9 @@ export default class BootScene extends BaseScene {
      */
     private async launch(): Promise<void> {
         await this.initPersist();
-        await this.initHost();
+        // await this.initHost();
         // await this.initUpdate();
-        await this.initDevice();
+        // await this.initDevice();
 
         this.into();
     }
