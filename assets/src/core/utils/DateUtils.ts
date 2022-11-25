@@ -2,12 +2,10 @@
  * Author       : ougato
  * Date         : 2021-11-18 15:08:18
  * LastEditors  : ougato
- * LastEditTime : 2021-11-18 16:32:15
+ * LastEditTime : 2022-11-25 18:41:57
  * FilePath     : /client/assets/src/core/utils/DateUtils.ts
  * Description  : 日期时间工具
  */
-
-import TypeUtils from "./TypeUtils";
 
 export default class DateUtils {
 
@@ -20,7 +18,7 @@ export default class DateUtils {
     public static timestampToFormat(format: string = "YYYY-MM-DD hh:mm:ss.SSS", timestamp?: number): string {
         let date = new Date();
 
-        if (!TypeUtils.isNull(timestamp)) {
+        if (timestamp !== null && timestamp !== undefined) {
             date.setTime(timestamp);
         }
 
