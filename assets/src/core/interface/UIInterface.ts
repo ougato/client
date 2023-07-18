@@ -11,7 +11,7 @@ import BaseView from "../base/BaseView";
 import BaseScene from "../base/BaseScene";
 import BaseComponent from "../base/BaseComponent";
 import BaseItem from "../base/BaseItem";
-import { BundleDefine } from "../define/BundleDefine";
+import { BundleDefine } from "../../define/BundleDefine";
 import { UIDefine } from "../define/UIDefine";
 
 export namespace UIInterface {

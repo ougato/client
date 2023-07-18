@@ -10,7 +10,7 @@
 import BaseManager from "../../base/BaseManager";
 import LangUtils from "../../utils/LangUtils";
 import { LocalStorageDefine } from "../../define/LocalStorageDefine";
-import { BundleDefine } from "../../define/BundleDefine";
+import { BundleDefine } from "../../../define/BundleDefine";
 import { LangDefine } from "../../define/LangDefine";
 import { LangInterface } from "../../interface/LangInterface";
 

@@ -138,7 +138,7 @@ export default class HttpXmlRequest implements HttpInterface.Http {
      */
     private startWaitingTimer(): void {
         this.stopWaitingTimer();
-        G.UIMgr.openLockScreen();
+        G.UIMgr.openBlock();
         this._waitingTimer = setTimeout(() => {
             G.UIMgr.openWaiting();
         }, HttpDefine.WAITING_TIMEOUT * 1000);
@@ -151,7 +151,7 @@ export default class HttpXmlRequest implements HttpInterface.Http {
         if (!TypeUtils.isNull(this._waitingTimer)) {
             clearTimeout(this._waitingTimer);
             this._waitingTimer = null;
-            G.UIMgr.closeLockScreen();
+            G.UIMgr.closeBlock();
             G.UIMgr.closeWaiting();
         }
     }

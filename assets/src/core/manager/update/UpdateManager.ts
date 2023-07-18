@@ -8,13 +8,13 @@
  */
 
 import CryptUtils from "../../utils/CryptUtils";
-import CommonUtils from "../../utils/CommonUtils";
 import TypeUtils from "../../utils/TypeUtils";
 import { LocalStorageDefine } from "../../define/LocalStorageDefine";
 import { EventDefine } from "../../define/EventDefine";
 import { UpdateDefine } from "../../define/UpdateDefine";
 import { UpdateInterface } from "../../interface/UpdateInterface";
 import { UpdateConfig } from "../../config/UpdateConfig";
+import { ConverUtils } from "../../utils/ConverUtils";
 
 // 原生热更新资源文件夹
 const NATIVE_UPDATE_ASSETS_FOLDER: string = "hot-update";
@@ -236,7 +236,7 @@ export default class UpdateManager {
                         break;
                     // 单个文件更新完成
                     case jsb.EventAssetsManager.ASSET_UPDATED: {
-                        percent = CommonUtils.toFixed(event.getPercentByFile() * 100);
+                        percent = ConverUtils.toFixed(event.getPercentByFile() * 100);
                         console.log(`文件完成：${event.getAssetId()} （${percent}%）`);
                     }
                         break;
@@ -356,7 +356,7 @@ export default class UpdateManager {
                         switch (event.getEventCode()) {
                             // 单个文件更新完成
                             case jsb.EventAssetsManager.ASSET_UPDATED: {
-                                percent = CommonUtils.toFixed(event.getPercentByFile() * 100);
+                                percent = ConverUtils.toFixed(event.getPercentByFile() * 100);
                                 console.log(`文件完成：${event.getAssetId()} （${percent}%）`);
                             }
                                 break;

@@ -8,7 +8,7 @@
  */
 
 import ResCache from "../manager/res/ResCache";
-import { BundleDefine } from "../define/BundleDefine";
+import { BundleDefine } from "../../define/BundleDefine";
 import { ResDefine } from "../define/ResDefine";
 
 export namespace ResInterface {

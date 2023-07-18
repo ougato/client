@@ -18,7 +18,6 @@ import LocalStorageManager from "./manager/localStorage/LocalStorageManager";
 import NetworkManager from "./manager/network/NetworkManager";
 import UpdateManager from "./manager/update/UpdateManager";
 
-
 export default class Global {
 
     // 实例对象
@@ -104,7 +103,7 @@ export default class Global {
 
     /**
      * 本地存储管理器
-     * @returns {ControllerManager} 实例对象
+     * @returns {LocalStorageManager} 实例对象
      */
     public get LocalStorageMgr(): LocalStorageManager {
         return LocalStorageManager.getInstance()
@@ -112,6 +111,7 @@ export default class Global {
 
     /**
      * 网络管理器
+     * @returns {NetworkManager} 实例对象
      */
     public get NetworkMgr(): NetworkManager {
         return NetworkManager.getInstance();
@@ -119,8 +119,9 @@ export default class Global {
 
     /**
      * 更新管理器
+     * @returns {UpdateManager} 实例对象
      */
-    public get UpdateMgr():UpdateManager {
+    public get UpdateMgr(): UpdateManager {
         return UpdateManager.getInstance();
     }
 

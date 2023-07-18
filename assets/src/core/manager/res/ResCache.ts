@@ -7,7 +7,7 @@
  * Description  : 资源缓存
  */
 
-import { BundleDefine } from "../../define/BundleDefine";
+import { BundleDefine } from "../../../define/BundleDefine";
 import { ResDefine } from "../../define/ResDefine";
 import { ResInterface } from "../../interface/ResInterface";
 

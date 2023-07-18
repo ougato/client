@@ -12,7 +12,7 @@ import ResBuffer from "./ResBuffer";
 import ResLoader from "./ResLoader";
 import ResCache from "./ResCache";
 import TypeUtils from "../../utils/TypeUtils";
-import { BundleDefine } from "../../define/BundleDefine";
+import { BundleDefine } from "../../../define/BundleDefine";
 import { ResDefine } from "../../define/ResDefine";
 import { ResInterface } from "../../interface/ResInterface";
 

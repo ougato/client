@@ -13,7 +13,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "LockScreenPersist",
+    "_name": "BlockPersist",
     "_objFlags": 0,
     "_parent": null,
     "_children": [],
@@ -42,8 +42,8 @@
     },
     "_contentSize": {
       "__type__": "cc.Size",
-      "width": 1280,
-      "height": 720
+      "width": 750,
+      "height": 1334
     },
     "_anchorPoint": {
       "__type__": "cc.Vec2",
@@ -54,8 +54,8 @@
       "__type__": "TypedArray",
       "ctor": "Float64Array",
       "array": [
-        640,
-        360,
+        375,
+        667,
         0,
         0,
         0,
@@ -132,9 +132,9 @@
       "__id__": 1
     },
     "asset": {
-      "__uuid__": "f9a6ef54-ecfe-4403-a46a-b0a10c800e20"
+      "__id__": 0
     },
-    "fileId": "69jC4/5QlFg53ow6psslhm",
+    "fileId": "",
     "sync": false
   }
 ]

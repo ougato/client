@@ -71,7 +71,7 @@ export default class UIScene extends UIBase {
         view.resCache.state = ResDefine.ResState.LOADED;
         this._viewMap.set(className, view);
 
-        G.UIMgr.openLockScreen();
+        G.UIMgr.openBlock();
         this.startViewTimer(param.delay);
 
         G.ResMgr.load({
@@ -97,7 +97,7 @@ export default class UIScene extends UIBase {
                     if (param.onError) param.onError();
                 }
 
-                G.UIMgr.closeLockScreen();
+                G.UIMgr.closeBlock();
                 this.stopViewTimer();
             },
         })

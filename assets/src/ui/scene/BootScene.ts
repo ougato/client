@@ -9,7 +9,7 @@
 
 import BaseScene from "../../core/base/BaseScene";
 import HttpRequest from "../../core/http/HttpRequest";
-import LockScreenPersist from "../persist/LockScreenPersist";
+import BlockPersist from "../persist/BlockPersist";
 import LoadingPersist from "../persist/LoadingPersist";
 import WaitingPersist from "../persist/WaitingPersist";
 import DialogPersist from "../persist/DialogPersist";
@@ -25,7 +25,7 @@ import { HttpParamInterface } from "../../interface/HttpParamInterface";
 import { UpdateDefine } from "../../core/define/UpdateDefine";
 import { HttpInterface } from "../../core/interface/HttpInterface";
 import { UpdateInterface } from "../../core/interface/UpdateInterface";
-import { ColorDefine } from "../../core/define/ColorDefine";
+import LoginScene from "./LoginScene";
 
 // 请求获取动态主机最大次数
 const GET_DYNAMIC_HOST_MAX_COUNT: number = 3;
@@ -58,7 +58,7 @@ export default class BootScene extends BaseScene {
      */
     private async initPersist(): Promise<void> {
         return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
-            Promise.all([G.UIMgr.addPersist(LockScreenPersist), G.UIMgr.addPersist(LoadingPersist), G.UIMgr.addPersist(WaitingPersist), G.UIMgr.addPersist(DialogPersist)]).then(() => {
+            Promise.all([G.UIMgr.addPersist(BlockPersist), G.UIMgr.addPersist(LoadingPersist), G.UIMgr.addPersist(WaitingPersist), G.UIMgr.addPersist(DialogPersist)]).then(() => {
                 resolve();
             }).catch((reason: any) => {
                 // TODO: 弹窗重试
@@ -84,7 +84,7 @@ export default class BootScene extends BaseScene {
                 HttpRequest.get(url).then((responseInfo: HttpInterface.ResponseInfo) => {
                     if (HttpUtils.isOK(responseInfo)) {
                         let responseData: HttpParamInterface.HttpDynamicHostResponse = responseInfo.body.data;
-                        let hostData: HostData = G.DataMgr.add(HostData);
+                        let hostData: HostData = G.DataMgr.get(HostData);
                         hostData.loginHost = responseData.loginURL;
                         hostData.gameHost = responseData.gameURL;
                         hostData.appHost = responseData.appURL;
@@ -94,9 +94,10 @@ export default class BootScene extends BaseScene {
                         count = 0;
                         resolve();
                     } else {
-                        if (++count < GET_DYNAMIC_HOST_MAX_COUNT) {
+                        ++count
+                        if (count < GET_DYNAMIC_HOST_MAX_COUNT) {
                             return getDynamicHost(URLConfig.GET_DYNAMIC_HOST_URL);
-                        } else if (count >= GET_DYNAMIC_HOST_MAX_COUNT && count < GET_DYNAMIC_HOST_MAX_COUNT + GET_DYNAMIC_HOST_BACKUP_MAX_COUNT) {
+                        } else if (count < GET_DYNAMIC_HOST_MAX_COUNT + GET_DYNAMIC_HOST_BACKUP_MAX_COUNT) {
                             return getDynamicHost(URLConfig.GET_DYNAMIC_HOST_URL_BACKUP);
                         } else {
                             // TODO: 弹窗重试
@@ -313,9 +314,9 @@ export default class BootScene extends BaseScene {
      */
     private async launch(): Promise<void> {
         await this.initPersist();
-        // await this.initHost();
-        // await this.initUpdate();
-        // await this.initDevice();
+        await this.initHost();
+        await this.initUpdate();
+        await this.initDevice();
 
         this.into();
     }
@@ -324,13 +325,13 @@ export default class BootScene extends BaseScene {
      * 进入游戏
      */
     private into(): void {
-        // G.UIMgr.openScene({
-        //     sceneClass: LoginScene,
-        // });
-
         G.UIMgr.openScene({
-            sceneClass: ExampleScene,
+            sceneClass: LoginScene,
         });
+
+        // G.UIMgr.openScene({
+        //     sceneClass: ExampleScene,
+        // });
     }
 
 }

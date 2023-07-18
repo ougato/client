@@ -12,10 +12,9 @@ import BaseScene from "../../base/BaseScene";
 import BaseComponent from "../../base/BaseComponent";
 import UIScene from "./UIScene";
 import ResCache from "../res/ResCache";
-import MathUtils from "../../utils/MathUtils";
 import BaseView from "../../base/BaseView";
 import UIPersist from "./UIPersist";
-import LockScreenPersist from "../../../ui/persist/LockScreenPersist";
+import BlockPersist from "../../../ui/persist/BlockPersist";
 import LoadingPersist from "../../../ui/persist/LoadingPersist";
 import WaitingPersist from "../../../ui/persist/WaitingPersist";
 import DialogPersist from "../../../ui/persist/DialogPersist";
@@ -23,10 +22,11 @@ import BasePersist from "../../base/BasePersist";
 import BaseItem from "../../base/BaseItem";
 import UIUtils from "../../utils/UIUtils";
 import TypeUtils from "../../utils/TypeUtils";
-import { BundleDefine } from "../../define/BundleDefine";
+import { BundleDefine } from "../../../define/BundleDefine";
 import { UIInterface } from "../../interface/UIInterface";
 import { UIDefine } from "../../define/UIDefine";
 import { ColorDefine } from "../../define/ColorDefine";
+import { ConverUtils } from "../../utils/ConverUtils";
 
 // 打开视图等待常驻几秒后显示时间（单位：毫秒）
 const OPEN_VIEW_WAITING_TIME: number = 500;
@@ -129,7 +129,6 @@ export default class UIManager extends BaseManager {
 
         this._currScene.addView(param, data);
     }
-
 
     /**
      * 关闭视图（仅关闭当前场景内的视图，其他场景的视图不管，但是删除的时候会有多个，从最顶层的那个开始关闭，只关一个）
@@ -276,15 +275,15 @@ export default class UIManager extends BaseManager {
     /**
      * 打开防触摸视图
      */
-    public openLockScreen(): void {
-        this.openPersist(LockScreenPersist, UIDefine.PersistLayer.LOCK_SCREEN);
+    public openBlock(): void {
+        this.openPersist(BlockPersist, UIDefine.PersistLayer.BLOCK);
     }
 
     /**
      * 关闭防触摸视图
      */
-    public closeLockScreen(): void {
-        this.closePersist(LockScreenPersist);
+    public closeBlock(): void {
+        this.closePersist(BlockPersist);
     }
 
     /**
@@ -312,8 +311,8 @@ export default class UIManager extends BaseManager {
             percent = 0;
         }
         let retain: number = 2;
-        percent = MathUtils.decimal(percent, retain);
-        // this._persist.setLoading(MathUtils.fill0(percent, retain));
+        percent = ConverUtils.toFixed(percent, retain);
+        // this._persist.setLoading(ConverUtils.fill0(percent, retain));
     }
 
     /**

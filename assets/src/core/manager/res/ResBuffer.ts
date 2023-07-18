@@ -9,7 +9,7 @@
 
 import ResCache from "./ResCache";
 import TypeUtils from "../../utils/TypeUtils";
-import { BundleDefine } from "../../define/BundleDefine";
+import { BundleDefine } from "../../../define/BundleDefine";
 
 export default class ResBuffer {
 

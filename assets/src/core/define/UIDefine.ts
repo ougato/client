@@ -42,8 +42,8 @@ export namespace UIDefine {
 
     // 常驻层级
     export enum PersistLayer {
-        // 锁屏
-        LOCK_SCREEN = 0,
+        // 防点击
+        BLOCK = 0,
         // 对话框
         DIALOG,
         // 等待

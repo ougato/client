@@ -7,7 +7,7 @@
  * Description  : 单位转换
  */
 
-import CommonUtils from "./CommonUtils";
+import { ConverUtils } from "./ConverUtils";
 
 export default class UnitUtils {
 
@@ -29,7 +29,7 @@ export default class UnitUtils {
             unit = SYMBOLS[++index];
         }
 
-        return `${CommonUtils.toFixed(value)} ${unit}`;
+        return `${ConverUtils.toFixed(value)} ${unit}`;
     }
 
 }
