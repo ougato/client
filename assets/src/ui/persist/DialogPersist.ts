@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-04 23:07:17
  * LastEditors  : ougato
- * LastEditTime : 2022-09-18 18:36:07
+ * LastEditTime : 2023-07-19 16:58:12
  * FilePath     : /client/assets/src/ui/persist/DialogPersist.ts
  * @Description  : 对话框（按钮自定义文字）
  */

@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-10 02:52:20
  * LastEditors  : ougato
- * LastEditTime : 2022-11-09 15:48:03
+ * LastEditTime : 2023-07-19 14:22:22
  * FilePath     : /client/assets/src/core/manager/log/LogManager.ts
  * Description  : 日志管理器、拓展日志时间、日志上报等功能
  */
@@ -15,7 +15,7 @@ import DateUtils from "../../utils/DateUtils";
 
 // 背景颜色
 enum ColorBg {
-    // 基础颜色
+    // 基础颜色 
     BASE = ColorDefine.BaseColor.GREEN,
     // 天空颜色
     SKY = ColorDefine.BaseColor.BLUE,

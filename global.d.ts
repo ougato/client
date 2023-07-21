@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 01:38:17
  * LastEditors  : ougato
- * LastEditTime : 2021-11-05 11:44:46
+ * LastEditTime : 2023-07-19 14:22:51
  * FilePath     : /client/global.d.ts
  * Description  : 全局申明
  */
