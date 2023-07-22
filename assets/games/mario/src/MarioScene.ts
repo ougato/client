@@ -2,13 +2,12 @@
  * Author       : ougato
  * Date         : 2021-09-04 23:39:20
  * LastEditors  : ougato
- * LastEditTime : 2021-09-05 03:09:03
+ * LastEditTime : 2021-12-13 10:34:49
  * FilePath     : /client/assets/games/mario/src/MarioScene.ts
  * Description  : 
  */
 
 import BaseScene from "../../../src/core/base/BaseScene";
-import HallScene from "../../../src/ui/scene/HallScene";
 
 const { ccclass, property } = cc._decorator;
 
@@ -25,9 +24,7 @@ export default class MarioScene extends BaseScene {
     }
 
     private onClickHall(): void {
-        G.UIMgr.openScene({
-            sceneClass: HallScene,
-        })
+
     }
 
     // update (dt) {}

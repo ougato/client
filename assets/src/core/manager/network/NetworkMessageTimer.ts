@@ -7,6 +7,8 @@
  * @Description  : 网络超时器
  */
 
+import TypeUtils from "../../utils/TypeUtils";
+
 export default class NetworkMessageTimer {
 
     // 定时器 Map<序列号, 定时器ID>
@@ -26,7 +28,7 @@ export default class NetworkMessageTimer {
      */
     public on(serial: number, timeout: number): void {
         let timerId: NodeJS.Timeout | undefined = this._timerMap.get(serial);
-        if (timerId === undefined || timerId === null) {
+        if (TypeUtils.isNull(timerId)) {
             timerId = setTimeout(() => {
                 this._messageTimeoutCallback(serial);
                 this._timerMap.delete(serial);
@@ -41,7 +43,7 @@ export default class NetworkMessageTimer {
      */
     public off(serial: number): void {
         let timerId: NodeJS.Timeout | undefined = this._timerMap.get(serial);
-        if (timerId !== undefined && timerId !== null) {
+        if (!TypeUtils.isNull(timerId)) {
             clearTimeout(timerId);
             this._timerMap.delete(serial);
         }

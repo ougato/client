@@ -2,18 +2,19 @@
  * Author       : ougato
  * Date         : 2021-11-19 15:32:18
  * LastEditors  : ougato
- * LastEditTime : 2021-11-19 16:36:10
+ * LastEditTime : 2023-07-21 17:46:34
  * FilePath     : /client/assets/src/core/manager/update/UpdateManager.ts
  * Description  : 更新管理器，用于最开始进入游戏时热更新
  */
 
 import CryptUtils from "../../utils/CryptUtils";
-import CommonUtils from "../../utils/CommonUtils";
-import * as UpdateDefine from "../../define/UpdateDefine";
-import * as UpdateInterface from "../../interface/UpdateInterface";
-import * as UpdateConfig from "../../config/UpdateConfig";
-import * as EventDefine from "../../define/EventDefine";
-import * as LocalStorageDefine from "../../define/LocalStorageDefine";
+import TypeUtils from "../../utils/TypeUtils";
+import { LocalStorageDefine } from "../../define/LocalStorageDefine";
+import { EventDefine } from "../../define/EventDefine";
+import { UpdateDefine } from "../../define/UpdateDefine";
+import { UpdateInterface } from "../../interface/UpdateInterface";
+import { UpdateConfig } from "../../config/UpdateConfig";
+import { ConverUtils } from "../../utils/ConverUtils";
 
 // 原生热更新资源文件夹
 const NATIVE_UPDATE_ASSETS_FOLDER: string = "hot-update";
@@ -58,7 +59,6 @@ export default class UpdateManager {
     }
 
     constructor() {
-
         this.initData();
     }
 
@@ -235,7 +235,7 @@ export default class UpdateManager {
                         break;
                     // 单个文件更新完成
                     case jsb.EventAssetsManager.ASSET_UPDATED: {
-                        percent = CommonUtils.toFixed(event.getPercentByFile() * 100);
+                        percent = ConverUtils.toFixed(event.getPercentByFile() * 100);
                         console.log(`文件完成：${event.getAssetId()} （${percent}%）`);
                     }
                         break;
@@ -355,7 +355,7 @@ export default class UpdateManager {
                         switch (event.getEventCode()) {
                             // 单个文件更新完成
                             case jsb.EventAssetsManager.ASSET_UPDATED: {
-                                percent = CommonUtils.toFixed(event.getPercentByFile() * 100);
+                                percent = ConverUtils.toFixed(event.getPercentByFile() * 100);
                                 console.log(`文件完成：${event.getAssetId()} （${percent}%）`);
                             }
                                 break;
@@ -406,7 +406,7 @@ export default class UpdateManager {
                             G.EventMgr.emit(EventDefine.UpdateEvent.UPDATE_PROGRESS, this.m_percent);
                         }
 
-                        if (finishState !== null && finishState !== undefined) {
+                        if (!TypeUtils.isNull(finishState)) {
                             this.m_jsbAssetsManager.setEventCallback(null);
                             this.initData();
                             resolve({
@@ -414,7 +414,7 @@ export default class UpdateManager {
                             });
                         }
 
-                        if (failedState !== null && failedState !== undefined) {
+                        if (!TypeUtils.isNull(failedState)) {
                             this.m_jsbAssetsManager.setEventCallback(null);
                             this.initData();
                             this.m_errorState = failedState;

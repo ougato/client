@@ -12,9 +12,10 @@ import UIBase from "./UIBase";
 import UIView from "./UIView";
 import ResCache from "../res/ResCache";
 import BaseComponent from "../../base/BaseComponent";
-import * as ResDefine from "../../define/ResDefine";
-import * as UIInterface from "../../interface/UIInterface";
-import * as UIDefine from "../../define/UIDefine";
+import TypeUtils from "../../utils/TypeUtils";
+import { UIDefine } from "../../define/UIDefine";
+import { ResDefine } from "../../define/ResDefine";
+import { UIInterface } from "../../interface/UIInterface";
 
 export default class UIScene extends UIBase {
 
@@ -70,7 +71,7 @@ export default class UIScene extends UIBase {
         view.resCache.state = ResDefine.ResState.LOADED;
         this._viewMap.set(className, view);
 
-        G.UIMgr.openLockScreen();
+        G.UIMgr.openBlock();
         this.startViewTimer(param.delay);
 
         G.ResMgr.load({
@@ -96,7 +97,7 @@ export default class UIScene extends UIBase {
                     if (param.onError) param.onError();
                 }
 
-                G.UIMgr.closeLockScreen();
+                G.UIMgr.closeBlock();
                 this.stopViewTimer();
             },
         })
@@ -149,7 +150,7 @@ export default class UIScene extends UIBase {
      * 停止等待视图定时器
      */
     private stopViewTimer(): void {
-        if (this._viewTimer !== null && this._viewTimer !== undefined) {
+        if (!TypeUtils.isNull(this._viewTimer)) {
             clearTimeout(this._viewTimer);
             G.UIMgr.closeWaiting();
         }
@@ -167,12 +168,12 @@ export default class UIScene extends UIBase {
             return;
         }
 
-        if (layer === null || layer === undefined) {
+        if (TypeUtils.isNull(layer)) {
             layer = UIDefine.ViewLayer.VIEW;
         }
 
         let viewTopZIndex: UIDefine.ViewLayer = this._viewTopZIndexMap.get(layer);
-        if (viewTopZIndex === null || viewTopZIndex === undefined) {
+        if (TypeUtils.isNull(viewTopZIndex)) {
             viewTopZIndex = layer;
         }
 
@@ -213,7 +214,7 @@ export default class UIScene extends UIBase {
             }
         });
 
-        layerViewCacheList = layerViewCacheList.sort((a: UIView, b: UIView) => {
+        layerViewCacheList.sort((a: UIView, b: UIView) => {
             return a.node.zIndex - b.node.zIndex;
         });
 

@@ -2,14 +2,14 @@
  * Author       : ougato
  * Date         : 2021-11-18 15:08:18
  * LastEditors  : ougato
- * LastEditTime : 2021-11-18 16:32:15
+ * LastEditTime : 2023-07-19 14:27:15
  * FilePath     : /client/assets/src/core/utils/DateUtils.ts
  * Description  : 日期时间工具
  */
 
 export default class DateUtils {
 
-    /**
+    /** 
      * 时间戳转换日期格式
      * @param format {string} 日期格式字符串
      * @param timestamp {number} 时间戳（单位：秒/毫秒）
@@ -18,7 +18,7 @@ export default class DateUtils {
     public static timestampToFormat(format: string = "YYYY-MM-DD hh:mm:ss.SSS", timestamp?: number): string {
         let date = new Date();
 
-        if (timestamp !== undefined && timestamp !== null) {
+        if (timestamp !== null && timestamp !== undefined) {
             date.setTime(timestamp);
         }
 

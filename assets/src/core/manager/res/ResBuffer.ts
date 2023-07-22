@@ -8,7 +8,8 @@
  */
 
 import ResCache from "./ResCache";
-import * as BundleDefine from "../../define/BundleDefine";
+import TypeUtils from "../../utils/TypeUtils";
+import { BundleDefine } from "../../../define/BundleDefine";
 
 export default class ResBuffer {
 
@@ -45,11 +46,11 @@ export default class ResBuffer {
     public getCache(base: string, bundleName: BundleDefine.Name): ResCache {
         let cache: ResCache = null;
 
-        if (bundleName === null || bundleName === undefined || bundleName.length <= 0) {
+        if (TypeUtils.isNull(bundleName) || bundleName.length <= 0) {
             return cache;
         }
 
-        if (base === null || base === undefined || base.length <= 0) {
+        if (TypeUtils.isNull(base) || base.length <= 0) {
             return cache;
         }
 
@@ -72,11 +73,11 @@ export default class ResBuffer {
      * @param bundleName {BundleDefine.Name} 包名
      */
     public delCache(base: string, bundleName: BundleDefine.Name): void {
-        if (bundleName === null || bundleName === undefined || bundleName.length <= 0) {
+        if (TypeUtils.isNull(bundleName) || bundleName.length <= 0) {
             return;
         }
 
-        if (base === null || base === undefined || base.length <= 0) {
+        if (TypeUtils.isNull(base) || base.length <= 0) {
             return;
         }
 

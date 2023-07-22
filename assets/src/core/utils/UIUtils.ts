@@ -2,20 +2,20 @@
  * Author       : ougato
  * Date         : 2021-11-04 14:05:26
  * LastEditors  : ougato
- * LastEditTime : 2021-11-04 14:06:46
+ * LastEditTime : 2022-09-18 18:35:51
  * FilePath     : /client/assets/src/core/utils/UIUtils.ts
  * Description  : 
  */
 
 import BaseComponent from "../base/BaseComponent";
-import * as UIInterface from "../interface/UIInterface";
+import { UIInterface } from "../interface/UIInterface";
 
 export default class UIUtils {
-    
+
     /**
      * 挂载根节点脚本组件
      */
-     public static addScript<T extends BaseComponent>(node: cc.Node, uiClass: UIInterface.UIClass<T>): BaseComponent | null {
+    public static addScript<T extends BaseComponent>(node: cc.Node, uiClass: UIInterface.UIClass<T>): BaseComponent | null {
         let script: BaseComponent = null;
 
         if (!node) {

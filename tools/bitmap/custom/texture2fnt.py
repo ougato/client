@@ -292,7 +292,7 @@ def get_code_point(filename):
     elif name_len > 1:
         value = alias.get(filename)
         if value:
-            code_point = value
+            code_point = ord(value)
 
     return code_point
 

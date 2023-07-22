@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-10-30 23:12:46
  * LastEditors  : ougato
- * LastEditTime : 2021-12-09 11:20:37
+ * LastEditTime : 2022-09-18 18:34:21
  * FilePath     : /client/assets/src/controller/HallController.ts
  * Description  : 大厅控制器
  */
@@ -14,15 +14,15 @@ import GameData from "../data/GameData";
 import DeviceData from "../data/DeviceData";
 import NativeUtils from "../core/utils/NativeUtils";
 import HttpUtils from "../utils/HttpUtils";
-import * as APIConfig from "../config/APIConfig";
-import * as HttpInterface from "../core/interface/HttpInterface";
-import * as HttpParamInterface from "../interface/HttpParamInterface";
-import * as NetworkInterface from "../core/interface/NetworkInterface";
 import WebSocketData from "../data/WebSocketData";
 import Proto = require("../protobuf/Proto");
 import ClassDecorator from "../core/decorator/ClassDecorator";
-import * as UIDefine from "../core/define/UIDefine";
 import LoginScene from "../ui/scene/LoginScene";
+import { APIConfig } from "../config/APIConfig";
+import { HttpInterface } from "../core/interface/HttpInterface";
+import { HttpParamInterface } from "../interface/HttpParamInterface";
+import { UIDefine } from "../core/define/UIDefine";
+import { NetworkInterface } from "../core/interface/NetworkInterface";
 
 // 请求登陆最大次数
 const LOGIN_MAX_COUNT: number = 3;
@@ -259,7 +259,7 @@ export default class HallController extends BaseController {
      * @param responseData 
      */
     private onPingResponse(responseData: Proto.IPingResponse): void {
-        let clientTimestamp: number = new Date().getTime();
+        let clientTimestamp: number = Date.now();
         let serverTimestamp: number = Number(responseData.timestamp);
 
         let gameData: GameData = G.DataMgr.get(GameData);

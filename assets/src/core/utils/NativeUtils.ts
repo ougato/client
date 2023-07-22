@@ -2,10 +2,15 @@
  * Author       : ougato
  * Date         : 2021-10-12 00:55:14
  * LastEditors  : ougato
- * LastEditTime : 2021-11-01 02:20:37
+ * LastEditTime : 2022-11-10 15:04:49
  * FilePath     : /client/assets/src/core/utils/NativeUtils.ts
  * Description  : 原生工具
  */
+
+import { LocalStorageDefine } from "../define/LocalStorageDefine";
+
+// 安卓交互文件路径
+const ANDROID_BRIDGE_FILE_PATH: string = "org/cocos2dx/javascript/CocosJsCallNative";
 
 export default class MathUtils {
 
@@ -17,7 +22,7 @@ export default class MathUtils {
         let value: number = 100;
 
         if (cc.sys.isNative) {
-            // cocos 提供了获取电量的接口、暂且使用官方电量获取、如有需求可重写此接口
+            // cocos 提供了获取电量的接口、使用官方电量获取、如有需求可重写此接口
             value = Math.floor(cc.sys.getBatteryLevel() * 100);
         }
 
@@ -52,8 +57,8 @@ export default class MathUtils {
         }
 
         // TODO: 暂停使用本地存储，后面需要删除
-        G.LocalStorageMgr.setItem("LOCAL_UUID", uuid);
-        
+        G.LocalStorageMgr.setItem(LocalStorageDefine.Local.UUID, uuid);
+
     }
 
     /**
@@ -70,8 +75,8 @@ export default class MathUtils {
             }
         }
 
-        // TODO: 暂停使用本地存储，后面需要删除
-        value = G.LocalStorageMgr.getItem("LOCAL_UUID") as string;
+        // TODO: 暂时使用本地存储，后面需要删除
+        value = G.LocalStorageMgr.getItem(LocalStorageDefine.Local.UUID) as string;
 
         return value;
     }
@@ -107,5 +112,47 @@ export default class MathUtils {
         }
         return value;
     }
+
+    /**
+     * 设置内容到系统剪切板
+     * @param {string} conetent 内容
+     * @return {boolean} 是否已拷贝到剪切板
+     */
+    public static setClipboard(content: string): boolean {
+        let isOK: boolean = false;
+        if (cc.sys.isNative) {
+            if (cc.sys.os === cc.sys.OS_ANDROID) {
+                isOK = jsb.reflection.callStaticMethod(ANDROID_BRIDGE_FILE_PATH, "setClipboard", "(Ljava/lang/String;)Z", content);
+            } else if (cc.sys.os === cc.sys.OS_IOS) {
+
+            }
+        }
+
+        G.LogMgr.log(`设置剪切板内容：${isOK}`);
+
+        return isOK;
+    }
+
+    /**
+     * 获取系统剪切板的内容
+     * @return {string} 剪切板内容
+     */
+    public static getClipboard(): string {
+        let content: string = "";
+        if (cc.sys.isNative) {
+            if (cc.sys.os === cc.sys.OS_ANDROID) {
+                content = jsb.reflection.callStaticMethod(ANDROID_BRIDGE_FILE_PATH, "getClipboard", "()Ljava/lang/String;");
+            } else if (cc.sys.os === cc.sys.OS_IOS) {
+
+            }
+        } else {
+
+        }
+
+        G.LogMgr.log(`获取剪切板内容：${content}`);
+
+        return content;
+    }
+
 
 }

@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:36:55
  * LastEditors  : ougato
- * LastEditTime : 2021-12-03 16:07:49
+ * LastEditTime : 2023-07-21 18:26:44
  * FilePath     : /client/assets/src/core/manager/ui/UIManager.ts
  * Description  : 界面管理器、所有的视图和场景、都由 UIManager 统一管理、包括打开视图|关闭视图|切换场景等等
  */
@@ -12,19 +12,21 @@ import BaseScene from "../../base/BaseScene";
 import BaseComponent from "../../base/BaseComponent";
 import UIScene from "./UIScene";
 import ResCache from "../res/ResCache";
-import MathUtils from "../../utils/MathUtils";
 import BaseView from "../../base/BaseView";
 import UIPersist from "./UIPersist";
-import LockScreenPersist from "../../../ui/persist/LockScreenPersist";
+import BlockPersist from "../../../ui/persist/BlockPersist";
 import LoadingPersist from "../../../ui/persist/LoadingPersist";
 import WaitingPersist from "../../../ui/persist/WaitingPersist";
 import DialogPersist from "../../../ui/persist/DialogPersist";
 import BasePersist from "../../base/BasePersist";
 import BaseItem from "../../base/BaseItem";
 import UIUtils from "../../utils/UIUtils";
-import * as UIInterface from "../../interface/UIInterface";
-import * as BundleDefine from "../../define/BundleDefine";
-import * as UIDefine from "../../define/UIDefine";
+import TypeUtils from "../../utils/TypeUtils";
+import { BundleDefine } from "../../../define/BundleDefine";
+import { UIInterface } from "../../interface/UIInterface";
+import { UIDefine } from "../../define/UIDefine";
+import { ColorDefine } from "../../define/ColorDefine";
+import { ConverUtils } from "../../utils/ConverUtils";
 
 // 打开视图等待常驻几秒后显示时间（单位：毫秒）
 const OPEN_VIEW_WAITING_TIME: number = 500;
@@ -94,7 +96,7 @@ export default class UIManager extends BaseManager {
      * @param data {...any[]} 可变长参数
      */
     public openView<T extends BaseView>(param: UIInterface.ViewParam<T>, ...data: any[]): void {
-        if (param.viewClass === null || param.viewClass === undefined) {
+        if (TypeUtils.isNull(param.viewClass)) {
             G.LogMgr.warn(`视图类不能为空`);
             return;
         }
@@ -104,19 +106,19 @@ export default class UIManager extends BaseManager {
             return;
         }
 
-        if (param.bundleName === null || param.bundleName === undefined) {
+        if (TypeUtils.isNull(param.bundleName)) {
             param.bundleName = BundleDefine.Name.RESOURCES;
         }
 
-        if (param.style === null || param.style === undefined) {
+        if (TypeUtils.isNull(param.style)) {
             param.style = UIDefine.Style.DEFAULT;
         }
 
-        if (param.delay === null || param.delay === undefined || typeof (param.delay) !== "number" || param.delay < 0) {
+        if (TypeUtils.isNull(param.delay) || typeof (param.delay) !== "number" || param.delay < 0) {
             param.delay = OPEN_VIEW_WAITING_TIME;
         }
 
-        if (param.layer === null || param.layer === undefined) {
+        if (TypeUtils.isNull(param.layer)) {
             param.layer = UIDefine.ViewLayer.VIEW;
         }
 
@@ -127,7 +129,6 @@ export default class UIManager extends BaseManager {
 
         this._currScene.addView(param, data);
     }
-
 
     /**
      * 关闭视图（仅关闭当前场景内的视图，其他场景的视图不管，但是删除的时候会有多个，从最顶层的那个开始关闭，只关一个）
@@ -145,7 +146,7 @@ export default class UIManager extends BaseManager {
             name = viewName;
         } else {
             let viewClass: UIInterface.UIClass<BaseView> = arguments[0];
-            if (viewClass === null || viewClass === undefined) {
+            if (TypeUtils.isNull(viewClass)) {
                 G.LogMgr.warn(`视图类不能为空`);
                 return;
             }
@@ -168,12 +169,12 @@ export default class UIManager extends BaseManager {
     /**
      * 打开场景
      * 由于整个游戏设计只有一个 fire 场景，其他场景概念都使用 prefab 来代替
-     * 目的是更好的控制资源
+     * 目的是更好的管理资源的交互和加载
      * @param param {UIInterface.SceneParam} 场景参数
      * @param data {...any[]} 数据
      */
     public openScene<T extends BaseScene>(param: UIInterface.SceneParam<T>, ...data: any[]): void {
-        if (param.sceneClass === null || param.sceneClass === undefined) {
+        if (TypeUtils.isNull(param.sceneClass)) {
             G.LogMgr.warn(`场景类不能为空`);
             return;
         }
@@ -183,15 +184,15 @@ export default class UIManager extends BaseManager {
             return;
         }
 
-        if (param.bundleName === null || param.bundleName === undefined) {
+        if (TypeUtils.isNull(param.bundleName)) {
             param.bundleName = BundleDefine.Name.RESOURCES;
         }
 
-        if (param.delay === null || param.delay === undefined || typeof (param.delay) !== "number" || param.delay < 0) {
+        if (TypeUtils.isNull(param.delay) || typeof (param.delay) !== "number" || param.delay < 0) {
             param.delay = 0;
         }
 
-        if (param.isReleaseAllScene === null || param.isReleaseAllScene === undefined || typeof (param.isReleaseAllScene) !== "boolean") {
+        if (TypeUtils.isNull(param.isReleaseAllScene) || typeof (param.isReleaseAllScene) !== "boolean") {
             param.isReleaseAllScene = true;
         }
 
@@ -204,12 +205,12 @@ export default class UIManager extends BaseManager {
             }
         }
 
-        if (param.sceneClass.prefabPath === null || param.sceneClass.prefabPath === undefined || typeof (param.sceneClass.prefabPath) !== "string" || param.sceneClass.prefabPath.length <= 0) {
+        if (TypeUtils.isNull(param.sceneClass.prefabPath) || typeof (param.sceneClass.prefabPath) !== "string" || param.sceneClass.prefabPath.length <= 0) {
             G.LogMgr.warn(`找不到 ${param.sceneClass.name} 预制的路径、请重写 BaseComponent 中的静态成员 prefabPath 的路径`);
             return;
         }
 
-        G.LogMgr.color("打开场景", className);
+        G.LogMgr.color("打开场景", className, ColorDefine.LogColor.SKY);
 
         this.startSceneTimer(param.delay);
 
@@ -274,15 +275,15 @@ export default class UIManager extends BaseManager {
     /**
      * 打开防触摸视图
      */
-    public openLockScreen(): void {
-        this.openPersist(LockScreenPersist, UIDefine.PersistLayer.LOCK_SCREEN);
+    public openBlock(): void {
+        this.openPersist(BlockPersist, UIDefine.PersistLayer.BLOCK);
     }
 
     /**
      * 关闭防触摸视图
      */
-    public closeLockScreen(): void {
-        this.closePersist(LockScreenPersist);
+    public closeBlock(): void {
+        this.closePersist(BlockPersist);
     }
 
     /**
@@ -310,8 +311,8 @@ export default class UIManager extends BaseManager {
             percent = 0;
         }
         let retain: number = 2;
-        percent = MathUtils.decimal(percent, retain);
-        // this._persist.setLoading(MathUtils.fill0(percent, retain));
+        percent = ConverUtils.toFixed(percent, retain);
+        // this._persist.setLoading(ConverUtils.fill0(percent, retain));
     }
 
     /**
@@ -333,7 +334,7 @@ export default class UIManager extends BaseManager {
      * @param param {UIInterface.DialogParam} 对话框参数
      */
     public async openDialog(param: UIInterface.DialogParam): Promise<void> {
-        if (param.showMode === null || param.showMode === undefined) {
+        if (TypeUtils.isNull(param.showMode)) {
             param.showMode = UIDefine.DialogMode.REAR;
         }
 
@@ -395,7 +396,7 @@ export default class UIManager extends BaseManager {
      * @returns {UIScene} 场景 如果找不到需要场景返回 null
      */
     public getScene(bundleName?: BundleDefine.Name): UIScene {
-        if (bundleName === undefined || bundleName === null) {
+        if (TypeUtils.isNull(bundleName)) {
             return this._currScene;
         }
 
@@ -412,7 +413,7 @@ export default class UIManager extends BaseManager {
      * @param param {UIInterface.NodeParam<T>} 节点参数
      */
     public addItem<T extends BaseItem>(param: UIInterface.ItemParam<T>, ...data: any[]): void {
-        if (param.itemClass === null || param.itemClass === undefined) {
+        if (TypeUtils.isNull(param.itemClass)) {
             G.LogMgr.warn(`节点类不能为空`);
             return;
         }
@@ -422,15 +423,15 @@ export default class UIManager extends BaseManager {
             return;
         }
 
-        if (param.bundleName === null || param.bundleName === undefined) {
+        if (TypeUtils.isNull(param.bundleName)) {
             param.bundleName = BundleDefine.Name.RESOURCES;
         }
 
-        if (param.layer === null || param.layer === undefined) {
+        if (TypeUtils.isNull(param.layer)) {
             param.layer = 0;
         }
 
-        if (param.parentNode === null || param.parentNode === undefined) {
+        if (TypeUtils.isNull(param.parentNode)) {
             param.parentNode = this.getScene().node;
         }
 
@@ -500,7 +501,7 @@ export default class UIManager extends BaseManager {
 
     private closePersist(persistClass: UIInterface.UIClass<BasePersist>): void {
         let persist: UIPersist = this._persistMap.get(cc.js.getClassName(persistClass));
-        if (persist === undefined || persist === null) {
+        if (TypeUtils.isNull(persist)) {
             return;
         }
 
@@ -512,7 +513,7 @@ export default class UIManager extends BaseManager {
      * @param ms {number} 等待多久打开进度视图（单位：毫秒）
      */
     private startSceneTimer(ms: number): void {
-        if (this._sceneTimer !== null && this._sceneTimer !== undefined) {
+        if (!TypeUtils.isNull(this._sceneTimer)) {
             return;
         }
 
@@ -525,7 +526,7 @@ export default class UIManager extends BaseManager {
      * 停止加载定时器
      */
     private stopSceneTimer(): void {
-        if (this._sceneTimer !== null && this._sceneTimer !== undefined) {
+        if (!TypeUtils.isNull(this._sceneTimer)) {
             clearTimeout(this._sceneTimer);
             this._sceneTimer = null;
             this.closeLoading();
@@ -552,7 +553,7 @@ export default class UIManager extends BaseManager {
         }
 
         let zIndex: number = 0;
-        if (layer === null || layer === undefined) {
+        if (TypeUtils.isNull(layer)) {
             zIndex = this._sceneTopZIndex + 1;
             if (zIndex >= (UIDefine.CanvasLayer.SCENE + 1) * UIDefine.LAYER_INTERVAL) {
                 zIndex = this.resetSceneZIndex() + 1;
@@ -571,7 +572,7 @@ export default class UIManager extends BaseManager {
      */
     private resetSceneZIndex(): number {
         let sceneList: any[][] = Object.entries(this._sceneMap);
-        sceneList = sceneList.sort((a: any[], b: any[]) => {
+        sceneList.sort((a: any[], b: any[]) => {
             return a[1].node.zIndex - b[1].node.zIndex;
         });
 

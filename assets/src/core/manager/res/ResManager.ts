@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-08 23:31:28
  * LastEditors  : ougato
- * LastEditTime : 2021-11-03 01:43:04
+ * LastEditTime : 2022-09-18 18:39:38
  * FilePath     : /client/assets/src/core/manager/res/ResManager.ts
  * Description  : 资源管理器、所有游戏中用到的资源操作、由 ResManager 进行统一管理
  */
@@ -10,10 +10,11 @@
 import BaseManager from "../../base/BaseManager";
 import ResBuffer from "./ResBuffer";
 import ResLoader from "./ResLoader";
-import * as ResInterface from "../../interface/ResInterface";
 import ResCache from "./ResCache";
-import * as ResDefine from "../../define/ResDefine";
-import * as BundleDefine from "../../define/BundleDefine";
+import TypeUtils from "../../utils/TypeUtils";
+import { BundleDefine } from "../../../define/BundleDefine";
+import { ResDefine } from "../../define/ResDefine";
+import { ResInterface } from "../../interface/ResInterface";
 
 export default class ResManager extends BaseManager {
 
@@ -56,19 +57,19 @@ export default class ResManager extends BaseManager {
      * @param param {ResInterface.LoadResParam} 加载资源参数
      */
     public load(param: ResInterface.LoadResParam): void {
-        if (param.bundleName === null || param.bundleName === undefined) {
+        if (TypeUtils.isNull(param.bundleName)) {
             param.bundleName = BundleDefine.Name.RESOURCES;
         }
 
-        if (param.loadType === null || param.loadType === undefined) {
+        if (TypeUtils.isNull(param.loadType)) {
             param.loadType = ResDefine.LoadType.ASSET;
         }
 
-        if (param.loadMode === null || param.loadMode === undefined) {
+        if (TypeUtils.isNull(param.loadMode)) {
             param.loadMode = ResDefine.LoadMode.LOCAL;
         }
 
-        if (param.progressCallback === null || param.progressCallback === undefined) {
+        if (TypeUtils.isNull(param.progressCallback)) {
             param.progressCallback = null;
         }
 
@@ -153,7 +154,7 @@ export default class ResManager extends BaseManager {
             let base: string = arguments[0];
             let bundleName: BundleDefine.Name = arguments[1];
 
-            if (bundleName === null || bundleName === undefined) {
+            if (TypeUtils.isNull(bundleName)) {
                 bundleName = BundleDefine.Name.RESOURCES;
             }
             resCache = this._buffer.getCache(base, bundleName);

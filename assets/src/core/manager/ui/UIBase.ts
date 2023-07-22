@@ -2,15 +2,15 @@
  * Author       : ougato
  * Date         : 2021-08-26 01:00:54
  * LastEditors  : ougato
- * LastEditTime : 2021-11-04 14:09:29
+ * LastEditTime : 2022-09-18 18:35:36
  * FilePath     : /client/assets/src/core/manager/ui/UIBase.ts
  * Description  : 场景缓存
  */
 
 import BaseComponent from "../../base/BaseComponent";
 import ResCache from "../res/ResCache";
-import * as UIInterface from "../../interface/UIInterface";
 import UIUtils from "../../utils/UIUtils";
+import { UIInterface } from "../../interface/UIInterface";
 
 export default class UIBase {
 

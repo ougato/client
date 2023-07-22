@@ -2,19 +2,17 @@
  * Author       : ougato
  * Date         : 2021-07-11 17:01:18
  * LastEditors  : ougato
- * LastEditTime : 2021-11-01 00:46:55
+ * LastEditTime : 2022-09-18 18:40:16
  * FilePath     : /client/assets/src/core/manager/lang/LangManager.ts
  * Description  : 语言管理器、本地话多语言的加载和切换
  */
 
 import BaseManager from "../../base/BaseManager";
-import * as BundleDefine from "../../define/BundleDefine";
-import * as LangDefine from "../../define/LangDefine";
-import * as LangInterface from "../../interface/LangInterface";
-import * as LocalStorageDefine from "../../define/LocalStorageDefine";
-import ResCache from "../res/ResCache";
-import ResManager from "../res/ResManager";
 import LangUtils from "../../utils/LangUtils";
+import { LocalStorageDefine } from "../../define/LocalStorageDefine";
+import { BundleDefine } from "../../../define/BundleDefine";
+import { LangDefine } from "../../define/LangDefine";
+import { LangInterface } from "../../interface/LangInterface";
 
 export default class LangManager extends BaseManager {
 
@@ -117,7 +115,7 @@ export default class LangManager extends BaseManager {
     //             onComplete: (resCache: ResCache | null) => {
     //                 if (resCache.asset) {
     //                     let md5: string = (resCache.asset as cc.TextAsset).text;
-    //                     if (md5 !== null && md5 !== undefined) {
+    //                     if (!TypeUtils.isNull(md5)) {
     //                         resolve(md5);
     //                     } else {
     //                         resolve(null);
@@ -144,7 +142,7 @@ export default class LangManager extends BaseManager {
     //             onComplete: (resCache: ResCache | null) => {
     //                 if (resCache.asset) {
     //                     let json: object = (resCache.asset as cc.JsonAsset).json;
-    //                     if (json !== null && json !== undefined) {
+    //                     if (!TypeUtils.isNull(json)) {
     //                         this.setCacheJson(bundleName, json);
     //                         this.setLocalStorageJson(bundleName, json);
     //                         resolve(json);
@@ -173,7 +171,7 @@ export default class LangManager extends BaseManager {
     //             onComplete: (resCache: ResCache | null) => {
     //                 if (resCache.asset) {
     //                     let atlas: cc.SpriteAtlas = (resCache.asset as cc.SpriteAtlas);
-    //                     if (atlas !== null && atlas !== undefined) {
+    //                     if (!TypeUtils.isNull(atlas)) {
     //                         resolve();
     //                     } else {
     //                         reject();

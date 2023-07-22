@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 01:43:20
  * LastEditors  : ougato
- * LastEditTime : 2021-12-08 18:22:10
+ * LastEditTime : 2023-07-19 14:26:50
  * FilePath     : /client/assets/src/core/Global.ts
  * Description  : 全局控制
  */
@@ -17,7 +17,6 @@ import ControllerManager from "./manager/controller/ControllerManager";
 import LocalStorageManager from "./manager/localStorage/LocalStorageManager";
 import NetworkManager from "./manager/network/NetworkManager";
 import UpdateManager from "./manager/update/UpdateManager";
-
 
 export default class Global {
 
@@ -104,7 +103,7 @@ export default class Global {
 
     /**
      * 本地存储管理器
-     * @returns {ControllerManager} 实例对象
+     * @returns {LocalStorageManager} 实例对象
      */
     public get LocalStorageMgr(): LocalStorageManager {
         return LocalStorageManager.getInstance()
@@ -112,6 +111,7 @@ export default class Global {
 
     /**
      * 网络管理器
+     * @returns {NetworkManager} 实例对象
      */
     public get NetworkMgr(): NetworkManager {
         return NetworkManager.getInstance();
@@ -119,8 +119,9 @@ export default class Global {
 
     /**
      * 更新管理器
+     * @returns {UpdateManager} 实例对象
      */
-    public get UpdateMgr():UpdateManager {
+    public get UpdateMgr(): UpdateManager {
         return UpdateManager.getInstance();
     }
 

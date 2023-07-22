@@ -2,12 +2,12 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:21:20
  * LastEditors  : ougato
- * LastEditTime : 2021-12-09 11:10:49
+ * LastEditTime : 2022-09-18 18:38:29
  * FilePath     : /client/assets/src/core/base/BaseComponent.ts
  * Description  : 组件 基类、是 BaseView 和 BaseScene 的父类
  */
 
-import * as ResInterface from "../interface/ResInterface";
+import { ResInterface } from "../interface/ResInterface";
 import ResCache from "../manager/res/ResCache";
 
 export default class BaseComponent extends cc.Component {

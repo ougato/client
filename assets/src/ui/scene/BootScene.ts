@@ -2,15 +2,14 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2021-11-19 17:48:30
+ * LastEditTime : 2022-11-10 15:08:13
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
 
 import BaseScene from "../../core/base/BaseScene";
-import LoginScene from "../scene/LoginScene";
 import HttpRequest from "../../core/http/HttpRequest";
-import LockScreenPersist from "../persist/LockScreenPersist";
+import BlockPersist from "../persist/BlockPersist";
 import LoadingPersist from "../persist/LoadingPersist";
 import WaitingPersist from "../persist/WaitingPersist";
 import DialogPersist from "../persist/DialogPersist";
@@ -19,12 +18,14 @@ import NativeUtils from "../../core/utils/NativeUtils";
 import DeviceData from "../../data/DeviceData";
 import HttpUtils from "../../utils/HttpUtils";
 import HallController from "../../controller/HallController";
-import * as URLConfig from "../../config/URLConfig";
-import * as HttpInterface from "../../core/interface/HttpInterface";
-import * as HttpParamInterface from "../../interface/HttpParamInterface";
-import * as UpdateInterface from "../../core/interface/UpdateInterface";
-import * as UpdateDefine from "../../core/define/UpdateDefine";
-import UnitUtils from "../../core/utils/UnitUtils";
+import ExampleScene from "./ExampleScene";
+import TypeUtils from "../../core/utils/TypeUtils";
+import { URLConfig } from "../../config/URLConfig";
+import { HttpParamInterface } from "../../interface/HttpParamInterface";
+import { UpdateDefine } from "../../core/define/UpdateDefine";
+import { HttpInterface } from "../../core/interface/HttpInterface";
+import { UpdateInterface } from "../../core/interface/UpdateInterface";
+import LoginScene from "./LoginScene";
 
 // 请求获取动态主机最大次数
 const GET_DYNAMIC_HOST_MAX_COUNT: number = 3;
@@ -40,11 +41,13 @@ export default class BootScene extends BaseScene {
 
     protected onLoad(): void {
         super.onLoad();
-        cc.debug.setDisplayStats(false)
+
     }
 
     protected start(): void {
         super.start();
+
+        cc.sys.dump();
 
         this.launch();
     }
@@ -55,7 +58,7 @@ export default class BootScene extends BaseScene {
      */
     private async initPersist(): Promise<void> {
         return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
-            Promise.all([G.UIMgr.addPersist(LockScreenPersist), G.UIMgr.addPersist(LoadingPersist), G.UIMgr.addPersist(WaitingPersist), G.UIMgr.addPersist(DialogPersist)]).then(() => {
+            Promise.all([G.UIMgr.addPersist(BlockPersist), G.UIMgr.addPersist(LoadingPersist), G.UIMgr.addPersist(WaitingPersist), G.UIMgr.addPersist(DialogPersist)]).then(() => {
                 resolve();
             }).catch((reason: any) => {
                 // TODO: 弹窗重试
@@ -81,7 +84,7 @@ export default class BootScene extends BaseScene {
                 HttpRequest.get(url).then((responseInfo: HttpInterface.ResponseInfo) => {
                     if (HttpUtils.isOK(responseInfo)) {
                         let responseData: HttpParamInterface.HttpDynamicHostResponse = responseInfo.body.data;
-                        let hostData: HostData = G.DataMgr.add(HostData);
+                        let hostData: HostData = G.DataMgr.get(HostData);
                         hostData.loginHost = responseData.loginURL;
                         hostData.gameHost = responseData.gameURL;
                         hostData.appHost = responseData.appURL;
@@ -91,9 +94,10 @@ export default class BootScene extends BaseScene {
                         count = 0;
                         resolve();
                     } else {
-                        if (++count < GET_DYNAMIC_HOST_MAX_COUNT) {
+                        ++count
+                        if (count < GET_DYNAMIC_HOST_MAX_COUNT) {
                             return getDynamicHost(URLConfig.GET_DYNAMIC_HOST_URL);
-                        } else if (count >= GET_DYNAMIC_HOST_MAX_COUNT && count < GET_DYNAMIC_HOST_MAX_COUNT + GET_DYNAMIC_HOST_BACKUP_MAX_COUNT) {
+                        } else if (count < GET_DYNAMIC_HOST_MAX_COUNT + GET_DYNAMIC_HOST_BACKUP_MAX_COUNT) {
                             return getDynamicHost(URLConfig.GET_DYNAMIC_HOST_URL_BACKUP);
                         } else {
                             // TODO: 弹窗重试
@@ -140,11 +144,11 @@ export default class BootScene extends BaseScene {
                 // TODO: 弹窗
                 // G.ViewMgr.openPopups("错误", strError, this.node, async () => {
                 //     let updateResult: UpdateInterface.UpdateResult = await G.UpdateMgr.retry();
-                //     if (updateResult.error !== null && updateResult.error !== undefined) {
+                //     if (!TypeUtils.isNull(updateResult.error)) {
                 //         return error(updateResult.error);
                 //     }
 
-                //     if (updateResult.state === null || updateResult.state === undefined) {
+                //     if (TypeUtils.isNull(updateResult.state)) {
                 //         reject("热更重试结果异常");
                 //     }
 
@@ -173,11 +177,11 @@ export default class BootScene extends BaseScene {
                 // G.UIMgr.openView(ViewDefine.UpdateView);
 
                 let updateResult: UpdateInterface.UpdateResult = await G.UpdateMgr.update();
-                if (updateResult.error !== null && updateResult.error !== undefined) {
+                if (!TypeUtils.isNull(updateResult.error)) {
                     return error(updateResult.error);
                 }
 
-                if (updateResult.state === null || updateResult.state === undefined) {
+                if (TypeUtils.isNull(updateResult.state)) {
                     reject("热更更新结果异常");
                 }
 
@@ -213,11 +217,11 @@ export default class BootScene extends BaseScene {
 
                 let checkResult: UpdateInterface.CheckResult = await G.UpdateMgr.check();
 
-                if (checkResult.error !== null && checkResult.error !== undefined) {
+                if (!TypeUtils.isNull(checkResult.error)) {
                     return error(checkResult.error);
                 }
 
-                if (checkResult.state === null || checkResult.state === undefined) {
+                if (TypeUtils.isNull(checkResult.state)) {
                     reject("热更检测结果异常");
                 }
 
@@ -311,7 +315,7 @@ export default class BootScene extends BaseScene {
     private async launch(): Promise<void> {
         await this.initPersist();
         await this.initHost();
-        // await this.initUpdate();
+        await this.initUpdate();
         await this.initDevice();
 
         this.into();
@@ -324,6 +328,10 @@ export default class BootScene extends BaseScene {
         G.UIMgr.openScene({
             sceneClass: LoginScene,
         });
+
+        // G.UIMgr.openScene({
+        //     sceneClass: ExampleScene,
+        // });
     }
 
 }

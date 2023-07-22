@@ -7,9 +7,10 @@
  * Description  : 原生上不支持 fetch 的写法，只有默认使用 XMLHttpRequest
  */
 
-import * as EventDefine from "../define/EventDefine";
-import * as HttpDefine from "../define/HttpDefine";
-import * as HttpInterface from "../interface/HttpInterface";
+import { EventDefine } from "../define/EventDefine";
+import { HttpDefine } from "../define/HttpDefine";
+import { HttpInterface } from "../interface/HttpInterface";
+import TypeUtils from "../utils/TypeUtils";
 
 export default class HttpXmlRequest implements HttpInterface.Http {
 
@@ -58,18 +59,18 @@ export default class HttpXmlRequest implements HttpInterface.Http {
             param = {};
         }
 
-        if (param.responseType === null || param.responseType === undefined) {
+        if (TypeUtils.isNull(param.responseType)) {
             param.responseType = "json";
         }
 
-        if (param.requestHeader === null || param.requestHeader === undefined) {
+        if (TypeUtils.isNull(param.requestHeader)) {
             param.requestHeader = new Map();
         }
         if (!param.requestHeader.has(HttpDefine.RequestHeader.CONTENT_TYPE)) {
             param.requestHeader.set(HttpDefine.RequestHeader.CONTENT_TYPE, HttpDefine.ContentType.JSON);
         }
 
-        if (param.responseHeader === null || param.responseHeader === undefined) {
+        if (TypeUtils.isNull(param.responseHeader)) {
             param.responseHeader = new Map();
         }
         if (!param.responseHeader.has(HttpDefine.ResponseHeader.CONTENT_TYPE)) {
@@ -137,7 +138,7 @@ export default class HttpXmlRequest implements HttpInterface.Http {
      */
     private startWaitingTimer(): void {
         this.stopWaitingTimer();
-        G.UIMgr.openLockScreen();
+        G.UIMgr.openBlock();
         this._waitingTimer = setTimeout(() => {
             G.UIMgr.openWaiting();
         }, HttpDefine.WAITING_TIMEOUT * 1000);
@@ -147,10 +148,10 @@ export default class HttpXmlRequest implements HttpInterface.Http {
      * 停止等待界面定时器
      */
     private stopWaitingTimer(): void {
-        if (this._waitingTimer !== null && this._waitingTimer !== undefined) {
+        if (!TypeUtils.isNull(this._waitingTimer)) {
             clearTimeout(this._waitingTimer);
             this._waitingTimer = null;
-            G.UIMgr.closeLockScreen();
+            G.UIMgr.closeBlock();
             G.UIMgr.closeWaiting();
         }
     }
