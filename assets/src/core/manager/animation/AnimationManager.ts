@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-08-17 17:39:06
  * LastEditors  : ougato
- * LastEditTime : 2023-08-17 18:54:55
+ * LastEditTime : 2023-08-18 00:33:16
  * FilePath     : /client/assets/src/core/manager/animation/AnimationManager.ts
  * Description  : 动画管理器
  */
@@ -45,8 +45,10 @@ export default class AnimationManager extends BaseManager {
 
     /**
      * 获取 AnimationTween 对象
+     * @returns {AnimationTween} 动画对象
      */
     public getTween(): AnimationTween {
+        let animationTween: AnimationTween = null;
 
     }
 
