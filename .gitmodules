@@ -1,3 +1,3 @@
 [submodule "proto"]
 	path = proto
-	url = git@gogs.ougato.com:personal/proto.git
+	url = https://gogs.ougato.com:8443/cocos-creator/proto.git
