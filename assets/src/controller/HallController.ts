@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-10-30 23:12:46
  * LastEditors  : ougato
- * LastEditTime : 2022-09-18 18:34:21
+ * LastEditTime : 2023-07-22 23:49:35
  * FilePath     : /client/assets/src/controller/HallController.ts
  * Description  : 大厅控制器
  */
@@ -40,6 +40,7 @@ export default class HallController extends BaseController {
     protected register(): void {
         super.register();
 
+        G.NetworkMgr.on(Proto.SignInResponse, this, this.onSignInResponse);
     }
 
     protected unregister(): void {

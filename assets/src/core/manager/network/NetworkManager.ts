@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-11-01 15:57:27
  * LastEditors  : ougato
- * LastEditTime : 2022-09-18 18:38:05
+ * LastEditTime : 2023-07-22 23:53:56
  * FilePath     : /client/assets/src/core/manager/network/NetworkManager.ts
  * Description  : 网络管理器
  */
@@ -14,6 +14,7 @@ import TypeUtils from "../../utils/TypeUtils";
 import { EventDefine } from "../../define/EventDefine";
 import { NetworkDefine } from "../../define/NetworkDefine";
 import { NetworkInterface } from "../../interface/NetworkInterface";
+import BaseController from "../../base/BaseController";
 
 // 序列号 占用字节大小（4 byte）
 const SERIAL_LENGTH_BYTE_SIZE: number = 1;
@@ -36,30 +37,30 @@ export default class NetworkManager extends BaseManager {
 
     private static s_instance: NetworkManager = null;
 
-    // WebSocket
-    private m_websocket: WebSocket = null;
-    // 网络注册结构 Mao<消息名, Map<注册脚本对象, 回调方法>>
-    private m_messageCallbackMap: Map<string, Map<any, Function>> = null;
+    // WebSocket（单链接）
+    private _websocket: WebSocket = null;
+    // 网络注册结构 Map<消息名, Map<注册类对象, 回调方法>>
+    private _messageCallbackMap: Map<string, Map<BaseController, Function>> = null;
     // 消息响应超时定时器
-    private m_networkMessageTimer: NetworkMessageTimer = null;
+    private _networkMessageTimer: NetworkMessageTimer = null;
     // 心跳超时定时器
-    private m_pingTimer: NodeJS.Timeout = null;
+    private _pingTimer: NodeJS.Timeout = null;
     // 消息超时等待定时器
-    private m_messageWaitTimer: NodeJS.Timeout = null;
+    private _messageWaitTimer: NodeJS.Timeout = null;
     // 连接超时定时器
-    private m_connectTimeoutTimer: NodeJS.Timeout = null;
+    private _connectTimeoutTimer: NodeJS.Timeout = null;
     // 发送累加序列号
-    private m_serial: number = 0;
+    private _serial: number = 0;
     // 请求数据列表 Map<序列号, 网络数据结构>
-    private m_requestDataMap: Map<number, NetworkInterface.TransferData> = null;
+    private _requestDataMap: Map<number, NetworkInterface.TransferData> = null;
     // 网络消息超时 Map<序列号, 网络数据结构>
-    private m_messageTimeoutMap: Map<number, NetworkInterface.TransferData> = null;
+    private _messageTimeoutMap: Map<number, NetworkInterface.TransferData> = null;
     // 网络断开状态
-    private m_closeState: NetworkDefine.CloseState = null;
+    private _closeState: NetworkDefine.CloseState = null;
     // 当前重连次数
-    private m_reconnectCount: number = null;
+    private _reconnectCount: number = null;
     // 连接地址
-    private m_wsURL: string = null;
+    private _wsURL: string = null;
 
     public static getInstance(): NetworkManager {
         if (this.s_instance === null) {
@@ -78,50 +79,50 @@ export default class NetworkManager extends BaseManager {
     constructor() {
         super();
 
-        this.m_messageCallbackMap = new Map();
-        this.m_networkMessageTimer = new NetworkMessageTimer(this.onMessageTimeout.bind(this));
-        this.m_requestDataMap = new Map();
-        this.m_messageTimeoutMap = new Map();
-        this.m_reconnectCount = 0;
+        this._messageCallbackMap = new Map();
+        this._networkMessageTimer = new NetworkMessageTimer(this.onMessageTimeout.bind(this));
+        this._requestDataMap = new Map();
+        this._messageTimeoutMap = new Map();
+        this._reconnectCount = 0;
     }
 
     private initClose(): void {
-        this.m_websocket.onopen = null;
-        this.m_websocket.onmessage = null;
-        this.m_websocket.onclose = null;
-        this.m_websocket.onerror = null;
-        this.m_websocket = null;
-        this.m_closeState = null;
-        this.m_serial = 0;
+        this._websocket.onopen = null;
+        this._websocket.onmessage = null;
+        this._websocket.onclose = null;
+        this._websocket.onerror = null;
+        this._websocket = null;
+        this._closeState = null;
+        this._serial = 0;
         this.stopAllTimer();
-        this.m_requestDataMap.clear();
-        this.m_messageTimeoutMap.clear();
+        this._requestDataMap.clear();
+        this._messageTimeoutMap.clear();
     }
 
     /**
      * 注册网络
      * @param msgClass {T} 消息类
-     * @param caller {any} 注册者的 this 对象
+     * @param caller {BaseController} 注册者的 this 对象（只允许通过控制监听网络后、用事件派发出去）
      * @param callback {Function} 监听回调函数
      */
-    public on<T extends NetworkInterface.ProtoClass>(msgClass: T, caller: any, callback: Function): void {
+    public on<T extends NetworkInterface.ProtoClass>(msgClass: T, caller: BaseController, callback: Function): void {
         let msgName: string = msgClass.prototype.classname;
-        if (this.m_messageCallbackMap === null) {
+        if (this._messageCallbackMap === null) {
             G.LogMgr.warn(`注册 ${msgName} 网络失败`);
             return;
         }
 
-        let listenMap: Map<any, Function> | undefined = this.m_messageCallbackMap.get(msgName);
+        let listenMap: Map<any, Function> | undefined = this._messageCallbackMap.get(msgName);
 
         if (listenMap === undefined) {
             listenMap = new Map<any, Function>();
-            this.m_messageCallbackMap.set(msgName, listenMap);
+            this._messageCallbackMap.set(msgName, listenMap);
         }
 
         let value: Function | undefined = listenMap.get(caller);
 
         if (!TypeUtils.isNull(value)) {
-            G.LogMgr.warn(`${caller.prototype.classname} 类中，重复注册网络 ${msgName}`);
+            G.LogMgr.warn(`${cc.js.getClassName(caller)} 类中，重复注册网络 ${msgName}`);
             return;
         }
 
@@ -131,16 +132,16 @@ export default class NetworkManager extends BaseManager {
     /**
      * 释放网络
      * @param msgClass {T} 消息类
-     * @param caller {any} 注册者的 this 对象
+     * @param caller {BaseController} 注册者的 this 对象
      */
-    public off<T extends NetworkInterface.ProtoClass>(msgClass: T, caller: any): void {
+    public off<T extends NetworkInterface.ProtoClass>(msgClass: T, caller: BaseController): void {
         let msgName: string = msgClass.prototype.classname;
-        if (this.m_messageCallbackMap === null) {
+        if (this._messageCallbackMap === null) {
             G.LogMgr.warn(`释放 ${msgName} 网络失败`);
             return;
         }
 
-        let listenMap: Map<any, Function> | undefined = this.m_messageCallbackMap.get(msgName);
+        let listenMap: Map<any, Function> | undefined = this._messageCallbackMap.get(msgName);
         if (TypeUtils.isNull(listenMap)) {
             return;
         }
@@ -155,19 +156,19 @@ export default class NetworkManager extends BaseManager {
      * @param serial {number} 超时序列号
      */
     private onMessageTimeout(serial: number): void {
-        if (this.m_messageTimeoutMap.size <= 0) {
+        if (this._messageTimeoutMap.size <= 0) {
             G.EventMgr.emit(EventDefine.NetEvent.NET_WS_MESSAGE_TIMEOUT);
             this.startMessageWait();
         }
 
-        let networkData: NetworkInterface.TransferData | undefined = this.m_requestDataMap.get(serial);
+        let networkData: NetworkInterface.TransferData | undefined = this._requestDataMap.get(serial);
 
         if (networkData === undefined) {
             G.LogMgr.error(`网络超时数据不存在，由于没有任何地方可以删除数据，所以在这里必须有数据`);
             return;
         }
 
-        this.m_messageTimeoutMap.set(serial, networkData);
+        this._messageTimeoutMap.set(serial, networkData);
 
         G.LogMgr.warn(`消息超时 序列号：${networkData.serial} 消息名：${networkData.msgName}`);
     }
@@ -179,7 +180,7 @@ export default class NetworkManager extends BaseManager {
         G.LogMgr.log(`网络连接成功`);
         G.UIMgr.closeWaiting();
         this.stopConnectTimeout();
-        this.m_reconnectCount = 0;
+        this._reconnectCount = 0;
         G.EventMgr.emit(EventDefine.NetEvent.NET_WS_CONNECTED);
     }
 
@@ -190,9 +191,9 @@ export default class NetworkManager extends BaseManager {
         let responseData: NetworkInterface.TransferData = this.decodeData(ev.data);
 
         // 处理弱网超时消息
-        if (this.m_messageTimeoutMap.has(responseData.serial)) {
-            this.m_messageTimeoutMap.delete(responseData.serial);
-            if (this.m_messageTimeoutMap.size <= 0) {
+        if (this._messageTimeoutMap.has(responseData.serial)) {
+            this._messageTimeoutMap.delete(responseData.serial);
+            if (this._messageTimeoutMap.size <= 0) {
                 this.stopMessageWait();
                 G.EventMgr.emit(EventDefine.NetEvent.NET_WS_MESSAGE_NORMAL);
             }
@@ -204,14 +205,14 @@ export default class NetworkManager extends BaseManager {
             this.resetPing();
         }
 
-        this.m_networkMessageTimer.off(responseData.serial);
-        if (this.m_requestDataMap.has(responseData.serial)) {
-            this.m_requestDataMap.delete(responseData.serial);
+        this._networkMessageTimer.off(responseData.serial);
+        if (this._requestDataMap.has(responseData.serial)) {
+            this._requestDataMap.delete(responseData.serial);
         }
 
-        let listenMap: Map<any, Function> | undefined = this.m_messageCallbackMap.get(responseData.msgName);
+        let listenMap: Map<any, Function> | undefined = this._messageCallbackMap.get(responseData.msgName);
         if (listenMap !== undefined) {
-            listenMap.forEach((callback: Function, caller: any) => {
+            listenMap.forEach((callback: Function, caller: BaseController) => {
                 callback.call(caller, responseData.msgData);
             });
         }
@@ -224,11 +225,11 @@ export default class NetworkManager extends BaseManager {
     private onClose(ev?: CloseEvent): void {
         G.UIMgr.openWaiting();
 
-        if (this.m_closeState === null) {
-            this.m_closeState = NetworkDefine.CloseState.SERVER_CLOSE;
+        if (this._closeState === null) {
+            this._closeState = NetworkDefine.CloseState.SERVER_CLOSE;
         }
 
-        let closeState: NetworkDefine.CloseState = this.m_closeState;
+        let closeState: NetworkDefine.CloseState = this._closeState;
         this.initClose();
         G.LogMgr.log(`网络断开连接`);
 
@@ -238,7 +239,7 @@ export default class NetworkManager extends BaseManager {
                 break;
             case NetworkDefine.CloseState.ERROR_CLOSE:
             case NetworkDefine.CloseState.SERVER_CLOSE:
-                if (this.m_reconnectCount++ < MAX_RECONNECT_COUNT) {
+                if (this._reconnectCount++ < MAX_RECONNECT_COUNT) {
                     this.reconnect();
                 } else {
                     G.EventMgr.emit(EventDefine.NetEvent.NET_WS_CLOSED, closeState);
@@ -251,7 +252,7 @@ export default class NetworkManager extends BaseManager {
      * 连接错误回调
      */
     private onError(ev?: Event): void {
-        this.m_closeState = NetworkDefine.CloseState.ERROR_CLOSE;
+        this._closeState = NetworkDefine.CloseState.ERROR_CLOSE;
         G.EventMgr.emit(EventDefine.NetEvent.NET_WS_ERROR);
         G.LogMgr.log(`网络连接错误`);
     }
@@ -260,13 +261,13 @@ export default class NetworkManager extends BaseManager {
      * 连接超时回调
      */
     private onConnectTimeout(): void {
-        if (this.m_websocket) {
-            this.m_websocket.onopen = null;
-            this.m_websocket.onmessage = null;
-            this.m_websocket.onclose = null;
-            this.m_websocket.onerror = null;
-            this.m_websocket.close();
-            this.m_websocket = null;
+        if (this._websocket) {
+            this._websocket.onopen = null;
+            this._websocket.onmessage = null;
+            this._websocket.onclose = null;
+            this._websocket.onerror = null;
+            this._websocket.close();
+            this._websocket = null;
         }
         this.stopConnectTimeout();
         G.EventMgr.emit(EventDefine.NetEvent.NET_WS_CONNECT_TIMEOUT);
@@ -284,7 +285,7 @@ export default class NetworkManager extends BaseManager {
     public connect(protocol: WebSocketProtocol, host: string, port: string): void;
     public connect(wsURL: string): void;
     public connect(...args: any[]): void {
-        if (this.m_websocket !== null && this.m_websocket.readyState !== WebSocket.CLOSED) {
+        if (this._websocket !== null && this._websocket.readyState !== WebSocket.CLOSED) {
             G.LogMgr.warn("网络连接未关闭，请不要重复建立连接");
             return;
         }
@@ -303,21 +304,21 @@ export default class NetworkManager extends BaseManager {
 
         G.UIMgr.openWaiting();
 
-        this.m_wsURL = url;
+        this._wsURL = url;
         this.startConnectTimeout();
 
         try {
-            this.m_websocket = new WebSocket(url);
+            this._websocket = new WebSocket(url);
         } catch (e) {
             this.onError();
             this.onClose();
             return;
         }
-        this.m_websocket.binaryType = "arraybuffer";
-        this.m_websocket.onopen = this.onOpen.bind(this);
-        this.m_websocket.onmessage = this.onMessage.bind(this);
-        this.m_websocket.onclose = this.onClose.bind(this);
-        this.m_websocket.onerror = this.onError.bind(this);
+        this._websocket.binaryType = "arraybuffer";
+        this._websocket.onopen = this.onOpen.bind(this);
+        this._websocket.onmessage = this.onMessage.bind(this);
+        this._websocket.onclose = this.onClose.bind(this);
+        this._websocket.onerror = this.onError.bind(this);
 
         G.LogMgr.log(`正在连接网络：${url}`);
     }
@@ -336,7 +337,7 @@ export default class NetworkManager extends BaseManager {
     public reconnect(...args: any[]): void {
         G.LogMgr.log(`正在重连网络`)
         if (args.length <= 0) {
-            this.connect(this.m_wsURL);
+            this.connect(this._wsURL);
         } else {
             this.connect.apply(this, args);
         }
@@ -348,13 +349,13 @@ export default class NetworkManager extends BaseManager {
      * @param msgData {any} 协议数据
      */
     public send<T extends NetworkInterface.ProtoClass>(msgClass: T, msgData?: any): void {
-        if (TypeUtils.isNull(this.m_websocket)) {
+        if (TypeUtils.isNull(this._websocket)) {
             G.LogMgr.warn(`网络发送失败，未建立网络连接`);
             return;
         }
 
-        if (this.m_websocket.readyState !== WebSocket.OPEN) {
-            G.LogMgr.warn(`网络状态异常：${this.m_websocket.readyState}`);
+        if (this._websocket.readyState !== WebSocket.OPEN) {
+            G.LogMgr.warn(`网络状态异常：${this._websocket.readyState}`);
             return;
         }
 
@@ -368,19 +369,19 @@ export default class NetworkManager extends BaseManager {
             serial: requestData.serial,
             packet: requestData.packet,
         }
-        this.m_websocket.send(Proto.Base.encode(Proto.Base.create(baseData)).finish());
+        this._websocket.send(Proto.Base.encode(Proto.Base.create(baseData)).finish());
         // 留作输出请求数据的二进制流
         // G.LogMgr.log(new Uint8Array(requestData.slice(0, requestData.byteLength)));
 
         try {
-            G.LogMgr.log(`消息发送 序列号：${this.m_serial} 消息名：${msgClass.prototype.classname} 数据：${JSON.stringify(msgData)}`);
+            G.LogMgr.log(`消息发送 序列号：${this._serial} 消息名：${msgClass.prototype.classname} 数据：${JSON.stringify(msgData)}`);
         } catch (e) {
-            G.LogMgr.log(`消息发送 序列号：${this.m_serial} 消息名：${msgClass.prototype.classname} 数据：${msgData}`);
+            G.LogMgr.log(`消息发送 序列号：${this._serial} 消息名：${msgClass.prototype.classname} 数据：${msgData}`);
         }
 
-        this.m_networkMessageTimer.on(this.m_serial, MSG_RESPONSE_TIMEOUT_SEC);
-        this.m_requestDataMap.set(this.m_serial, {
-            serial: this.m_serial++ % (MAX_SERIAL + 1),
+        this._networkMessageTimer.on(this._serial, MSG_RESPONSE_TIMEOUT_SEC);
+        this._requestDataMap.set(this._serial, {
+            serial: this._serial++ % (MAX_SERIAL + 1),
             msgName: msgClass.prototype.classname,
             msgData: msgData,
         });
@@ -390,16 +391,16 @@ export default class NetworkManager extends BaseManager {
      * 关闭连接
      */
     public close(): void {
-        if (this.m_websocket.readyState === WebSocket.CLOSING || this.m_websocket.readyState === WebSocket.CLOSED) {
+        if (this._websocket.readyState === WebSocket.CLOSING || this._websocket.readyState === WebSocket.CLOSED) {
             G.LogMgr.warn(`网络正在关闭，请不要重复关闭网络`);
             return;
         }
 
-        this.m_closeState = NetworkDefine.CloseState.CLIENT_CLOSE;
+        this._closeState = NetworkDefine.CloseState.CLIENT_CLOSE;
 
         G.EventMgr.emit(EventDefine.NetEvent.NET_WS_CLOSING);
         G.LogMgr.log("网络正在断开");
-        this.m_websocket.close();
+        this._websocket.close();
     }
 
     /**
@@ -407,15 +408,15 @@ export default class NetworkManager extends BaseManager {
      * @return {NetworkDefine.CloseState | null}
      */
     public getCloseState(): NetworkDefine.CloseState | null {
-        return this.m_closeState;
+        return this._closeState;
     }
 
     /**
      * 启动连接超时
      */
     private startConnectTimeout(): void {
-        if (TypeUtils.isNull(this.m_connectTimeoutTimer)) {
-            this.m_connectTimeoutTimer = setTimeout(() => {
+        if (TypeUtils.isNull(this._connectTimeoutTimer)) {
+            this._connectTimeoutTimer = setTimeout(() => {
                 this.onConnectTimeout();
             }, CONNECT_TIMEOUT_SEC * 1000);
         }
@@ -425,9 +426,9 @@ export default class NetworkManager extends BaseManager {
      * 停止连接超时
      */
     private stopConnectTimeout(): void {
-        if (!TypeUtils.isNull(this.m_connectTimeoutTimer)) {
-            clearTimeout(this.m_connectTimeoutTimer);
-            this.m_connectTimeoutTimer = null;
+        if (!TypeUtils.isNull(this._connectTimeoutTimer)) {
+            clearTimeout(this._connectTimeoutTimer);
+            this._connectTimeoutTimer = null;
         }
     }
 
@@ -435,11 +436,11 @@ export default class NetworkManager extends BaseManager {
      * 启动消息超时等待（提升弱网体验）
      */
     private startMessageWait(): void {
-        if (TypeUtils.isNull(this.m_messageWaitTimer)) {
-            this.m_messageWaitTimer = setTimeout(() => {
+        if (TypeUtils.isNull(this._messageWaitTimer)) {
+            this._messageWaitTimer = setTimeout(() => {
                 this.stopAllTimer();
                 this.close();
-                this.m_messageWaitTimer = null;
+                this._messageWaitTimer = null;
             }, MSG_WAIT_TIMEOUT_SEC * 1000);
         }
     }
@@ -448,9 +449,9 @@ export default class NetworkManager extends BaseManager {
      * 停止消息超时等待
      */
     private stopMessageWait(): void {
-        if (!TypeUtils.isNull(this.m_messageWaitTimer)) {
-            clearTimeout(this.m_messageWaitTimer);
-            this.m_messageWaitTimer = null;
+        if (!TypeUtils.isNull(this._messageWaitTimer)) {
+            clearTimeout(this._messageWaitTimer);
+            this._messageWaitTimer = null;
         }
     }
 
@@ -458,8 +459,8 @@ export default class NetworkManager extends BaseManager {
      * 启动心跳
      */
     public startPing(): void {
-        if (TypeUtils.isNull(this.m_pingTimer)) {
-            this.m_pingTimer = setInterval(() => {
+        if (TypeUtils.isNull(this._pingTimer)) {
+            this._pingTimer = setInterval(() => {
                 this.sendPing();
             }, PING_INTERVAL_TIME * 1000);
         }
@@ -484,9 +485,9 @@ export default class NetworkManager extends BaseManager {
      * 停止心跳
      */
     private stopPing(): void {
-        if (!TypeUtils.isNull(this.m_pingTimer)) {
-            clearTimeout(this.m_pingTimer);
-            this.m_pingTimer = null;
+        if (!TypeUtils.isNull(this._pingTimer)) {
+            clearTimeout(this._pingTimer);
+            this._pingTimer = null;
         }
     }
 
@@ -495,7 +496,7 @@ export default class NetworkManager extends BaseManager {
      */
     private stopAllTimer(): void {
         this.stopPing();
-        this.m_networkMessageTimer.offAll();
+        this._networkMessageTimer.offAll();
         this.stopMessageWait();
         this.stopConnectTimeout();
     }
@@ -509,7 +510,7 @@ export default class NetworkManager extends BaseManager {
     private encodeData<T extends NetworkInterface.ProtoClass>(msgClass: T, msgData: any): NetworkInterface.TransmitData {
         let transmitData: NetworkInterface.TransmitData = {
             action: msgClass.prototype.classname,
-            serial: this.m_serial,
+            serial: this._serial,
             packet: msgClass.encode(msgClass.create(msgData)).finish(),
         }
 
@@ -528,7 +529,7 @@ export default class NetworkManager extends BaseManager {
         // let bufferOffset: number = 0;
 
         // // 序列号
-        // dataView.setUint8(bufferOffset, this.m_serial);
+        // dataView.setUint8(bufferOffset, this._serial);
         // bufferOffset += SERIAL_LENGTH_BYTE_SIZE;
         // // 协议名长度
         // dataView.setUint8(bufferOffset, msgNameLen);

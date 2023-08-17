@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2022-11-10 15:08:13
+ * LastEditTime : 2023-07-22 23:41:43
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
@@ -48,6 +48,8 @@ export default class BootScene extends BaseScene {
         super.start();
 
         cc.sys.dump();
+
+        G.ControllerMgr.get(HallController);
 
         this.launch();
     }

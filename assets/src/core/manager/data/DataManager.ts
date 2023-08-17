@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-10-29 17:28:20
  * LastEditors  : ougato
- * LastEditTime : 2021-11-05 10:15:48
+ * LastEditTime : 2023-07-22 20:54:19
  * FilePath     : /client/assets/src/core/manager/data/DataManager.ts
  * Description  : 数据管理器
  */
@@ -17,7 +17,7 @@ export default class DataManager extends BaseManager {
     private static s_instance: DataManager = null;
 
     // 数据注册结构 Map<数据类名, 数据>
-    private m_dataMap: Map<string, BaseData> = null;
+    private _dataMap: Map<string, BaseData> = null;
 
     public static getInstance(): DataManager {
         if (this.s_instance === null) {
@@ -36,18 +36,18 @@ export default class DataManager extends BaseManager {
     constructor() {
         super();
 
-        this.m_dataMap = new Map();
+        this._dataMap = new Map();
     }
 
     /**
      * 销毁 清理所有数据
      */
     protected destroy(): void {
-        this.m_dataMap.forEach((value: BaseData, key: string, map: Map<string, BaseData>) => {
+        this._dataMap.forEach((value: BaseData, key: string, map: Map<string, BaseData>) => {
             value.destroy();
         });
-        this.m_dataMap.clear();
-        this.m_dataMap = null;
+        this._dataMap.clear();
+        this._dataMap = null;
     }
 
     /**
@@ -57,7 +57,7 @@ export default class DataManager extends BaseManager {
      */
     public get<T extends BaseData>(dataClass: DataInterface.DataClass<T>): T {
         let className: string = cc.js.getClassName(dataClass);
-        let baseData: T = this.m_dataMap.get(className) as T;
+        let baseData: T = this._dataMap.get(className) as T;
         if (TypeUtils.isNull(baseData)) {
             baseData = this.add(dataClass);
         }
@@ -71,19 +71,19 @@ export default class DataManager extends BaseManager {
     public add<T extends BaseData>(dataClass: DataInterface.DataClass<T>): T {
         let className: string = cc.js.getClassName(dataClass);
 
-        if (this.m_dataMap === null) {
+        if (this._dataMap === null) {
             G.LogMgr.warn(`添加 ${className} 数据失败`);
             return;
         }
 
-        let baseData: T = this.m_dataMap.get(className) as T;
+        let baseData: T = this._dataMap.get(className) as T;
         if (baseData) {
             G.LogMgr.warn(`已经存在 ${className} 对象`);
             return baseData;
         }
 
         baseData = new dataClass();
-        this.m_dataMap.set(className, baseData);
+        this._dataMap.set(className, baseData);
         return baseData;
     }
 
@@ -94,14 +94,14 @@ export default class DataManager extends BaseManager {
     public del<T extends BaseData>(dataClass: DataInterface.DataClass<T>): void {
         let className: string = cc.js.getClassName(dataClass);
 
-        if (this.m_dataMap === null) {
+        if (this._dataMap === null) {
             return;
         }
 
-        let baseData: T = this.m_dataMap.get(className) as T;
+        let baseData: T = this._dataMap.get(className) as T;
         if (baseData) {
             baseData.destroy();
-            this.m_dataMap.delete(className);
+            this._dataMap.delete(className);
         }
     }
 
