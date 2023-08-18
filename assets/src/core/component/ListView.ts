@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-12-13 11:11:13
  * LastEditors  : ougato
- * LastEditTime : 2021-12-19 03:52:04
+ * LastEditTime : 2023-07-22 20:54:13
  * FilePath     : /client/assets/src/core/component/ListView.ts
  * Description  : 滑动列表（分帧加载、分页加载、无限加载）
  */
@@ -790,16 +790,16 @@ export default class ListView extends cc.ScrollView {
         //     let itemNode: cc.Node = this.content.children[i];
         //     let itemRect: cc.Rect = itemNode.getBoundingBoxToWorld();
 
-        //     if (itemRect.intersects(this.m_cacheRect)) {
+        //     if (itemRect.intersects(this._cacheRect)) {
 
         //     } else {
         //         if (this.direction === ComponentDefine.DirectionType.HORIZONTAL) {
         //             if (itemNode.convertToWorldSpace(cc.v2(0, 0)).x > this.content.parent.convertToWorldSpaceAR(cc.v2(0, 0)).x) {
-        //                 --this.m_lastIndex;
+        //                 --this._lastIndex;
         //             }
         //         } else if (this.direction === ComponentDefine.DirectionType.VERTICAL) {
         //             if (itemNode.convertToWorldSpace(cc.v2(0, 0)).y < this.content.parent.convertToWorldSpaceAR(cc.v2(0, 0)).x) {
-        //                 --this.m_lastIndex;
+        //                 --this._lastIndex;
         //             }
         //         }
         //         this.putNode(itemNode);

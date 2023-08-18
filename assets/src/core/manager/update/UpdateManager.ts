@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-11-19 15:32:18
  * LastEditors  : ougato
- * LastEditTime : 2021-11-19 16:36:10
+ * LastEditTime : 2023-07-22 20:54:48
  * FilePath     : /client/assets/src/core/manager/update/UpdateManager.ts
  * Description  : 更新管理器，用于最开始进入游戏时热更新
  */
@@ -30,15 +30,15 @@ export default class UpdateManager {
     private static s_instance: UpdateManager = null;
 
     // 原生资源管理器
-    private m_jsbAssetsManager: jsb.AssetsManager = null;
+    private _jsbAssetsManager: jsb.AssetsManager = null;
     // 差异版本号
-    private m_diffVersionNum: UpdateDefine.VersionNumber = null;
+    private _diffVersionNum: UpdateDefine.VersionNumber = null;
     // 失败文件
-    private m_failedFiles: string[] = null;
+    private _failedFiles: string[] = null;
     // 错误状态
-    private m_errorState: UpdateDefine.ErrorState = null;
+    private _errorState: UpdateDefine.ErrorState = null;
     // 更新进度
-    private m_percent: number = null;
+    private _percent: number = null;
     // 本地版本
     public localVersion: string = null;
     // 远程版本
@@ -59,7 +59,6 @@ export default class UpdateManager {
     }
 
     constructor() {
-
         this.initData();
     }
 
@@ -67,9 +66,9 @@ export default class UpdateManager {
      * 初始化数据
      */
     private initData(): void {
-        this.m_diffVersionNum = null;
-        this.m_failedFiles = [];
-        this.m_percent = 0;
+        this._diffVersionNum = null;
+        this._failedFiles = [];
+        this._percent = 0;
     }
 
     /**
@@ -88,19 +87,19 @@ export default class UpdateManager {
                 reject("网络错误");
             }
 
-            if (this.m_jsbAssetsManager === null) {
-                this.m_jsbAssetsManager = jsb.AssetsManager.create(this.getLocalManifestPath(), this.getUpdateSearchPath());
-                this.m_jsbAssetsManager.setVersionCompareHandle(this.onVersionCompare.bind(this));
-                this.m_jsbAssetsManager.setVerifyCallback(this.onVerifyMD5.bind(this));
+            if (this._jsbAssetsManager === null) {
+                this._jsbAssetsManager = jsb.AssetsManager.create(this.getLocalManifestPath(), this.getUpdateSearchPath());
+                this._jsbAssetsManager.setVersionCompareHandle(this.onVersionCompare.bind(this));
+                this._jsbAssetsManager.setVerifyCallback(this.onVerifyMD5.bind(this));
             }
 
-            let jsbState: jsb.AssetsManager.State = this.m_jsbAssetsManager.getState();
+            let jsbState: jsb.AssetsManager.State = this._jsbAssetsManager.getState();
             if (jsbState >= jsb.AssetsManager.State.PREDOWNLOAD_VERSION && jsbState !== jsb.AssetsManager.State.FAIL_TO_UPDATE) {
                 console.warn(`已检测过版本，请不要重复检测更新数据`);
                 reject("重复执行热更检测方法");
             }
 
-            if (!this.m_jsbAssetsManager.getLocalManifest() || !this.m_jsbAssetsManager.getLocalManifest().isLoaded()) {
+            if (!this._jsbAssetsManager.getLocalManifest() || !this._jsbAssetsManager.getLocalManifest().isLoaded()) {
                 console.warn("加载本地 manifest 失败");
                 return resolve({
                     error: UpdateDefine.ErrorState.LOAD_LOCAL_MANIFEST,
@@ -111,7 +110,7 @@ export default class UpdateManager {
 
             let checkState: UpdateDefine.CheckState = null;
             let failedState: UpdateDefine.ErrorState = null;
-            this.m_jsbAssetsManager.setEventCallback((event: jsb.EventAssetsManager) => {
+            this._jsbAssetsManager.setEventCallback((event: jsb.EventAssetsManager) => {
                 switch (event.getEventCode()) {
                     case jsb.EventAssetsManager.ERROR_NO_LOCAL_MANIFEST: {
                         console.warn("加载本地文件 Manifest 失败");
@@ -136,13 +135,13 @@ export default class UpdateManager {
                         break;
                     case jsb.EventAssetsManager.NEW_VERSION_FOUND: {
                         console.log("发现新版本更新");
-                        switch (this.m_diffVersionNum) {
+                        switch (this._diffVersionNum) {
                             case UpdateDefine.VersionNumber.X:
                                 checkState = UpdateDefine.CheckState.URL;
                                 break;
                             case UpdateDefine.VersionNumber.Y:
                             case UpdateDefine.VersionNumber.Z:
-                                // this.m_jsbAssetsManager.prepareUpdate();
+                                // this._jsbAssetsManager.prepareUpdate();
                                 checkState = UpdateDefine.CheckState.QUIET;
                                 // if (cc.sys.getNetworkType() === cc.sys.NetworkType.WWAN) {
                                 //     checkState = UpdateDefine.CheckState.PROMPT;
@@ -159,7 +158,7 @@ export default class UpdateManager {
                 }
 
                 if (checkState !== null) {
-                    this.m_jsbAssetsManager.setEventCallback(null);
+                    this._jsbAssetsManager.setEventCallback(null);
                     resolve({
                         state: checkState,
                         downloadBytes: event.getTotalBytes(),
@@ -167,15 +166,15 @@ export default class UpdateManager {
                 }
 
                 if (failedState !== null) {
-                    this.m_jsbAssetsManager.setEventCallback(null);
+                    this._jsbAssetsManager.setEventCallback(null);
                     resolve({
                         error: failedState,
                     });
-                    this.m_errorState = failedState;
+                    this._errorState = failedState;
                 }
             });
 
-            this.m_jsbAssetsManager.checkUpdate();
+            this._jsbAssetsManager.checkUpdate();
         })
     }
 
@@ -189,7 +188,7 @@ export default class UpdateManager {
                 reject("网络错误");
             }
 
-            let jsbState: jsb.AssetsManager.State = this.m_jsbAssetsManager.getState();
+            let jsbState: jsb.AssetsManager.State = this._jsbAssetsManager.getState();
             if (jsbState > jsb.AssetsManager.State.READY_TO_UPDATE && jsbState !== jsb.AssetsManager.State.FAIL_TO_UPDATE) {
                 console.warn(`正在更新最新资源，请不要重复执行更新`);
                 reject("重复执行热更更新方法");
@@ -200,8 +199,8 @@ export default class UpdateManager {
             let failedCount: number = 0;
             let finishState: UpdateDefine.UpdateState = null;
             let failedState: UpdateDefine.ErrorState = null;
-            let percent: number = this.m_percent;
-            this.m_jsbAssetsManager.setEventCallback((event: jsb.EventAssetsManager) => {
+            let percent: number = this._percent;
+            this._jsbAssetsManager.setEventCallback((event: jsb.EventAssetsManager) => {
                 let eventCode: number = event.getEventCode();
                 switch (eventCode) {
                     // 加载本地 manifest 失败
@@ -225,7 +224,7 @@ export default class UpdateManager {
                     // 解压远程资源文件失败
                     case jsb.EventAssetsManager.ERROR_DECOMPRESS: {
                         console.log(`解压文件失败：${event.getAssetId()}`);
-                        this.m_failedFiles.push(event.getAssetId());
+                        this._failedFiles.push(event.getAssetId());
                         if (failedCount++ >= MAX_FAILED_FILE_COUNT) {
                             failedState = UpdateDefine.ErrorState.DECOMPRESS_FILE;
                         }
@@ -243,7 +242,7 @@ export default class UpdateManager {
                     // 下载远程资源文件失败
                     case jsb.EventAssetsManager.ERROR_UPDATING: {
                         console.warn(`下载文件失败：${event.getAssetId()}`);
-                        this.m_failedFiles.push(event.getAssetId());
+                        this._failedFiles.push(event.getAssetId());
                         if (++failedCount >= MAX_FAILED_FILE_COUNT) {
                             failedState = UpdateDefine.ErrorState.DOWNLOAD_FILE;
                         }
@@ -252,7 +251,7 @@ export default class UpdateManager {
                     // 校验远程资源文件失败
                     case jsb.EventAssetsManager.UPDATE_FAILED:
                         console.log(`文件校验失败：${event.getAssetId()}`);
-                        this.m_failedFiles.push(event.getAssetId());
+                        this._failedFiles.push(event.getAssetId());
                         if (++failedCount >= MAX_FAILED_FILE_COUNT) {
                             failedState = UpdateDefine.ErrorState.VERIFY_FILE;
                         }
@@ -276,13 +275,13 @@ export default class UpdateManager {
                         break;
                 }
 
-                if (this.m_percent < percent) {
-                    this.m_percent = percent;
-                    G.EventMgr.emit(EventDefine.UpdateEvent.UPDATE_PROGRESS, this.m_percent);
+                if (this._percent < percent) {
+                    this._percent = percent;
+                    G.EventMgr.emit(EventDefine.UpdateEvent.UPDATE_PROGRESS, this._percent);
                 }
 
                 if (finishState !== null) {
-                    this.m_jsbAssetsManager.setEventCallback(null);
+                    this._jsbAssetsManager.setEventCallback(null);
                     this.initData();
                     resolve({
                         state: finishState,
@@ -290,16 +289,16 @@ export default class UpdateManager {
                 }
 
                 if (failedState !== null) {
-                    this.m_jsbAssetsManager.setEventCallback(null);
+                    this._jsbAssetsManager.setEventCallback(null);
                     this.initData();
-                    this.m_errorState = failedState;
+                    this._errorState = failedState;
                     resolve({
                         error: failedState,
                     });
                 }
             });
 
-            this.m_jsbAssetsManager.update();
+            this._jsbAssetsManager.update();
         });
     }
 
@@ -313,14 +312,14 @@ export default class UpdateManager {
                 reject("网络错误");
             }
 
-            if (this.m_jsbAssetsManager.getState() !== jsb.AssetsManager.State.FAIL_TO_UPDATE) {
+            if (this._jsbAssetsManager.getState() !== jsb.AssetsManager.State.FAIL_TO_UPDATE) {
                 console.warn(`无法执行热更重试，要求在失败状态下才能执行`);
                 reject("无法执行热更重试，要求在失败状态下才能执行");
             }
 
             console.log("正在重试更新资源");
 
-            switch (this.m_errorState) {
+            switch (this._errorState) {
                 case UpdateDefine.ErrorState.LOAD_LOCAL_MANIFEST:
                     // TODO 本地文件错误
                     // 1.删除搜索路径的 hot-update_temp 和 hot-update 目录
@@ -349,7 +348,7 @@ export default class UpdateManager {
                 case UpdateDefine.ErrorState.DECOMPRESS_FILE:
                 case UpdateDefine.ErrorState.DOWNLOAD_FILE:
                 case UpdateDefine.ErrorState.VERIFY_FILE: {
-                    this.m_jsbAssetsManager.setEventCallback((event: jsb.EventAssetsManager) => {
+                    this._jsbAssetsManager.setEventCallback((event: jsb.EventAssetsManager) => {
                         let percent: number = 0;
                         let failedState: UpdateDefine.ErrorState = null;
                         let finishState: UpdateDefine.UpdateState = null;
@@ -363,20 +362,20 @@ export default class UpdateManager {
                             // 下载远程资源文件失败
                             case jsb.EventAssetsManager.ERROR_UPDATING: {
                                 console.warn(`下载文件失败：${event.getAssetId()}`);
-                                this.m_failedFiles.push(event.getAssetId());
+                                this._failedFiles.push(event.getAssetId());
                                 failedState = UpdateDefine.ErrorState.DOWNLOAD_FILE;
                             }
                                 break;
                             // 解压远程资源文件失败
                             case jsb.EventAssetsManager.ERROR_DECOMPRESS: {
                                 console.log(`解压文件失败：${event.getAssetId()}`);
-                                this.m_failedFiles.push(event.getAssetId());
+                                this._failedFiles.push(event.getAssetId());
                                 failedState = UpdateDefine.ErrorState.DECOMPRESS_FILE;
                             }
                             // 校验远程资源文件失败
                             case jsb.EventAssetsManager.UPDATE_FAILED:
                                 console.log(`文件校验失败：${event.getAssetId()}`);
-                                this.m_failedFiles.push(event.getAssetId());
+                                this._failedFiles.push(event.getAssetId());
                                 failedState = UpdateDefine.ErrorState.VERIFY_FILE;
                                 break;
                             // 已是最新
@@ -389,7 +388,7 @@ export default class UpdateManager {
                             case jsb.EventAssetsManager.UPDATE_FINISHED: {
                                 console.log("更新完成，自动重启客户端");
                                 let searchPaths: string[] = jsb.fileUtils.getOriginalSearchPaths();
-                                let newSearchPaths: string[] = this.m_jsbAssetsManager.getLocalManifest().getSearchPaths();
+                                let newSearchPaths: string[] = this._jsbAssetsManager.getLocalManifest().getSearchPaths();
                                 Array.prototype.unshift.apply(searchPaths, newSearchPaths);
                                 cc.sys.localStorage.setItem(LocalStorageDefine.Update.UPDATE_SEARCH_PATH, JSON.stringify(searchPaths));
                                 jsb.fileUtils.setSearchPaths(searchPaths);
@@ -402,13 +401,13 @@ export default class UpdateManager {
                                 break;
                         }
 
-                        if (this.m_percent < percent) {
-                            this.m_percent = percent;
-                            G.EventMgr.emit(EventDefine.UpdateEvent.UPDATE_PROGRESS, this.m_percent);
+                        if (this._percent < percent) {
+                            this._percent = percent;
+                            G.EventMgr.emit(EventDefine.UpdateEvent.UPDATE_PROGRESS, this._percent);
                         }
 
                         if (!TypeUtils.isNull(finishState)) {
-                            this.m_jsbAssetsManager.setEventCallback(null);
+                            this._jsbAssetsManager.setEventCallback(null);
                             this.initData();
                             resolve({
                                 state: finishState,
@@ -416,15 +415,15 @@ export default class UpdateManager {
                         }
 
                         if (!TypeUtils.isNull(failedState)) {
-                            this.m_jsbAssetsManager.setEventCallback(null);
+                            this._jsbAssetsManager.setEventCallback(null);
                             this.initData();
-                            this.m_errorState = failedState;
+                            this._errorState = failedState;
                             resolve({
                                 error: failedState,
                             });
                         }
                     });
-                    this.m_jsbAssetsManager.downloadFailedAssets();
+                    this._jsbAssetsManager.downloadFailedAssets();
                 }
                     break;
             }
@@ -600,7 +599,7 @@ export default class UpdateManager {
      */
     private resetSearchPath(): void {
         let searchPaths: string[] = this.uniqueSearchPath(jsb.fileUtils.getOriginalSearchPaths());
-        let insertSearchPaths: string[] = this.m_jsbAssetsManager.getLocalManifest().getSearchPaths();
+        let insertSearchPaths: string[] = this._jsbAssetsManager.getLocalManifest().getSearchPaths();
         for (let i: number = 0; i < insertSearchPaths.length; ++i) {
             let insertSearchPath: string = insertSearchPaths[i];
             let sameSearchPathIndex: number = searchPaths.indexOf(insertSearchPath);
@@ -635,7 +634,7 @@ export default class UpdateManager {
             let aNum: number = Number(aSplit[i]);
             let bNum: number = Number(bSplit[i]);
             if (aNum < bNum) {
-                this.m_diffVersionNum = UpdateDefine.VersionNumber[UpdateDefine.VersionNumber[i]];
+                this._diffVersionNum = UpdateDefine.VersionNumber[UpdateDefine.VersionNumber[i]];
                 return -1;
             } else if (aNum > bNum) {
                 break;
@@ -677,9 +676,9 @@ export default class UpdateManager {
      * 销毁
      */
     public destroy(): void {
-        this.m_jsbAssetsManager = null;
-        this.m_diffVersionNum = null;
-        this.m_failedFiles = null;
-        this.m_percent = null;
+        this._jsbAssetsManager = null;
+        this._diffVersionNum = null;
+        this._failedFiles = null;
+        this._percent = null;
     }
 }

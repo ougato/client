@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:36:55
  * LastEditors  : ougato
- * LastEditTime : 2022-11-09 15:37:16
+ * LastEditTime : 2023-07-21 18:26:44
  * FilePath     : /client/assets/src/core/manager/ui/UIManager.ts
  * Description  : 界面管理器、所有的视图和场景、都由 UIManager 统一管理、包括打开视图|关闭视图|切换场景等等
  */
@@ -169,7 +169,7 @@ export default class UIManager extends BaseManager {
     /**
      * 打开场景
      * 由于整个游戏设计只有一个 fire 场景，其他场景概念都使用 prefab 来代替
-     * 目的是更好的控制资源
+     * 目的是更好的管理资源的交互和加载
      * @param param {UIInterface.SceneParam} 场景参数
      * @param data {...any[]} 数据
      */
