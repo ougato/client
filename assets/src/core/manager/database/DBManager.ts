@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-26 10:53:43
  * LastEditors  : ougato
- * LastEditTime : 2023-12-28 15:13:00
+ * LastEditTime : 2023-12-28 23:54:02
  * FilePath     : /client/assets/src/core/manager/database/DBManager.ts
  * Description  : 数据库管理器
  */
@@ -38,14 +38,13 @@ export default class DBManager extends BaseManager {
     constructor() {
         super();
 
-        this.init();
     }
 
     protected destroy(): void {
 
     }
 
-    public init(): void {
+    public async init(): Promise<boolean> {
         if (cc.sys.isBrowser) {
             this._db = new DBIndexed();
         } else if (cc.sys.isNative) {
@@ -58,10 +57,14 @@ export default class DBManager extends BaseManager {
             }
         }
 
-        this._db.init(DBConfig.NAME, DBConfig.VERSION);
+        return this._db.init(DBConfig.NAME, DBConfig.VERSION);
     }
 
     public insert(table: DBDefine.Table, data: { [key: string]: any }) {
+        if (this._db.state !== DBDefine.State.OPENED) {
+            G.LogMgr.warn(`当前数据库状态 [${this._db.state}] 无法许插入数据`)
+            return;
+        }
         this._db.insert(table, data);
     }
 

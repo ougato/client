@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-28 11:29:24
  * LastEditors  : ougato
- * LastEditTime : 2023-12-28 15:11:40
+ * LastEditTime : 2023-12-29 00:08:17
  * FilePath     : /client/assets/src/core/manager/action/ActionManager.ts
  * Description  : 用户行为管理器
  */
@@ -12,7 +12,7 @@ import UserData from "../../../data/UserData";
 import BaseManager from "../../base/BaseManager";
 import { ActionDefine } from "../../define/ActionDefine";
 import { DBDefine } from "../../define/DBDefine";
-import { ActionInterface } from "../../interface/ActionInterface";
+import { DBInterface } from "../../interface/DBInterface";
 import TypeUtils from "../../utils/TypeUtils";
 import DataManager from "../data/DataManager";
 import DBManager from "../database/DBManager";
@@ -45,7 +45,7 @@ export default class ActionManager extends BaseManager {
 
     }
 
-    protected saveDB<T>(data: ActionInterface.RecordData<T>) {
+    protected save<T>(data: DBInterface.ActionData<T>) {
         if (TypeUtils.isNull(data.timestamp)) {
             let gameData: GameData = DataManager.getInstance().get(GameData);
 
@@ -63,28 +63,28 @@ export default class ActionManager extends BaseManager {
     }
 
     public touchStart(pos: cc.Vec2): void {
-        this.saveDB({
+        this.save({
             action_type: ActionDefine.Type.TOUCH_START,
             action_data: pos,
         })
     }
 
     public touchMove(pos: cc.Vec2): void {
-        this.saveDB({
+        this.save({
             action_type: ActionDefine.Type.TOUCH_MOVE,
             action_data: pos,
         })
     }
 
     public touchCancel(pos: cc.Vec2): void {
-        this.saveDB({
+        this.save({
             action_type: ActionDefine.Type.TOUCH_CANCEL,
             action_data: pos,
         })
     }
 
     public touchEnd(pos: cc.Vec2): void {
-        this.saveDB({
+        this.save({
             action_type: ActionDefine.Type.TOUCH_END,
             action_data: pos,
         })

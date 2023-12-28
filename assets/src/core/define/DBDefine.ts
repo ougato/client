@@ -2,12 +2,30 @@
  * Author       : ougato
  * Date         : 2023-12-27 18:28:07
  * LastEditors  : ougato
- * LastEditTime : 2023-12-28 14:38:03
+ * LastEditTime : 2023-12-28 23:25:37
  * FilePath     : /client/assets/src/core/define/DBDefine.ts
  * Description  : 数据库定义
  */
 
 export namespace DBDefine {
+
+    // 数据库状态
+    export enum State {
+        // 无
+        NONE = 0,
+        // 正在打开
+        OPENING = 1,
+        // 正在更新
+        UPDATING = 2,
+        // 已经打开
+        OPENED = 3,
+        // 锁定
+        BLOCK = 4,
+        // 正在关闭
+        CLOSING = 5,
+        // 已经关闭
+        CLOSED = 6,
+    }
 
     // 表名
     export enum Table {

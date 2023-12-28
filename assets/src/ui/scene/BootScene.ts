@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2023-12-27 17:33:07
+ * LastEditTime : 2023-12-28 23:58:36
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
@@ -54,8 +54,15 @@ export default class BootScene extends BaseScene {
         this.launch();
     }
 
-    private initDB(): void {
-        G.DBMgr.init();
+    private async initDB(): Promise<void> {
+        return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
+            G.DBMgr.init().then((isOK: boolean) => {
+                if (!isOK) {
+                    G.LogMgr.error("初始化数据库失败");
+                }
+                resolve();
+            });
+        });
     }
 
     /**
@@ -319,7 +326,7 @@ export default class BootScene extends BaseScene {
      * 游戏启动
      */
     private async launch(): Promise<void> {
-        this.initDB();
+        await this.initDB();
         await this.initPersist();
         await this.initHost();
         await this.initUpdate();

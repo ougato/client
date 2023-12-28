@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-26 15:25:49
  * LastEditors  : ougato
- * LastEditTime : 2023-12-28 21:09:42
+ * LastEditTime : 2023-12-28 23:28:14
  * FilePath     : /client/assets/src/core/manager/database/DBIndexed.ts
  * Description  : IndexedDB 用于 Web 环境使用
  */
@@ -32,7 +32,7 @@ export default class DBIndexed extends DBBase<IDBDatabase> {
 
         for (let oldTableName of oldTableNameList) {
             let isNewTable: boolean = DBConfig.Struct.some((tableInfo: DBInterface.Table) => {
-                tableInfo.name === oldTableName;
+                return tableInfo.name === oldTableName;
             })
 
             if (!isNewTable) {
@@ -59,7 +59,7 @@ export default class DBIndexed extends DBBase<IDBDatabase> {
             const oldIndexNameList: string[] = ConverUtils.converEnumToArrayGetValue(table.indexNames);
             for (let oldIndexName of oldIndexNameList) {
                 let isNewIndex: boolean = tableInfo.indexList.some((indexInfo: DBInterface.Index) => {
-                    indexInfo.name === oldIndexName;
+                    return indexInfo.name === oldIndexName;
                 })
 
                 if (!isNewIndex) {
@@ -75,46 +75,57 @@ export default class DBIndexed extends DBBase<IDBDatabase> {
         }
     }
 
-    public init(dbName: string, dbVersion?: number): boolean {
-        let isOK: boolean = false;
+    public async init(dbName: string, dbVersion?: number): Promise<boolean> {
+        return new Promise((resolve: (value: boolean | PromiseLike<boolean>) => void, reject: (reason?: any) => void) => {
+            this._indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 
-        this._indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+            if (!this._indexedDB) {
+                G.LogMgr.warn(`浏览器不支持 IndexedDB 数据库`);
+                return resolve(false);
+            }
 
-        if (!this._indexedDB) {
-            G.LogMgr.warn(`浏览器不支持 IndexedDB 数据库`);
-            return isOK;
-        }
+            this.state = DBDefine.State.OPENING;
 
-        let request: IDBOpenDBRequest = this._indexedDB.open(dbName, dbVersion);
+            let request: IDBOpenDBRequest = this._indexedDB.open(dbName, dbVersion);
 
-        request.onsuccess = (ev: Event) => {
-            this.db = (ev.target as IDBRequest<IDBDatabase>).result;
+            request.onsuccess = (ev: Event) => {
+                this.state = DBDefine.State.OPENED;
+                G.LogMgr.log(`打开 [${dbName}] 数据库成功`);
 
-            this.db.onversionchange = function () {
-                this.close();
-                alert("Database is outdated, please reload the page.")
+                this.db = (ev.target as IDBRequest<IDBDatabase>).result;
+
+                this.db.onversionchange = function () {
+                    this.close();
+                    alert("Database is outdated, please reload the page.")
+                };
+
+                resolve(true);
+            }
+
+            request.onerror = (ev: Event) => {
+                this.state = null;
+
+                G.LogMgr.warn(`打开 [${dbName}][${dbVersion}] 数据库失败：${(ev.target as IDBRequest<IDBDatabase>).error}`);
+                resolve(false);
             };
-        }
 
-        request.onerror = (ev: Event) => {
-            G.LogMgr.warn(`打开 [${dbName}][${dbVersion}] 数据库失败：${(ev.target as IDBRequest<IDBDatabase>).error}`);
+            request.onupgradeneeded = (ev: IDBVersionChangeEvent) => {
+                this.state = DBDefine.State.UPDATING;
 
-        };
+                G.LogMgr.log(`正在更新 [${dbName}][${ev.oldVersion}->${ev.newVersion}] 数据库`);
 
-        request.onupgradeneeded = (ev: IDBVersionChangeEvent) => {
-            G.LogMgr.log(`正在更新 [${dbName}][${ev.oldVersion}->${ev.newVersion}] 数据库`);
+                const target: IDBOpenDBRequest = ev.target as IDBOpenDBRequest;
+                const db: IDBDatabase = target.result;
+                this.upgradeTable(db);
+                this.upgradeIndex(target);
+            };
 
-            const target: IDBOpenDBRequest = ev.target as IDBOpenDBRequest;
-            const db: IDBDatabase = target.result;
-            this.upgradeTable(db);
-            this.upgradeIndex(target);
-        };
+            request.onblocked = (ev: IDBVersionChangeEvent) => {
+                this.state = DBDefine.State.BLOCK;
+                G.LogMgr.log(`正在锁定 [${dbName}] 数据库`);
 
-        request.onblocked = (ev: IDBVersionChangeEvent) => {
-
-        }
-
-        return isOK;
+            }
+        })
     }
 
     public insert(table: DBDefine.Table, data: { [key: string]: any; }): void {
@@ -142,4 +153,5 @@ export default class DBIndexed extends DBBase<IDBDatabase> {
     select(): void {
         throw new Error("Method not implemented.");
     }
+
 }
