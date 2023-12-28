@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2022-09-18 19:15:52
  * LastEditors  : ougato
- * LastEditTime : 2022-11-25 18:32:17
+ * LastEditTime : 2023-12-28 18:52:54
  * FilePath     : /client/assets/src/core/utils/TypeUtils.ts
  * Description  : 
  */
@@ -29,6 +29,13 @@ export default class TypeUtils {
      */
     public static isNull<T>(data: T): boolean {
         return data === undefined || data === null;
+    }
+
+    /**
+     * 是否数字
+     */
+    public static isNumber<T>(data: T): boolean {
+        return typeof data === "number";
     }
 
 }

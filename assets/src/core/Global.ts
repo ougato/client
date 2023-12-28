@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 01:43:20
  * LastEditors  : ougato
- * LastEditTime : 2023-07-19 14:26:50
+ * LastEditTime : 2023-12-26 11:50:24
  * FilePath     : /client/assets/src/core/Global.ts
  * Description  : 全局控制
  */
@@ -17,6 +17,8 @@ import ControllerManager from "./manager/controller/ControllerManager";
 import LocalStorageManager from "./manager/localStorage/LocalStorageManager";
 import NetworkManager from "./manager/network/NetworkManager";
 import UpdateManager from "./manager/update/UpdateManager";
+import DBManager from "./manager/database/DBManager";
+import TrackManager from "./manager/track/TrackManager";
 
 export default class Global {
 
@@ -123,6 +125,20 @@ export default class Global {
      */
     public get UpdateMgr(): UpdateManager {
         return UpdateManager.getInstance();
+    }
+
+    /**
+     * 数据库管理器
+     */
+    public get DBMgr(): DBManager {
+        return DBManager.getInstance();
+    }
+
+    /**
+     * 操作轨迹管理器
+     */
+    public get TrackMgr(): TrackManager {
+        return TrackManager.getInstance();
     }
 
 }

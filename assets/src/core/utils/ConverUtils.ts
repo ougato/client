@@ -2,10 +2,12 @@
  * Author       : ougato
  * Date         : 2022-11-25 18:31:24
  * LastEditors  : ougato
- * LastEditTime : 2022-11-25 18:40:53
+ * LastEditTime : 2023-12-28 21:10:12
  * FilePath     : /client/assets/src/core/utils/ConverUtils.ts
  * Description  : 转换工具
  */
+
+import TypeUtils from "./TypeUtils";
 
 export class ConverUtils {
 
@@ -15,11 +17,30 @@ export class ConverUtils {
      * @returns {string[]} Key 数组
      */
     public static converEnumToArrayGetKey<T>(data: T): string[] {
-        let array: any[] = Object.keys(data).map((key, index) => {
-            return data[key];
-        });
+        let array: string[] = [];
+        let keyValue: [string, any][] = Object.entries(data);
 
-        return array.slice(0, array.length / 2);
+        if (keyValue.length <= 0) {
+            return array;
+        }
+
+        let isTwoWay: boolean = false;
+        for (let [key, value] of keyValue) {
+            if ((TypeUtils.isNumber(value) || TypeUtils.isNumber(key)) && key === data[value]) {
+                isTwoWay = true;
+                break;
+            }
+        }
+
+        let keyList: string[] = Object.keys(data);
+
+        if (isTwoWay) {
+            array = keyList.slice(keyList.length / 2, keyList.length);
+        } else {
+            array = keyList.slice(0, keyList.length);
+        }
+
+        return array;
     }
 
     /**
@@ -27,12 +48,31 @@ export class ConverUtils {
      * @param data {K} 枚举数据
      * @returns {V[]} Value 数组
      */
-    public static converEnumToArrayGetValue<K, V>(data: K): V[] {
-        let array: any[] = Object.keys(data).map((key, index) => {
-            return data[key];
-        });
+    public static converEnumToArrayGetValue<T>(data: T): any[] {
+        let array: any[] = [];
+        let keyValue: [string, any][] = Object.entries(data);
 
-        return array.slice(array.length / 2, array.length);
+        if (keyValue.length <= 0) {
+            return array;
+        }
+
+        let isTwoWay: boolean = false;
+        for (let [key, value] of keyValue) {
+            if ((TypeUtils.isNumber(value) || TypeUtils.isNumber(key)) && key === data[value]) {
+                isTwoWay = true;
+                break;
+            }
+        }
+
+        let valueList: string[] = Object.values(data);
+
+        if (isTwoWay) {
+            array = valueList.slice(valueList.length / 2, valueList.length);
+        } else {
+            array = valueList.slice(0, valueList.length);
+        }
+
+        return array;
     }
 
     /**

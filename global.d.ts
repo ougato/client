@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 01:38:17
  * LastEditors  : ougato
- * LastEditTime : 2023-07-19 14:22:51
+ * LastEditTime : 2023-12-26 11:55:05
  * FilePath     : /client/global.d.ts
  * Description  : 全局申明
  */
@@ -13,6 +13,11 @@ declare global {
 
     interface Window {
         G: Global;
+
+        indexedDB;
+        mozIndexedDB;
+        webkitIndexedDB;
+        msIndexedDB;
     }
 
     declare let G: Global = window.G;

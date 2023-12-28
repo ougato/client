@@ -33,7 +33,7 @@ PROTO_OUTPUT_PATH = os.path.join(CURRENT_PATH, "..", "..", "assets", "src", "pro
 JS_PATH = os.path.relpath(os.path.join(PROTO_OUTPUT_PATH, "Proto.js"))
 TS_PATH = os.path.relpath(os.path.join(PROTO_OUTPUT_PATH, "Proto.d.ts"))
 
-MAKE_JS_COMMAND = "%s -t static-module -p ../lib/protobuf -w commonjs --dependency protobuf --es6 --keep-case --no-beautify --no-convert -o %s %s"
+MAKE_JS_COMMAND = "%s -t static-module -p ../lib/protobuf -w commonjs --dependency protobuf --es6 --keep-case --force-number --no-beautify --no-convert  -o %s %s"
 MAKE_TS_COMMAND = "%s -n Proto --no-comments -o %s %s"
 
 

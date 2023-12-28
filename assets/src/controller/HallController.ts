@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-10-30 23:12:46
  * LastEditors  : ougato
- * LastEditTime : 2023-07-22 23:49:35
+ * LastEditTime : 2023-12-28 15:06:02
  * FilePath     : /client/assets/src/controller/HallController.ts
  * Description  : 大厅控制器
  */
@@ -23,6 +23,7 @@ import { HttpInterface } from "../core/interface/HttpInterface";
 import { HttpParamInterface } from "../interface/HttpParamInterface";
 import { UIDefine } from "../core/define/UIDefine";
 import { NetworkInterface } from "../core/interface/NetworkInterface";
+import TypeUtils from "../core/utils/TypeUtils";
 
 // 请求登陆最大次数
 const LOGIN_MAX_COUNT: number = 3;
@@ -265,6 +266,9 @@ export default class HallController extends BaseController {
 
         let gameData: GameData = G.DataMgr.get(GameData);
         gameData.timeDifference = serverTimestamp - clientTimestamp;
+        if (TypeUtils.isNull(gameData.timeDifferenceFirst)) {
+            gameData.timeDifferenceFirst = gameData.timeDifference;
+        }
 
         G.LogMgr.log(`校正客户端与服务端时间差：${gameData.timeDifference} 毫秒`);
     }

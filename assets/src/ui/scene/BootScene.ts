@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2023-07-22 23:41:43
+ * LastEditTime : 2023-12-27 17:33:07
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
@@ -49,9 +49,13 @@ export default class BootScene extends BaseScene {
 
         cc.sys.dump();
 
-        G.ControllerMgr.get(HallController);
+        // G.ControllerMgr.get(HallController);
 
         this.launch();
+    }
+
+    private initDB(): void {
+        G.DBMgr.init();
     }
 
     /**
@@ -60,7 +64,7 @@ export default class BootScene extends BaseScene {
      */
     private async initPersist(): Promise<void> {
         return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
-            Promise.all([G.UIMgr.addPersist(BlockPersist), G.UIMgr.addPersist(LoadingPersist), G.UIMgr.addPersist(WaitingPersist), G.UIMgr.addPersist(DialogPersist)]).then(() => {
+            Promise.all([G.UIMgr.addPersist(DialogPersist), G.UIMgr.addPersist(BlockPersist), G.UIMgr.addPersist(LoadingPersist), G.UIMgr.addPersist(WaitingPersist)]).then(() => {
                 resolve();
             }).catch((reason: any) => {
                 // TODO: 弹窗重试
@@ -315,6 +319,7 @@ export default class BootScene extends BaseScene {
      * 游戏启动
      */
     private async launch(): Promise<void> {
+        this.initDB();
         await this.initPersist();
         await this.initHost();
         await this.initUpdate();
