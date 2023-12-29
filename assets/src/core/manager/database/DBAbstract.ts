@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-26 16:55:37
  * LastEditors  : ougato
- * LastEditTime : 2023-12-28 23:23:11
+ * LastEditTime : 2023-12-29 16:32:34
  * FilePath     : /client/assets/src/core/manager/database/DBAbstract.ts
  * Description  : 数据库抽象类
  */
@@ -15,5 +15,5 @@ export default abstract class DBAbstract {
     abstract insert(table: DBDefine.Table, data: { [key: string]: any }): void;
     abstract delele(): void;
     abstract update(): void;
-    abstract select(): void;
+    abstract select(table: DBDefine.Table, key: string): void;
 }

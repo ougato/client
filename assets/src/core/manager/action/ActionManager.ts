@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-28 11:29:24
  * LastEditors  : ougato
- * LastEditTime : 2023-12-29 00:08:17
+ * LastEditTime : 2023-12-29 17:06:03
  * FilePath     : /client/assets/src/core/manager/action/ActionManager.ts
  * Description  : 用户行为管理器
  */
@@ -12,6 +12,7 @@ import UserData from "../../../data/UserData";
 import BaseManager from "../../base/BaseManager";
 import { ActionDefine } from "../../define/ActionDefine";
 import { DBDefine } from "../../define/DBDefine";
+import { ActionInterface } from "../../interface/ActionInterface";
 import { DBInterface } from "../../interface/DBInterface";
 import TypeUtils from "../../utils/TypeUtils";
 import DataManager from "../data/DataManager";
@@ -20,6 +21,9 @@ import DBManager from "../database/DBManager";
 export default class ActionManager extends BaseManager {
 
     private static s_instance: ActionManager = null;
+
+    // 上一次移动时间
+    protected _prevTime: number = 0;
 
     public static getInstance(): ActionManager {
         if (this.s_instance === null) {
@@ -62,31 +66,37 @@ export default class ActionManager extends BaseManager {
         DBManager.getInstance().insert(DBDefine.Table.ACTION, data);
     }
 
-    public touchStart(pos: cc.Vec2): void {
+    public touchStart(data: ActionInterface.TouchStartData): void {
         this.save({
             action_type: ActionDefine.Type.TOUCH_START,
-            action_data: pos,
+            action_data: data,
         })
     }
 
-    public touchMove(pos: cc.Vec2): void {
+    public touchMove(data: ActionInterface.TouchMoveData): void {
+        let currTime: number = Date.now();
+        if (currTime < this._prevTime + ActionDefine.MOVE_INTERVAL_TIME) {
+            return;
+        }
+        this._prevTime = currTime;
+
         this.save({
             action_type: ActionDefine.Type.TOUCH_MOVE,
-            action_data: pos,
+            action_data: data,
         })
     }
 
-    public touchCancel(pos: cc.Vec2): void {
+    public touchCancel(data: ActionInterface.TouchCancelData): void {
         this.save({
             action_type: ActionDefine.Type.TOUCH_CANCEL,
-            action_data: pos,
+            action_data: data,
         })
     }
 
-    public touchEnd(pos: cc.Vec2): void {
+    public touchEnd(data: ActionInterface.TouchEndData): void {
         this.save({
             action_type: ActionDefine.Type.TOUCH_END,
-            action_data: pos,
+            action_data: data,
         })
     }
 

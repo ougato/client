@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-26 16:34:12
  * LastEditors  : ougato
- * LastEditTime : 2023-12-28 22:40:56
+ * LastEditTime : 2023-12-29 14:12:29
  * FilePath     : /client/assets/src/core/interface/DBInterface.ts
  * Description  : 数据接口
  */
@@ -34,4 +34,5 @@ export namespace DBInterface {
         // 行为数据
         action_data: T,
     }
+
 }

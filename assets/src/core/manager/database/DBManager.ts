@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-26 10:53:43
  * LastEditors  : ougato
- * LastEditTime : 2023-12-28 23:54:02
+ * LastEditTime : 2023-12-29 16:38:12
  * FilePath     : /client/assets/src/core/manager/database/DBManager.ts
  * Description  : 数据库管理器
  */
@@ -60,12 +60,16 @@ export default class DBManager extends BaseManager {
         return this._db.init(DBConfig.NAME, DBConfig.VERSION);
     }
 
-    public insert(table: DBDefine.Table, data: { [key: string]: any }) {
+    public insert(table: DBDefine.Table, data: { [key: string]: any }): void {
         if (this._db.state !== DBDefine.State.OPENED) {
             G.LogMgr.warn(`当前数据库状态 [${this._db.state}] 无法许插入数据`)
             return;
         }
         this._db.insert(table, data);
+    }
+
+    public select(table: DBDefine.Table, key?: string): void {
+        this._db.select(table, key);
     }
 
 }

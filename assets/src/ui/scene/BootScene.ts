@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2023-12-28 23:58:36
+ * LastEditTime : 2023-12-29 16:39:59
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
@@ -26,6 +26,8 @@ import { UpdateDefine } from "../../core/define/UpdateDefine";
 import { HttpInterface } from "../../core/interface/HttpInterface";
 import { UpdateInterface } from "../../core/interface/UpdateInterface";
 import LoginScene from "./LoginScene";
+import TouchPersist from "../persist/TouchPersist";
+import { DBDefine } from "../../core/define/DBDefine";
 
 // 请求获取动态主机最大次数
 const GET_DYNAMIC_HOST_MAX_COUNT: number = 3;
@@ -71,7 +73,8 @@ export default class BootScene extends BaseScene {
      */
     private async initPersist(): Promise<void> {
         return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
-            Promise.all([G.UIMgr.addPersist(DialogPersist), G.UIMgr.addPersist(BlockPersist), G.UIMgr.addPersist(LoadingPersist), G.UIMgr.addPersist(WaitingPersist)]).then(() => {
+            Promise.all([G.UIMgr.addPersist(TouchPersist), G.UIMgr.addPersist(DialogPersist), G.UIMgr.addPersist(BlockPersist), G.UIMgr.addPersist(LoadingPersist), G.UIMgr.addPersist(WaitingPersist)]).then(() => {
+                G.UIMgr.openTouch();
                 resolve();
             }).catch((reason: any) => {
                 // TODO: 弹窗重试
@@ -327,6 +330,7 @@ export default class BootScene extends BaseScene {
      */
     private async launch(): Promise<void> {
         await this.initDB();
+        G.DBMgr.select(DBDefine.Table.ACTION);
         await this.initPersist();
         await this.initHost();
         await this.initUpdate();

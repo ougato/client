@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-26 15:25:49
  * LastEditors  : ougato
- * LastEditTime : 2023-12-28 23:28:14
+ * LastEditTime : 2023-12-29 16:42:30
  * FilePath     : /client/assets/src/core/manager/database/DBIndexed.ts
  * Description  : IndexedDB 用于 Web 环境使用
  */
@@ -11,6 +11,7 @@ import { DBConfig } from "../../../config/DBConfig";
 import { DBDefine } from "../../define/DBDefine";
 import { DBInterface } from "../../interface/DBInterface";
 import { ConverUtils } from "../../utils/ConverUtils";
+import UnitUtils from "../../utils/UnitUtils";
 import DBBase from "./DBBase";
 
 export default class DBIndexed extends DBBase<IDBDatabase> {
@@ -92,7 +93,7 @@ export default class DBIndexed extends DBBase<IDBDatabase> {
                 this.state = DBDefine.State.OPENED;
                 G.LogMgr.log(`打开 [${dbName}] 数据库成功`);
 
-                this.db = (ev.target as IDBRequest<IDBDatabase>).result;
+                this.db = request.result;
 
                 this.db.onversionchange = function () {
                     this.close();
@@ -105,7 +106,7 @@ export default class DBIndexed extends DBBase<IDBDatabase> {
             request.onerror = (ev: Event) => {
                 this.state = null;
 
-                G.LogMgr.warn(`打开 [${dbName}][${dbVersion}] 数据库失败：${(ev.target as IDBRequest<IDBDatabase>).error}`);
+                G.LogMgr.warn(`打开 [${dbName}][${dbVersion}] 数据库失败：${request.error}`);
                 resolve(false);
             };
 
@@ -129,16 +130,20 @@ export default class DBIndexed extends DBBase<IDBDatabase> {
     }
 
     public insert(table: DBDefine.Table, data: { [key: string]: any; }): void {
-        let request: IDBRequest<IDBValidKey> = this.db.transaction([table], "readwrite")
-            .objectStore(table)
-            .add(data);
+        try {
+            let request: IDBRequest<IDBValidKey> = this.db.transaction(table, "readwrite")
+                .objectStore(table)
+                .add(data);
 
-        request.onsuccess = (ev: Event) => {
+            request.onsuccess = (ev: Event) => {
 
-        }
+            }
 
-        request.onerror = (ev: Event) => {
-
+            request.onerror = (ev: Event) => {
+                G.LogMgr.warn(`插入数据失败：${request.error}`);
+            }
+        } catch (e) {
+            G.LogMgr.warn(`插入数据报错：${e}`);
         }
     }
 
@@ -150,8 +155,22 @@ export default class DBIndexed extends DBBase<IDBDatabase> {
         throw new Error("Method not implemented.");
     }
 
-    select(): void {
-        throw new Error("Method not implemented.");
+    public select(table: DBDefine.Table, key?: string): void {
+        try {
+            let request: IDBRequest<IDBValidKey> = this.db.transaction(table, "readonly")
+                .objectStore(table)
+                .getAll();
+
+            request.onsuccess = (ev: Event) => {
+                G.LogMgr.log(UnitUtils.bytesToFileUnit(JSON.stringify(request.result).length));
+            }
+
+            request.onerror = (ev: Event) => {
+                G.LogMgr.warn(`查询数据失败：${(ev.target as IDBRequest<IDBValidKey>).error}`);
+            }
+        } catch (e) {
+            G.LogMgr.warn(`查询数据报错：${e}`);
+        }
     }
 
 }

@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-27 16:43:28
  * LastEditors  : ougato
- * LastEditTime : 2023-12-28 22:40:34
+ * LastEditTime : 2023-12-29 16:06:15
  * FilePath     : /client/assets/src/config/DBConfig.ts
  * Description  : 数据库配置
  */
@@ -15,7 +15,7 @@ export namespace DBConfig {
     // 库名
     export const NAME: string = "GameDB";
     // 版本
-    export const VERSION: number = 4;
+    export const VERSION: number = 12;
     // 结构
     export const Struct: DBInterface.Table[] = [
         {
@@ -33,7 +33,6 @@ export namespace DBConfig {
                 { name: DBDefine.ActionField.TIMESTAMP, keyPath: DBDefine.ActionField.TIMESTAMP, options: { unique: false } },
                 { name: DBDefine.ActionField.UID, keyPath: DBDefine.ActionField.UID, options: { unique: false } },
                 { name: DBDefine.ActionField.ACTION_TYPE, keyPath: DBDefine.ActionField.ACTION_TYPE, options: { unique: false } },
-                { name: DBDefine.ActionField.ACTION_DATA, keyPath: DBDefine.ActionField.ACTION_DATA, options: { unique: false } },
             ]
         },
         {
