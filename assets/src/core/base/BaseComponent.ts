@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:21:20
  * LastEditors  : ougato
- * LastEditTime : 2022-09-18 18:38:29
+ * LastEditTime : 2024-01-02 18:26:57
  * FilePath     : /client/assets/src/core/base/BaseComponent.ts
  * Description  : 组件 基类、是 BaseView 和 BaseScene 的父类
  */
@@ -190,4 +190,14 @@ export default class BaseComponent extends cc.Component {
             this._loadList = [];
         }
     }
+
+    /**
+     * 点击回调
+     * @param ev {cc.Event.EventTouch} 按钮事件
+     * @param data {T} 数据
+     */
+    protected onClick<T>(ev: cc.Event.EventTouch, data?: T): void {
+
+    }
+
 }

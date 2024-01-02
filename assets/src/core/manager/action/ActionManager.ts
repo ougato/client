@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-28 11:29:24
  * LastEditors  : ougato
- * LastEditTime : 2023-12-29 17:06:03
+ * LastEditTime : 2024-01-02 19:00:13
  * FilePath     : /client/assets/src/core/manager/action/ActionManager.ts
  * Description  : 用户行为管理器
  */
@@ -98,6 +98,34 @@ export default class ActionManager extends BaseManager {
             action_type: ActionDefine.Type.TOUCH_END,
             action_data: data,
         })
+    }
+
+    public wsRequest(): void {
+
+    }
+
+    public wsResponse(): void {
+
+    }
+
+    public httpRequest(): void {
+
+    }
+
+    public httpResponse(): void {
+
+    }
+
+    public openView(): void {
+
+    }
+
+    public closeView(): void {
+
+    }
+
+    public openScene(): void {
+
     }
 
 }

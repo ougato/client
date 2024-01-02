@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:36:55
  * LastEditors  : ougato
- * LastEditTime : 2023-12-29 11:59:13
+ * LastEditTime : 2024-01-02 12:02:45
  * FilePath     : /client/assets/src/core/manager/ui/UIManager.ts
  * Description  : 界面管理器、所有的视图和场景、都由 UIManager 统一管理、包括打开视图|关闭视图|切换场景等等
  */
@@ -28,6 +28,7 @@ import { UIDefine } from "../../define/UIDefine";
 import { ColorDefine } from "../../define/ColorDefine";
 import { ConverUtils } from "../../utils/ConverUtils";
 import TouchPersist from "../../../ui/persist/TouchPersist";
+import SimulatePersist from "../../../ui/persist/SimulatePersist";
 
 // 打开视图等待常驻几秒后显示时间（单位：毫秒）
 const OPEN_VIEW_WAITING_TIME: number = 500;
@@ -274,28 +275,28 @@ export default class UIManager extends BaseManager {
     }
 
     /**
-     * 打开防触摸视图
+     * 打开防触摸
      */
     public openBlock(): void {
         this.openPersist(BlockPersist, UIDefine.PersistLayer.BLOCK);
     }
 
     /**
-     * 关闭防触摸视图
+     * 关闭防触摸
      */
     public closeBlock(): void {
         this.closePersist(BlockPersist);
     }
 
     /**
-     * 打开加载进度视图（Loading）
+     * 打开加载进度（Loading）
      */
     public openLoading(): void {
         this.openPersist(LoadingPersist, UIDefine.PersistLayer.LOADING);
     }
 
     /**
-     * 关闭加载进度视图
+     * 关闭加载进度
      */
     public closeLoading(): void {
         this.closePersist(LoadingPersist);
@@ -317,14 +318,14 @@ export default class UIManager extends BaseManager {
     }
 
     /**
-     * 打开等待视图（转圈）
+     * 打开等待（转圈）
      */
     public openWaiting(): void {
         this.openPersist(WaitingPersist, UIDefine.PersistLayer.WAITING);
     }
 
     /**
-     * 关闭等待视图
+     * 关闭等待
      */
     public closeWaiting(): void {
         this.closePersist(WaitingPersist);
@@ -381,10 +382,17 @@ export default class UIManager extends BaseManager {
     }
 
     /**
-     * 打开防触摸视图
+     * 打开触摸记录
      */
     public openTouch(): void {
         this.openPersist(TouchPersist, UIDefine.PersistLayer.TOUCH);
+    }
+
+    /**
+     * 打开模拟点击
+     */
+    public openSimulate(): void {
+        this.openPersist(SimulatePersist, UIDefine.PersistLayer.SIMULATE);
     }
 
     /**
@@ -468,8 +476,8 @@ export default class UIManager extends BaseManager {
     /**
      * 添加常驻
      */
-    public async addPersist(persistClass: UIInterface.UIClass<BasePersist>): Promise<void> {
-        return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
+    public async addPersist(persistClass: UIInterface.UIClass<BasePersist>): Promise<UIPersist> {
+        return new Promise((resolve: (value: UIPersist | PromiseLike<UIPersist>) => void, reject: (reason?: any) => void) => {
             G.ResMgr.load({
                 base: persistClass.prefabPath,
                 bundleName: BundleDefine.Name.RESOURCES,
@@ -484,7 +492,7 @@ export default class UIManager extends BaseManager {
                         persist.resCache = resCache;
                         persist.node = node;
                         this._persistMap.set(persist.className, persist);
-                        resolve();
+                        resolve(persist);
                     } else {
                         reject();
                     }
@@ -496,7 +504,7 @@ export default class UIManager extends BaseManager {
     private async openPersist(persistClass: UIInterface.UIClass<BasePersist>, layer: UIDefine.PersistLayer, ...data: any[]): Promise<void> {
         let persist: UIPersist = this._persistMap.get(cc.js.getClassName(persistClass));
         if (!persist) {
-            await this.addPersist(persistClass);
+            persist = await this.addPersist(persistClass);
         }
 
         if (!persist.node.parent) {

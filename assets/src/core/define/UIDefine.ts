@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:56:31
  * LastEditors  : ougato
- * LastEditTime : 2024-01-01 13:56:16
+ * LastEditTime : 2024-01-02 11:24:45
  * FilePath     : /client/assets/src/core/define/UIDefine.ts
  * Description  : 界面定义
  */
@@ -50,6 +50,8 @@ export namespace UIDefine {
         WAITING,
         // 加载
         LOADING,
+        // 模拟触摸
+        SIMULATE,
         // 触摸
         TOUCH,
     }

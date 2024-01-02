@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-04 23:07:17
  * LastEditors  : ougato
- * LastEditTime : 2023-07-19 16:58:12
+ * LastEditTime : 2024-01-02 18:26:32
  * FilePath     : /client/assets/src/ui/persist/DialogPersist.ts
  * @Description  : 对话框（按钮自定义文字）
  */
@@ -129,15 +129,14 @@ export default class DialogPersist extends BasePersist {
     /**
      * 点击关闭
      */
-    private onClickClose(): void {
-
+    private clickClose(): void {
         this.playCloseAnimation();
     }
 
     /**
      * 点击取消
      */
-    private onClickCancel(): void {
+    private clickCancel(): void {
         this._data.cancelCallback && this._data.cancelCallback();
         this.playCloseAnimation();
     }
@@ -145,9 +144,24 @@ export default class DialogPersist extends BasePersist {
     /**
      * 点击确认
      */
-    private onClickConfirm(): void {
+    private clickConfirm(): void {
         this._data.confirmCallback && this._data.confirmCallback();
         this.playCloseAnimation();
+    }
+
+    protected onClick<T>(ev: cc.Event.EventTouch, data?: T): void {
+        super.onClick(ev, true);
+        switch (ev.target.name) {
+            case "btnConfirm":
+                this.clickConfirm()
+                break;
+            case "btnCancel":
+                this.clickCancel();
+                break;
+            case "btnClose":
+                this.clickClose();
+                break;
+        }
     }
 
 }
