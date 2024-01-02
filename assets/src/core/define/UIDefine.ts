@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:56:31
  * LastEditors  : ougato
- * LastEditTime : 2023-12-29 11:47:24
+ * LastEditTime : 2024-01-01 13:56:16
  * FilePath     : /client/assets/src/core/define/UIDefine.ts
  * Description  : 界面定义
  */
@@ -22,7 +22,7 @@ export namespace UIDefine {
     export enum CanvasLayer {
         // 场景层（大厅、游戏）
         SCENE = 0 * LAYER_INTERVAL,
-        // 常驻层（防触摸、加载转圈、转场进度、跑马灯）
+        // 常驻层（防点击、加载转圈、转场进度、跑马灯，触摸）
         PERSIST = 1 * LAYER_INTERVAL,
     }
 

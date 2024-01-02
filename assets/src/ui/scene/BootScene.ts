@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2023-12-29 16:39:59
+ * LastEditTime : 2024-01-01 13:31:05
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
@@ -72,9 +72,9 @@ export default class BootScene extends BaseScene {
      * @returns {Promise<void>}
      */
     private async initPersist(): Promise<void> {
+        G.UIMgr.openTouch();
         return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
-            Promise.all([G.UIMgr.addPersist(TouchPersist), G.UIMgr.addPersist(DialogPersist), G.UIMgr.addPersist(BlockPersist), G.UIMgr.addPersist(LoadingPersist), G.UIMgr.addPersist(WaitingPersist)]).then(() => {
-                G.UIMgr.openTouch();
+            Promise.all([G.UIMgr.addPersist(DialogPersist), G.UIMgr.addPersist(BlockPersist), G.UIMgr.addPersist(LoadingPersist), G.UIMgr.addPersist(WaitingPersist)]).then(() => {
                 resolve();
             }).catch((reason: any) => {
                 // TODO: 弹窗重试
