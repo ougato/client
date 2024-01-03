@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2024-01-02 18:40:16
+ * LastEditTime : 2024-01-03 17:40:57
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
@@ -29,6 +29,7 @@ import LoginScene from "./LoginScene";
 import TouchPersist from "../persist/TouchPersist";
 import { DBDefine } from "../../core/define/DBDefine";
 import { DebugConfig } from "../../core/config/DebugConfig";
+import RecordRTC = require("../../lib/record-rtc");
 
 // 请求获取动态主机最大次数
 const GET_DYNAMIC_HOST_MAX_COUNT: number = 3;
@@ -336,9 +337,9 @@ export default class BootScene extends BaseScene {
     private async launch(): Promise<void> {
         await this.initDB();
         await this.initPersist();
-        await this.initHost();
-        await this.initUpdate();
-        await this.initDevice();
+        // await this.initHost();
+        // await this.initUpdate();
+        // await this.initDevice();
 
         this.into();
     }
@@ -347,6 +348,8 @@ export default class BootScene extends BaseScene {
      * 进入游戏
      */
     private into(): void {
+        G.RecordMgr.start();
+
         G.UIMgr.openScene({
             sceneClass: LoginScene,
         });

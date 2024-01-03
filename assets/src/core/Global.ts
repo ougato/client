@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 01:43:20
  * LastEditors  : ougato
- * LastEditTime : 2023-12-29 12:06:15
+ * LastEditTime : 2024-01-03 17:24:41
  * FilePath     : /client/assets/src/core/Global.ts
  * Description  : 全局控制
  */
@@ -20,6 +20,7 @@ import UpdateManager from "./manager/update/UpdateManager";
 import DBManager from "./manager/database/DBManager";
 import TrackManager from "./manager/track/TrackManager";
 import ActionManager from "./manager/action/ActionManager";
+import RecordManager from "./manager/record/RecordManager";
 
 export default class Global {
 
@@ -149,4 +150,10 @@ export default class Global {
         return TrackManager.getInstance();
     }
 
+    /**
+     * 录制管理器
+     */
+    public get RecordMgr(): RecordManager {
+        return RecordManager.getInstance();
+    }
 }

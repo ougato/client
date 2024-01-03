@@ -927,7 +927,7 @@
     },
     "component": "",
     "_componentId": "de144aApv1L3rj5sVpU707G",
-    "handler": "onClickLoginPhone",
+    "handler": "onClick",
     "customEventData": ""
   },
   {
@@ -1461,7 +1461,7 @@
     },
     "component": "",
     "_componentId": "de144aApv1L3rj5sVpU707G",
-    "handler": "onClickLoginGuest",
+    "handler": "onClick",
     "customEventData": ""
   },
   {
