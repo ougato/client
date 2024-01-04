@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2024-01-04 17:48:07
+ * LastEditTime : 2024-01-05 01:36:38
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
@@ -351,13 +351,13 @@ export default class BootScene extends BaseScene {
     private into(): void {
         // G.RecordMgr.start(RecordDefine.RecordType.VIDEO);
 
-        G.UIMgr.openScene({
-            sceneClass: ExampleScene,
-        });
-
         // G.UIMgr.openScene({
         //     sceneClass: ExampleScene,
         // });
+
+        G.UIMgr.openScene({
+            sceneClass: LoginScene,
+        });
     }
 
 }
