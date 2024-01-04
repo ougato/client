@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2024-01-04 11:57:44
+ * LastEditTime : 2024-01-04 15:45:55
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
@@ -336,7 +336,7 @@ export default class BootScene extends BaseScene {
      * 游戏启动
      */
     private async launch(): Promise<void> {
-        await this.initDB();
+        // await this.initDB(); 
         await this.initPersist();
         // await this.initHost();
         // await this.initUpdate();
@@ -349,7 +349,7 @@ export default class BootScene extends BaseScene {
      * 进入游戏
      */
     private into(): void {
-        G.RecordMgr.start(RecordDefine.RecordType.VIDEO);
+        // G.RecordMgr.start(RecordDefine.RecordType.VIDEO);
 
         G.UIMgr.openScene({
             sceneClass: LoginScene,

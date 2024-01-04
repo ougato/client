@@ -23,7 +23,7 @@
   "fb-instant-games": {},
   "android": {
     "REMOTE_SERVER_ROOT": "",
-    "packageName": "org.cocos2d.demo"
+    "packageName": "com.ougato.game"
   },
   "ios": {
     "REMOTE_SERVER_ROOT": "",
@@ -54,5 +54,9 @@
   "agreements": {
     "20200904180755": false,
     "20200904180716": false
+  },
+  "openharmony": {
+    "packageName": "com.cocos.openharmony",
+    "REMOTE_SERVER_ROOT": ""
   }
 }
