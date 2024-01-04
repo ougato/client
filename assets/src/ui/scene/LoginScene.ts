@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-09-04 23:39:20
  * LastEditors  : ougato
- * LastEditTime : 2024-01-04 11:58:01
+ * LastEditTime : 2024-01-04 17:48:32
  * FilePath     : /client/assets/src/ui/scene/LoginScene.ts
  * Description  : 登陆场景
  */
@@ -41,11 +41,7 @@ export default class LoginScene extends BaseScene {
      * 点击手机登录
      */
     private clickLoginPhone(): void {
-        G.UIMgr.openDialog({
-            title: "标题",
-            content: "弹窗内容",
-            isShowClose: false,
-        })
+
     }
 
     /**

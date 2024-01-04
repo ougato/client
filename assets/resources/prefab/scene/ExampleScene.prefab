@@ -754,7 +754,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "New Button",
+    "_name": "btnJoin",
     "_objFlags": 0,
     "_parent": {
       "__id__": 1
@@ -1162,7 +1162,7 @@
     },
     "component": "",
     "_componentId": "41c8ebUPWNDpoFHsEne2S+A",
-    "handler": "onClickInsert",
+    "handler": "onClick",
     "customEventData": ""
   },
   {
@@ -1178,7 +1178,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "New EditBox",
+    "_name": "edbIndex",
     "_objFlags": 0,
     "_parent": {
       "__id__": 1
@@ -1702,7 +1702,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "New EditBox",
+    "_name": "edbCount",
     "_objFlags": 0,
     "_parent": {
       "__id__": 1
@@ -2226,7 +2226,7 @@
   },
   {
     "__type__": "cc.Node",
-    "_name": "New Button",
+    "_name": "btnDelete",
     "_objFlags": 0,
     "_parent": {
       "__id__": 1
@@ -2634,7 +2634,7 @@
     },
     "component": "",
     "_componentId": "41c8ebUPWNDpoFHsEne2S+A",
-    "handler": "onClickRemove",
+    "handler": "onClick",
     "customEventData": ""
   },
   {

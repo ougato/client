@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-12-13 10:31:14
  * LastEditors  : ougato
- * LastEditTime : 2022-11-10 13:51:47
+ * LastEditTime : 2024-01-04 20:48:09
  * FilePath     : /client/assets/src/ui/scene/ExampleScene.ts
  * Description  : 演示例子场景
  */
@@ -10,6 +10,7 @@
 import BaseScene from "../../core/base/BaseScene";
 import ListView from "../../core/component/ListView";
 import NativeUtils from "../../core/utils/NativeUtils";
+import TypeUtils from "../../core/utils/TypeUtils";
 
 const { ccclass, property } = cc._decorator;
 
@@ -36,39 +37,47 @@ export default class ExampleScene extends BaseScene {
 
     }
 
-    private onClickInsert(): void {
-        let index: number = Number(this.edbIndex.string);
-        if (isNaN(index)) {
-            G.LogMgr.warn("下标不是一个数");
+    private async clickJoin(): Promise<void> {
+        // let index: number = Number(this.edbIndex.string);
+        // if (isNaN(index)) {
+        //     G.LogMgr.warn("下标不是一个数");
+        //     return;
+        // }
+        // let count: number = Number(this.edbCount.string);
+        // if (isNaN(index)) {
+        //     G.LogMgr.warn("数量不是一个数");
+        //     return;
+        // }
+
+        // let listData: string[] = [];
+        // for (let i: number = 0; i < count; ++i) {
+        //     listData.push((this.index++).toString());
+        // }
+        // this.lsvExample.insert(listData, index);
+        let content: string = await NativeUtils.getClipboard();
+        if (TypeUtils.isNull(content)) {
+            G.UIMgr.openDialog({
+                title: "提示",
+                content: "请打开获取剪切板内容权限",
+
+            })
             return;
         }
-        let count: number = Number(this.edbCount.string);
-        if (isNaN(index)) {
-            G.LogMgr.warn("数量不是一个数");
-            return;
-        }
-
-        let listData: string[] = [];
-        for (let i: number = 0; i < count; ++i) {
-            listData.push((this.index++).toString());
-        }
-        this.lsvExample.insert(listData, index);
-
-        NativeUtils.getClipboard();
+        this.edbIndex.string = content;
     }
 
-    private onClickRemove(): void {
-        let index: number = Number(this.edbIndex.string);
-        if (isNaN(index)) {
-            G.LogMgr.warn("下标不是一个数");
-            return;
-        }
-        let count: number = Number(this.edbCount.string);
-        if (isNaN(index)) {
-            G.LogMgr.warn("数量不是一个数");
-            return;
-        }
-        this.lsvExample.remove(index, count);
+    private cickDelete(): void {
+        // let index: number = Number(this.edbIndex.string);
+        // if (isNaN(index)) {
+        //     G.LogMgr.warn("下标不是一个数");
+        //     return;
+        // }
+        // let count: number = Number(this.edbCount.string);
+        // if (isNaN(index)) {
+        //     G.LogMgr.warn("数量不是一个数");
+        //     return;
+        // }
+        // this.lsvExample.remove(index, count);
 
         NativeUtils.setClipboard(this.edbCount.string);
     }
@@ -79,5 +88,16 @@ export default class ExampleScene extends BaseScene {
 
     private pullLeft(): void {
         this.lsvExample.insert(++this.index, 0);
+    }
+
+    protected onClick<T>(ev: cc.Event.EventTouch, data?: T): void {
+        switch (ev.target.name) {
+            case "btnDelete":
+                this.cickDelete();
+                break;
+            case "btnJoin":
+                this.clickJoin();
+                break;
+        }
     }
 }

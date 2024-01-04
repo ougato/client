@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-10-12 00:55:14
  * LastEditors  : ougato
- * LastEditTime : 2022-11-10 15:04:49
+ * LastEditTime : 2024-01-04 21:02:29
  * FilePath     : /client/assets/src/core/utils/NativeUtils.ts
  * Description  : 原生工具
  */
@@ -118,40 +118,69 @@ export default class MathUtils {
      * @param {string} conetent 内容
      * @return {boolean} 是否已拷贝到剪切板
      */
-    public static setClipboard(content: string): boolean {
-        let isOK: boolean = false;
-        if (cc.sys.isNative) {
-            if (cc.sys.os === cc.sys.OS_ANDROID) {
-                isOK = jsb.reflection.callStaticMethod(ANDROID_BRIDGE_FILE_PATH, "setClipboard", "(Ljava/lang/String;)Z", content);
-            } else if (cc.sys.os === cc.sys.OS_IOS) {
+    public static async setClipboard(content: string): Promise<boolean> {
+        return new Promise((resolve: (value: boolean | PromiseLike<boolean>) => void, reject: (reason?: any) => void) => {
+            let isOK: boolean = false;
+            if (cc.sys.isBrowser) {
+                navigator.clipboard.writeText(content).then(
+                    () => {
+                        isOK = true;
+                        G.LogMgr.log(`设置剪切板内容：${content}`);
+                        resolve(isOK);
+                    },
+                    (err: string) => {
+                        G.LogMgr.log(`设置剪切板内容失败：${err}`);
+                        resolve(isOK);
+                    }
+                );
+            } else if (cc.sys.isNative) {
+                if (cc.sys.os === cc.sys.OS_ANDROID) {
+                    isOK = jsb.reflection.callStaticMethod(ANDROID_BRIDGE_FILE_PATH, "setClipboard", "(Ljava/lang/String;)Z", content);
+                } else if (cc.sys.os === cc.sys.OS_IOS) {
 
+                }
+
+                if (isOK) {
+                    G.LogMgr.log(`设置剪切板内容：${content}`);
+                } else {
+                    G.LogMgr.log(`设置剪切板内容失败`);
+                }
+
+                resolve(isOK);
             }
-        }
-
-        G.LogMgr.log(`设置剪切板内容：${isOK}`);
-
-        return isOK;
+        })
     }
 
     /**
      * 获取系统剪切板的内容
-     * @return {string} 剪切板内容
+     * @return {string} 剪切板内容（null-权限不足）
      */
-    public static getClipboard(): string {
-        let content: string = "";
-        if (cc.sys.isNative) {
-            if (cc.sys.os === cc.sys.OS_ANDROID) {
-                content = jsb.reflection.callStaticMethod(ANDROID_BRIDGE_FILE_PATH, "getClipboard", "()Ljava/lang/String;");
-            } else if (cc.sys.os === cc.sys.OS_IOS) {
+    public static async getClipboard(): Promise<string> {
+        return new Promise((resolve: (value: string | PromiseLike<string>) => void, reject: (reason?: any) => void) => {
+            let content: string = null;
+            if (cc.sys.isBrowser) {
+                // 本地 localhost 可以正常使用
+                // HTTPS 可以正常使用
+                navigator.clipboard.readText().then(
+                    (content: string) => {
+                        G.LogMgr.log(`获取剪切板内容：${content}`);
+                        resolve(content);
+                    },
+                    (err: string) => {
+                        G.LogMgr.log(`获取剪切板内容失败：${err}`);
+                        resolve(content);
+                    }
+                );
+            } else if (cc.sys.isNative) {
+                if (cc.sys.os === cc.sys.OS_ANDROID) {
+                    content = jsb.reflection.callStaticMethod(ANDROID_BRIDGE_FILE_PATH, "getClipboard", "()Ljava/lang/String;");
+                } else if (cc.sys.os === cc.sys.OS_IOS) {
 
+                }
+                G.LogMgr.log(`获取剪切板内容：${content}`);
+                resolve(content);
             }
-        } else {
-
-        }
-
-        G.LogMgr.log(`获取剪切板内容：${content}`);
-
-        return content;
+        });
     }
 
 

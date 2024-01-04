@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-04 23:07:17
  * LastEditors  : ougato
- * LastEditTime : 2024-01-02 18:26:32
+ * LastEditTime : 2024-01-04 20:39:04
  * FilePath     : /client/assets/src/ui/persist/DialogPersist.ts
  * @Description  : 对话框（按钮自定义文字）
  */
@@ -67,7 +67,7 @@ export default class DialogPersist extends BasePersist {
         }
 
         if (TypeUtils.isNull(data.isShowCancel)) {
-            data.isShowCancel = true;
+            data.isShowCancel = false;
         }
 
         if (TypeUtils.isNull(data.isShowClose)) {
