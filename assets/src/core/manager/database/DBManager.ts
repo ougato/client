@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-26 10:53:43
  * LastEditors  : ougato
- * LastEditTime : 2023-12-29 16:38:12
+ * LastEditTime : 2024-01-04 11:37:30
  * FilePath     : /client/assets/src/core/manager/database/DBManager.ts
  * Description  : 数据库管理器
  */
@@ -11,6 +11,7 @@ import { DBConfig } from "../../../config/DBConfig";
 import BaseManager from "../../base/BaseManager";
 import { DBDefine } from "../../define/DBDefine";
 import DBAbstract from "./DBAbstract";
+import DBBase from "./DBBase";
 import DBIndexed from "./DBIndexed";
 
 export default class DBManager extends BaseManager {
@@ -18,7 +19,7 @@ export default class DBManager extends BaseManager {
     private static s_instance: DBManager = null;
 
     // 数据库对象
-    protected _db: DBAbstract = null;
+    protected _db: DBBase = null;
 
     public static getInstance(): DBManager {
         if (this.s_instance === null) {

@@ -2,22 +2,24 @@
  * Author       : ougato
  * Date         : 2024-01-03 16:22:00
  * LastEditors  : ougato
- * LastEditTime : 2024-01-03 18:41:09
+ * LastEditTime : 2024-01-04 11:31:29
  * FilePath     : /client/assets/src/core/manager/record/RecordManager.ts
  * Description  : 录像管理器
  */
 
-import { CanvasRecorder } from "../../../lib/record-rtc";
-import RecordRTC = require("../../../lib/record-rtc");
 import BaseManager from "../../base/BaseManager";
 import { RecordDefine } from "../../define/RecordDefine";
+import RecordBase from "./RecordBase";
+import RecordWebCanvas from "./RecordWebCanvas";
 
 export default class RecordManager extends BaseManager {
 
     private static s_instance: RecordManager = null;
 
-    // 录制器
-    private _recorder: RecordRTC = null;
+    // 视频录制
+    protected _videoRecord: RecordBase = null;
+    // 音频录制
+    protected _audioRecord: RecordBase = null;
 
     public static getInstance(): RecordManager {
         if (this.s_instance === null) {
@@ -36,32 +38,43 @@ export default class RecordManager extends BaseManager {
     constructor() {
         super();
 
-    }
-
-    public init(): void {
-        const canvas = document.getElementById(RecordDefine.CANVAS_NAME) as HTMLCanvasElement;
-        this._recorder = new RecordRTC(canvas, {
-            type: 'canvas',
-            mimeType: "video/webm",
-            frameInterval: 1,
-            videoBitsPerSecond: 1,
-        });
-    }
-
-    public start(): void {
         this.init();
-        this._recorder.startRecording();
     }
 
-    public stop(): void {
-        this._recorder.stopRecording(() => {
-            let blob = this._recorder.getBlob();
-            // 处理录制的 Blob 数据，这里示例为保存为文件
-            const downloadLink = document.createElement('a');
-            downloadLink.href = URL.createObjectURL(blob);
-            downloadLink.download = 'recorded-video.webm';
-            downloadLink.click();
-        });
+    protected init(): void {
+        if (cc.sys.isBrowser) {
+            this._videoRecord = new RecordWebCanvas();
+        } else if (cc.sys.isNative) {
+            if (cc.sys.os === cc.sys.OS_ANDROID) {
+
+            } else if (cc.sys.os === cc.sys.OS_IOS) {
+
+            } else {
+
+            }
+        }
+    }
+
+    public start(type: RecordDefine.RecordType): void {
+        switch (type) {
+            case RecordDefine.RecordType.VIDEO:
+                this._videoRecord.start();
+                break;
+            case RecordDefine.RecordType.AUDIO:
+                this._audioRecord.start();
+                break;
+        }
+    }
+
+    public stop(type: RecordDefine.RecordType): void {
+        switch (type) {
+            case RecordDefine.RecordType.VIDEO:
+                this._videoRecord.stop();
+                break;
+            case RecordDefine.RecordType.AUDIO:
+                this._audioRecord.stop();
+                break;
+        }
     }
 
     /**

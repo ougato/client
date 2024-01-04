@@ -2,9 +2,9 @@
  * Author       : ougato
  * Date         : 2023-12-26 15:25:49
  * LastEditors  : ougato
- * LastEditTime : 2023-12-29 16:42:30
+ * LastEditTime : 2024-01-04 11:56:10
  * FilePath     : /client/assets/src/core/manager/database/DBIndexed.ts
- * Description  : IndexedDB 用于 Web 环境使用
+ * Description  : Web 环境数据库
  */
 
 import { DBConfig } from "../../../config/DBConfig";
@@ -14,8 +14,11 @@ import { ConverUtils } from "../../utils/ConverUtils";
 import UnitUtils from "../../utils/UnitUtils";
 import DBBase from "./DBBase";
 
-export default class DBIndexed extends DBBase<IDBDatabase> {
+export default class DBIndexed extends DBBase {
 
+    // 连接后可操作数据库的对象
+    protected _db: IDBDatabase = null;
+    // 连接前的数据库
     protected _indexedDB: IDBFactory = null;
 
     constructor() {
@@ -93,9 +96,9 @@ export default class DBIndexed extends DBBase<IDBDatabase> {
                 this.state = DBDefine.State.OPENED;
                 G.LogMgr.log(`打开 [${dbName}] 数据库成功`);
 
-                this.db = request.result;
+                this._db = request.result;
 
-                this.db.onversionchange = function () {
+                this._db.onversionchange = function () {
                     this.close();
                     alert("Database is outdated, please reload the page.")
                 };
@@ -131,7 +134,7 @@ export default class DBIndexed extends DBBase<IDBDatabase> {
 
     public insert(table: DBDefine.Table, data: { [key: string]: any; }): void {
         try {
-            let request: IDBRequest<IDBValidKey> = this.db.transaction(table, "readwrite")
+            let request: IDBRequest<IDBValidKey> = this._db.transaction(table, "readwrite")
                 .objectStore(table)
                 .add(data);
 
@@ -147,17 +150,17 @@ export default class DBIndexed extends DBBase<IDBDatabase> {
         }
     }
 
-    delele(): void {
-        throw new Error("Method not implemented.");
+    public delele(): void {
+
     }
 
-    update(): void {
-        throw new Error("Method not implemented.");
+    public update(): void {
+
     }
 
     public select(table: DBDefine.Table, key?: string): void {
         try {
-            let request: IDBRequest<IDBValidKey> = this.db.transaction(table, "readonly")
+            let request: IDBRequest<IDBValidKey> = this._db.transaction(table, "readonly")
                 .objectStore(table)
                 .getAll();
 
@@ -171,6 +174,11 @@ export default class DBIndexed extends DBBase<IDBDatabase> {
         } catch (e) {
             G.LogMgr.warn(`查询数据报错：${e}`);
         }
+    }
+
+    public destroy(): void {
+        super.destroy();
+
     }
 
 }

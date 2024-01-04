@@ -14,7 +14,7 @@
   "inlineSpriteFrames_native": true,
   "mainCompressionType": "default",
   "mainIsRemote": true,
-  "optimizeHotUpdate": false,
+  "optimizeHotUpdate": true,
   "md5Cache": true,
   "nativeMd5Cache": true,
   "encryptJs": true,
@@ -50,7 +50,7 @@
     "scheme": "https",
     "skipRecord": false
   },
-  "appBundle": false,
+  "appBundle": true,
   "agreements": {
     "20200904180755": false,
     "20200904180716": false

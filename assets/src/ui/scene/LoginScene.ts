@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-09-04 23:39:20
  * LastEditors  : ougato
- * LastEditTime : 2024-01-03 17:28:12
+ * LastEditTime : 2024-01-04 11:58:01
  * FilePath     : /client/assets/src/ui/scene/LoginScene.ts
  * Description  : 登陆场景
  */
@@ -12,6 +12,7 @@ import GameData from "../../data/GameData";
 import HallController from "../../controller/HallController";
 import DeviceData from "../../data/DeviceData";
 import UserData from "../../data/UserData";
+import { RecordDefine } from "../../core/define/RecordDefine";
 
 const { ccclass, property } = cc._decorator;
 
@@ -56,7 +57,7 @@ export default class LoginScene extends BaseScene {
         // await hallController.getWebSocketRequest({ token: G.DataMgr.get(GameData).token, });
         // hallController.connect();
 
-        G.RecordMgr.stop();
+        G.RecordMgr.stop(RecordDefine.RecordType.VIDEO);
     }
 
     /**
