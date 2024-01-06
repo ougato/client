@@ -1,14 +1,14 @@
-package org.cocos2dx.javascript;
+package org.cocos2dx.javascript.utils;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 
-public class CocosJsCallNative {
+public class NativeUtils {
 
     private static Context mContext = null;
 
-    public static void init(final Context context) {
+    public static void setContext(final Context context) {
         mContext = context;
     }
 
@@ -42,11 +42,6 @@ public class CocosJsCallNative {
                 ClipData clipData = clipboard.getPrimaryClip();
                 CharSequence charSequence = clipData.getItemAt(0).getText();
                 content = String.valueOf(charSequence);
-//                for (int i = 0; i < clipData.getItemCount(); ++i) {
-//                    ClipData.Item item = clipData.getItemAt(i);
-//                    CharSequence str = item.coerceToText(mContext);
-//                    content += str;
-//                }
             }
         } catch (Exception e) {
 

@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2022-09-18 19:15:52
  * LastEditors  : ougato
- * LastEditTime : 2023-12-28 18:52:54
+ * LastEditTime : 2024-01-05 14:52:17
  * FilePath     : /client/assets/src/core/utils/TypeUtils.ts
  * Description  : 
  */
@@ -18,7 +18,7 @@ export default class TypeUtils {
         if (Array.isArray) {
             return Array.isArray(data);
         } else {
-            return Object.prototype.toString.call(data) === '[object Array]';
+            return Object.prototype.toString.call(data) === "[object Array]";
         }
     }
 
@@ -32,7 +32,9 @@ export default class TypeUtils {
     }
 
     /**
-     * 是否数字
+     * 判断是否数字
+     * @param data {T} 数据
+     * @returns 是否数字
      */
     public static isNumber<T>(data: T): boolean {
         return typeof data === "number";

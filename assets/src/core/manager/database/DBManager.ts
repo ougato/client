@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-26 10:53:43
  * LastEditors  : ougato
- * LastEditTime : 2024-01-04 15:34:20
+ * LastEditTime : 2024-01-05 16:23:23
  * FilePath     : /client/assets/src/core/manager/database/DBManager.ts
  * Description  : 数据库管理器
  */
@@ -13,6 +13,7 @@ import { DBDefine } from "../../define/DBDefine";
 import DBAbstract from "./DBAbstract";
 import DBBase from "./DBBase";
 import DBIndexed from "./DBIndexed";
+import DBSQLite from "./DBSQLite";
 
 export default class DBManager extends BaseManager {
 
@@ -50,12 +51,15 @@ export default class DBManager extends BaseManager {
             this._db = new DBIndexed();
         } else if (cc.sys.isNative) {
             if (cc.sys.os === cc.sys.OS_ANDROID) {
-
+                this._db = new DBSQLite();
             } else if (cc.sys.os === cc.sys.OS_IOS) {
-
-            } else {
-
+                this._db = new DBSQLite();
             }
+        }
+
+        if (!this._db) {
+            G.LogMgr.warn(`设备环境不支持数据库`);
+            return false;
         }
 
         return this._db.init(DBConfig.NAME, DBConfig.VERSION);

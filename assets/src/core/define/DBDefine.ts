@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-27 18:28:07
  * LastEditors  : ougato
- * LastEditTime : 2023-12-28 23:25:37
+ * LastEditTime : 2024-01-05 18:02:42
  * FilePath     : /client/assets/src/core/define/DBDefine.ts
  * Description  : 数据库定义
  */
@@ -35,6 +35,8 @@ export namespace DBDefine {
         TRACK = "track",
         // 行为（玩家操作）
         ACTION = "action",
+        // 录制（音视频录制）
+        RECORD = "record",
     }
 
     // 日志表字段
@@ -71,4 +73,17 @@ export namespace DBDefine {
         ACTION_DATA = "action_data",
     }
 
+    // 录制表字段
+    export enum RecordField {
+        // 自增 ID
+        ID = "id",
+        // 时间戳
+        TIMESTAMP = "timestamp",
+        // 用户 ID
+        UID = "uid",
+        // 录制类型
+        RECORD_TYPE = "record_type",
+        // 数据
+        RECORD_DATA = "record_data",
+    }
 }

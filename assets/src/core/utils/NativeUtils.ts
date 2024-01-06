@@ -2,31 +2,44 @@
  * Author       : ougato
  * Date         : 2021-10-12 00:55:14
  * LastEditors  : ougato
- * LastEditTime : 2024-01-04 21:02:29
+ * LastEditTime : 2024-01-05 15:31:24
  * FilePath     : /client/assets/src/core/utils/NativeUtils.ts
  * Description  : 原生工具
  */
 
 import { LocalStorageDefine } from "../define/LocalStorageDefine";
+import { NavigatorInterface } from "../interface/NavigatorInterface";
 
 // 安卓交互文件路径
-const ANDROID_BRIDGE_FILE_PATH: string = "org/cocos2dx/javascript/CocosJsCallNative";
+const ANDROID_NATIVE_UTILS_FILE_PATH: string = "org/cocos2dx/javascript/utils/NativeUtils";
 
-export default class MathUtils {
+export default class NativeUtils {
 
     /**
      * 获取电池电量（0-100）百分比
      * @returns {number} 电池电量
      */
-    public static getBattery(): number {
-        let value: number = 100;
+    public static async getBattery(): Promise<number> {
+        return new Promise((resolve: (value: number | PromiseLike<number>) => void, reject: (reason?: any) => void) => {
+            let value: number = 100;
+            if (cc.sys.isBrowser) {
+                let navigatorEx: NavigatorInterface.NavigatorEx = navigator as NavigatorInterface.NavigatorEx;
+                if (!navigatorEx.getBattery) {
+                    return resolve(value);
+                }
 
-        if (cc.sys.isNative) {
-            // cocos 提供了获取电量的接口、使用官方电量获取、如有需求可重写此接口
-            value = Math.floor(cc.sys.getBatteryLevel() * 100);
-        }
-
-        return value;
+                navigatorEx.getBattery().then((battery: NavigatorInterface.Battery) => {
+                    value = Math.floor(battery.level * 100);
+                    resolve(value);
+                })
+            } else if (cc.sys.isNative) {
+                // cocos 提供了获取电量的接口、使用官方电量获取、如有需求可重写此接口
+                value = Math.floor(cc.sys.getBatteryLevel() * 100);
+                resolve(value);
+            } else {
+                resolve(value);
+            }
+        });
     }
 
     /**
@@ -135,7 +148,7 @@ export default class MathUtils {
                 );
             } else if (cc.sys.isNative) {
                 if (cc.sys.os === cc.sys.OS_ANDROID) {
-                    isOK = jsb.reflection.callStaticMethod(ANDROID_BRIDGE_FILE_PATH, "setClipboard", "(Ljava/lang/String;)Z", content);
+                    isOK = jsb.reflection.callStaticMethod(ANDROID_NATIVE_UTILS_FILE_PATH, "setClipboard", "(Ljava/lang/String;)Z", content);
                 } else if (cc.sys.os === cc.sys.OS_IOS) {
 
                 }
@@ -146,6 +159,8 @@ export default class MathUtils {
                     G.LogMgr.log(`设置剪切板内容失败`);
                 }
 
+                resolve(isOK);
+            } else {
                 resolve(isOK);
             }
         })
@@ -173,15 +188,16 @@ export default class MathUtils {
                 );
             } else if (cc.sys.isNative) {
                 if (cc.sys.os === cc.sys.OS_ANDROID) {
-                    content = jsb.reflection.callStaticMethod(ANDROID_BRIDGE_FILE_PATH, "getClipboard", "()Ljava/lang/String;");
+                    content = jsb.reflection.callStaticMethod(ANDROID_NATIVE_UTILS_FILE_PATH, "getClipboard", "()Ljava/lang/String;");
                 } else if (cc.sys.os === cc.sys.OS_IOS) {
 
                 }
                 G.LogMgr.log(`获取剪切板内容：${content}`);
                 resolve(content);
+            } else {
+                resolve(content);
             }
         });
     }
-
 
 }

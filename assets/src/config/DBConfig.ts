@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-27 16:43:28
  * LastEditors  : ougato
- * LastEditTime : 2023-12-29 16:06:15
+ * LastEditTime : 2024-01-05 18:03:02
  * FilePath     : /client/assets/src/config/DBConfig.ts
  * Description  : 数据库配置
  */
@@ -41,6 +41,16 @@ export namespace DBConfig {
             indexList: [
                 { name: DBDefine.TrackField.TIMESTAMP, keyPath: DBDefine.TrackField.TIMESTAMP, options: { unique: false } },
                 { name: DBDefine.TrackField.UID, keyPath: DBDefine.TrackField.UID, options: { unique: false } },
+            ]
+        },
+        {
+            name: DBDefine.Table.RECORD,
+            options: { keyPath: DBDefine.RecordField.ID, autoIncrement: true },
+            indexList: [
+                { name: DBDefine.RecordField.TIMESTAMP, keyPath: DBDefine.RecordField.TIMESTAMP, options: { unique: false } },
+                { name: DBDefine.RecordField.UID, keyPath: DBDefine.RecordField.UID, options: { unique: false } },
+                { name: DBDefine.RecordField.RECORD_TYPE, keyPath: DBDefine.RecordField.RECORD_TYPE, options: { unique: false } },
+                { name: DBDefine.RecordField.RECORD_DATA, keyPath: DBDefine.RecordField.RECORD_DATA, options: { unique: false } },
             ]
         },
     ];

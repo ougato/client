@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-12-13 10:31:14
  * LastEditors  : ougato
- * LastEditTime : 2024-01-04 20:48:09
+ * LastEditTime : 2024-01-05 12:17:39
  * FilePath     : /client/assets/src/ui/scene/ExampleScene.ts
  * Description  : 演示例子场景
  */
@@ -54,16 +54,18 @@ export default class ExampleScene extends BaseScene {
         //     listData.push((this.index++).toString());
         // }
         // this.lsvExample.insert(listData, index);
-        let content: string = await NativeUtils.getClipboard();
-        if (TypeUtils.isNull(content)) {
-            G.UIMgr.openDialog({
-                title: "提示",
-                content: "请打开获取剪切板内容权限",
+        // let content: string = await NativeUtils.getClipboard();
+        // if (TypeUtils.isNull(content)) {
+        //     G.UIMgr.openDialog({
+        //         title: "提示",
+        //         content: "请打开获取剪切板内容权限",
 
-            })
-            return;
-        }
-        this.edbIndex.string = content;
+        //     })
+        //     return;
+        // }
+        // this.edbIndex.string = content;
+
+        G.LogMgr.log(`电池电量：${await NativeUtils.getBattery()}`);
     }
 
     private cickDelete(): void {
@@ -79,7 +81,7 @@ export default class ExampleScene extends BaseScene {
         // }
         // this.lsvExample.remove(index, count);
 
-        NativeUtils.setClipboard(this.edbCount.string);
+        // NativeUtils.setClipboard(this.edbCount.string);
     }
 
     private onClickItem(node: cc.Node, data: string): void {
