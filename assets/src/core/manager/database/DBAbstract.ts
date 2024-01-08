@@ -11,7 +11,7 @@ import { DBDefine } from "../../define/DBDefine";
 
 export default abstract class DBAbstract {
     abstract state: DBDefine.State;
-    abstract init(dbName: string, dbVersion?: number): Promise<boolean>
+    abstract init(dbName: string, dbVersion: number): Promise<boolean>
     abstract insert(table: DBDefine.Table, data: { [key: string]: any }): void;
     abstract delele(): void;
     abstract update(): void;

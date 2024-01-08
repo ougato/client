@@ -2,25 +2,28 @@
  * Author       : ougato
  * Date         : 2023-12-26 16:34:12
  * LastEditors  : ougato
- * LastEditTime : 2023-12-29 14:12:29
+ * LastEditTime : 2024-01-09 00:33:39
  * FilePath     : /client/assets/src/core/interface/DBInterface.ts
  * Description  : 数据接口
  */
 
 import { ActionDefine } from "../define/ActionDefine";
+import { DBDefine } from "../define/DBDefine";
 
 export namespace DBInterface {
 
-    export interface Index {
+    export interface Field {
         name: string,
         keyPath: string | string[],
+        isIndex: boolean,
+        type: DBDefine.FieldType,
         options?: IDBIndexParameters,
     }
 
     export interface Table {
         name: string,
         options?: IDBObjectStoreParameters,
-        indexList?: Index[],
+        fieldList?: Field[],
     }
 
     // 用户行为数据

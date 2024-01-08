@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-26 15:25:49
  * LastEditors  : ougato
- * LastEditTime : 2024-01-08 12:05:03
+ * LastEditTime : 2024-01-09 00:41:18
  * FilePath     : /client/assets/src/core/manager/database/DBIndexed.ts
  * Description  : Web 环境数据库
  */
@@ -29,7 +29,6 @@ export default class DBIndexed extends DBBase {
     /**
      * 更新表
      * @param db {IDBDatabase} 数据库
-     * @returns
      */
     protected upgradeTable(db: IDBDatabase): void {
         const oldTableNameList: string[] = ConverUtils.converEnumToArrayGetValue(db.objectStoreNames);
@@ -52,9 +51,8 @@ export default class DBIndexed extends DBBase {
     }
 
     /**
-     * 更新索引
+     * 更新索引（索引名是根据 '表名_字段名' 生成）
      * @param target {IDBOpenDBRequest} 打开数据后的对象
-     * @returns
      */
     protected upgradeIndex(target: IDBOpenDBRequest): void {
         for (let tableInfo of DBConfig.Struct) {
@@ -62,8 +60,8 @@ export default class DBIndexed extends DBBase {
 
             const oldIndexNameList: string[] = ConverUtils.converEnumToArrayGetValue(table.indexNames);
             for (let oldIndexName of oldIndexNameList) {
-                let isNewIndex: boolean = tableInfo.indexList.some((indexInfo: DBInterface.Index) => {
-                    return indexInfo.name === oldIndexName;
+                let isNewIndex: boolean = tableInfo.fieldList.some((fieldInfo: DBInterface.Field) => {
+                    return this.getIndexName(tableInfo.name, fieldInfo.name) === oldIndexName && fieldInfo.isIndex;
                 })
 
                 if (!isNewIndex) {
@@ -71,15 +69,18 @@ export default class DBIndexed extends DBBase {
                 }
             }
 
-            for (let indexInfo of tableInfo.indexList) {
-                if (!table.indexNames.contains(indexInfo.name)) {
-                    table.createIndex(indexInfo.name, indexInfo.keyPath, indexInfo.options);
+            for (let fieldInfo of tableInfo.fieldList) {
+                if (!fieldInfo.isIndex) {
+                    continue;
+                }
+                if (!table.indexNames.contains(fieldInfo.name)) {
+                    table.createIndex(this.getIndexName(tableInfo.name, fieldInfo.name), fieldInfo.keyPath, fieldInfo.options);
                 }
             }
         }
     }
 
-    public async init(dbName: string, dbVersion?: number): Promise<boolean> {
+    public async init(dbName: string, dbVersion: number = 1): Promise<boolean> {
         return new Promise((resolve: (value: boolean | PromiseLike<boolean>) => void, reject: (reason?: any) => void) => {
             this._indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
 

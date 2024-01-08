@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-26 10:53:43
  * LastEditors  : ougato
- * LastEditTime : 2024-01-05 16:23:23
+ * LastEditTime : 2024-01-09 00:27:22
  * FilePath     : /client/assets/src/core/manager/database/DBManager.ts
  * Description  : 数据库管理器
  */
@@ -10,7 +10,6 @@
 import { DBConfig } from "../../../config/DBConfig";
 import BaseManager from "../../base/BaseManager";
 import { DBDefine } from "../../define/DBDefine";
-import DBAbstract from "./DBAbstract";
 import DBBase from "./DBBase";
 import DBIndexed from "./DBIndexed";
 import DBSQLite from "./DBSQLite";

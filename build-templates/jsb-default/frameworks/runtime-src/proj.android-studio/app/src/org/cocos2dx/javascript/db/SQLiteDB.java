@@ -63,17 +63,17 @@ public class SQLiteDB extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         createTable(db);
-//        String dbCmd = String.format(
-//                "CREATE TABLE %s (%s INTEGER PRIMARY KEY AUTOINCREMENT, %s TEXT, %s TEXT)",
-//                "aaa", "id", "n", "k"
-//        );
-//        db.execSQL(dbCmd);
+        createIndex(db);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         upgradeTable(db);
         upgradeIndex();
+    }
+
+    private String getIndexName(String tableName, String fieldName) {
+        return String.format("%s_%s", tableName, fieldName);
     }
 
     private void createTable(SQLiteDatabase db) {
@@ -84,25 +84,36 @@ public class SQLiteDB extends SQLiteOpenHelper {
                 createTableQuery.append(" AUTOINCREMENT");
             }
 
-            if(tableInfo.indexList.size() > 0) {
-                createTableQuery.append(",");
+            if(tableInfo.fieldList.size() > 0) {
+                createTableQuery.append(", ");
             }
 
             int i = 0;
-            for(DBConfig.Index indexInfo : tableInfo.indexList) {
-                createTableQuery.append(String.format("%s TEXT", indexInfo.keyPath));
-                if(indexInfo.options.unique) {
+            for(DBConfig.Field fieldInfo : tableInfo.fieldList) {
+                createTableQuery.append(String.format("%s %s", fieldInfo.name, fieldInfo.type));
+                if(fieldInfo.options.unique) {
                     createTableQuery.append(" UNIQUE");
                 }
 
-                if(i++ == tableInfo.indexList.size() - 1) {
+                if(i++ == tableInfo.fieldList.size() - 1) {
                     createTableQuery.append(")");
                 } else {
                     createTableQuery.append(", ");
                 }
             }
-            Log.w("pppppppppppppppp", createTableQuery.toString());
             db.execSQL(createTableQuery.toString());
+        }
+    }
+
+    private void createIndex(SQLiteDatabase db) {
+        for(DBConfig.Table tableInfo : mStruct) {
+            for(DBConfig.Field fieldInfo : tableInfo.fieldList) {
+                if(fieldInfo.isIndex) {
+                    StringBuilder createTableQuery = new StringBuilder();
+                    createTableQuery.append(String.format("CREATE INDEX %s ON %s (%s)", this.getIndexName(tableInfo.name, fieldInfo.name), tableInfo.name, fieldInfo.name));
+                    db.execSQL(createTableQuery.toString());
+                }
+            }
         }
     }
 
@@ -135,8 +146,8 @@ public class SQLiteDB extends SQLiteOpenHelper {
             for (String oldIndexName : oldIndexNameList) {
                 boolean isNewIndex = false;
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                    isNewIndex = tableInfo.indexList.stream()
-                            .anyMatch(indexInfo -> indexInfo.name.equals(oldIndexName));
+                    isNewIndex = tableInfo.fieldList.stream()
+                            .anyMatch(fieldInfo -> fieldInfo.name.equals(oldIndexName));
                 }
 
                 if (!isNewIndex) {
@@ -144,9 +155,9 @@ public class SQLiteDB extends SQLiteOpenHelper {
                 }
             }
 
-            for (DBConfig.Index indexInfo : tableInfo.indexList) {
-                if (!oldIndexNameList.contains(indexInfo.name)) {
-                    mDB.execSQL("CREATE INDEX " + indexInfo.name + " ON " + tableInfo.name + " (" + indexInfo.keyPath + ")");
+            for (DBConfig.Field fieldInfo : tableInfo.fieldList) {
+                if (!oldIndexNameList.contains(fieldInfo.name)) {
+                    mDB.execSQL("CREATE INDEX " + fieldInfo.name + " ON " + tableInfo.name + " (" + fieldInfo.keyPath + ")");
                 }
             }
         }

@@ -7,7 +7,7 @@ public class DBConfig {
     public static class Table {
         public String name;
         public Options options;
-        public List<Index> indexList;
+        public List<Field> fieldList;
     }
 
     public static class Options {
@@ -15,9 +15,11 @@ public class DBConfig {
         public boolean autoIncrement;
     }
 
-    public static class Index {
+    public static class Field {
         public String name;
         public String keyPath;
+        public boolean isIndex;
+        public String type;
         public IndexParameters options;
     }
 

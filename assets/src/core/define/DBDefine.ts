@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-27 18:28:07
  * LastEditors  : ougato
- * LastEditTime : 2024-01-05 18:02:42
+ * LastEditTime : 2024-01-08 22:48:41
  * FilePath     : /client/assets/src/core/define/DBDefine.ts
  * Description  : 数据库定义
  */
@@ -25,6 +25,18 @@ export namespace DBDefine {
         CLOSING = 5,
         // 已经关闭
         CLOSED = 6,
+    }
+
+    // 字段类型
+    export enum FieldType {
+        // 整数
+        INTEGER = "INTEGER",
+        // 字符串
+        TEXT = "TEXT",
+        // 浮点
+        REAL = "REAL",
+        // 二进制
+        BLOB = "BLOB",
     }
 
     // 表名
@@ -86,4 +98,5 @@ export namespace DBDefine {
         // 数据
         RECORD_DATA = "record_data",
     }
+
 }
