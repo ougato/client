@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-26 15:25:49
  * LastEditors  : ougato
- * LastEditTime : 2024-01-04 11:56:10
+ * LastEditTime : 2024-01-08 12:05:03
  * FilePath     : /client/assets/src/core/manager/database/DBIndexed.ts
  * Description  : Web 环境数据库
  */
@@ -100,7 +100,10 @@ export default class DBIndexed extends DBBase {
 
                 this._db.onversionchange = function () {
                     this.close();
-                    alert("Database is outdated, please reload the page.")
+                    G.UIMgr.openDialog({
+                        title: "错误",
+                        content: "数据库过期，请重新加载",
+                    })
                 };
 
                 resolve(true);
