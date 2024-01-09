@@ -1,11 +1,9 @@
-package org.cocos2dx.javascript.db;
+package org.cocos2dx.javascript.utils;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -17,11 +15,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class SQLiteDB extends SQLiteOpenHelper {
+public class DBUtils extends SQLiteOpenHelper {
 
     private static Context sContext = null;
     // 类实例
-    private static SQLiteDB sInstance = null;
+    private static DBUtils sInstance = null;
     // 数据库对象
     private SQLiteDatabase mDB = null;
     // 表数据结构
@@ -32,8 +30,8 @@ public class SQLiteDB extends SQLiteOpenHelper {
     }
 
     public static boolean init(String dbName, int dbVersion, String struct) {
-        SQLiteDB.sInstance = new SQLiteDB(SQLiteDB.sContext, dbName, null, dbVersion, struct);
-        return SQLiteDB.sInstance != null;
+        DBUtils.sInstance = new DBUtils(DBUtils.sContext, dbName, null, dbVersion, struct);
+        return DBUtils.sInstance != null;
     }
 
     public static void insert() {
@@ -52,7 +50,7 @@ public class SQLiteDB extends SQLiteOpenHelper {
 
     }
 
-    public SQLiteDB(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, String struct) {
+    public DBUtils(Context context, String name, SQLiteDatabase.CursorFactory factory, int version, String struct) {
         super(context, name, factory, version);
 
         Type listType = new TypeToken<List<DBConfig.Table>>() {}.getType();

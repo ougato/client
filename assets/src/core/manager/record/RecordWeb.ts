@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2024-01-04 10:32:43
  * LastEditors  : ougato
- * LastEditTime : 2024-01-04 11:45:31
+ * LastEditTime : 2024-01-10 00:39:26
  * FilePath     : /client/assets/src/core/manager/record/RecordWebCanvas.ts
  * Description  : Web 环境录制 Canvas
  */
@@ -11,7 +11,7 @@ import RecordRTC = require("../../../lib/record-rtc");
 import { RecordDefine } from "../../define/RecordDefine";
 import RecordBase from "./RecordBase";
 
-export default class RecordWebCanvas extends RecordBase {
+export default class RecordWeb extends RecordBase {
 
     // 录制器
     private _recorder: RecordRTC = null;

@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-27 16:43:28
  * LastEditors  : ougato
- * LastEditTime : 2024-01-09 16:49:21
+ * LastEditTime : 2024-01-10 00:07:16
  * FilePath     : /client/assets/src/config/DBConfig.ts
  * Description  : 数据库配置
  */
@@ -15,7 +15,7 @@ export namespace DBConfig {
     // 库名
     export const NAME: string = "GameDB";
     // 版本
-    export const VERSION: number = 1;
+    export const VERSION: number = 101;
     // 结构
     export const Struct: DBInterface.Table[] = [
         {

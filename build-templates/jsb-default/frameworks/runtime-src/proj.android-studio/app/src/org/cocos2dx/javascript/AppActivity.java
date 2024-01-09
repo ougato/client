@@ -24,7 +24,7 @@ THE SOFTWARE.
 ****************************************************************************/
 package org.cocos2dx.javascript;
 
-import org.cocos2dx.javascript.db.SQLiteDB;
+import org.cocos2dx.javascript.utils.DBUtils;
 import org.cocos2dx.javascript.utils.NativeUtils;
 import org.cocos2dx.lib.Cocos2dxActivity;
 import org.cocos2dx.lib.Cocos2dxGLSurfaceView;
@@ -41,7 +41,7 @@ public class AppActivity extends Cocos2dxActivity {
         super.onCreate(savedInstanceState);
         SDKWrapper.getInstance().init(this);
         NativeUtils.setContext(this);
-        SQLiteDB.setContext(this);
+        DBUtils.setContext(this);
     }
 
     @Override

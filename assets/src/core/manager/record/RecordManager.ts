@@ -10,7 +10,7 @@
 import BaseManager from "../../base/BaseManager";
 import { RecordDefine } from "../../define/RecordDefine";
 import RecordBase from "./RecordBase";
-import RecordWebCanvas from "./RecordWebCanvas";
+import RecordWeb from "./RecordWebCanvas";
 
 export default class RecordManager extends BaseManager {
 
@@ -43,7 +43,7 @@ export default class RecordManager extends BaseManager {
 
     protected init(): void {
         if (cc.sys.isBrowser) {
-            this._videoRecord = new RecordWebCanvas();
+            this._videoRecord = new RecordWeb();
         } else if (cc.sys.isNative) {
             if (cc.sys.os === cc.sys.OS_ANDROID) {
 
