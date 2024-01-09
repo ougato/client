@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-26 15:25:49
  * LastEditors  : ougato
- * LastEditTime : 2024-01-09 00:41:18
+ * LastEditTime : 2024-01-09 14:48:19
  * FilePath     : /client/assets/src/core/manager/database/DBIndexed.ts
  * Description  : Web 环境数据库
  */
@@ -73,8 +73,9 @@ export default class DBIndexed extends DBBase {
                 if (!fieldInfo.isIndex) {
                     continue;
                 }
-                if (!table.indexNames.contains(fieldInfo.name)) {
-                    table.createIndex(this.getIndexName(tableInfo.name, fieldInfo.name), fieldInfo.keyPath, fieldInfo.options);
+                let indexName: string = this.getIndexName(tableInfo.name, fieldInfo.name);
+                if (!table.indexNames.contains(indexName)) {
+                    table.createIndex(indexName, fieldInfo.keyPath, fieldInfo.options);
                 }
             }
         }

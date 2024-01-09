@@ -80,9 +80,9 @@ export namespace DBDefine {
         // 用户 ID
         UID = "uid",
         // 行动类型
-        ACTION_TYPE = "action_type",
+        TYPE = "type",
         // 数据
-        ACTION_DATA = "action_data",
+        DATA = "data",
     }
 
     // 录制表字段
@@ -94,9 +94,9 @@ export namespace DBDefine {
         // 用户 ID
         UID = "uid",
         // 录制类型
-        RECORD_TYPE = "record_type",
+        TYPE = "type",
         // 数据
-        RECORD_DATA = "record_data",
+        DATA = "data",
     }
 
 }

@@ -28,4 +28,8 @@ public class DBConfig {
         public Boolean unique;
     }
 
+    public static class Define {
+        public static final String[] SYSTEM_TABLE_NAME_LIST = {"android_metadata", "sqlite_sequence", "sqlite_temp_master", "sqlite_dbconfig"};
+    }
+
 }

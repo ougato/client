@@ -14,6 +14,7 @@ import org.cocos2dx.javascript.config.DBConfig;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class SQLiteDB extends SQLiteOpenHelper {
@@ -69,11 +70,16 @@ public class SQLiteDB extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         upgradeTable(db);
-        upgradeIndex();
+        upgradeFiled(db);
+        upgradeIndex(db);
     }
 
     private String getIndexName(String tableName, String fieldName) {
         return String.format("%s_%s", tableName, fieldName);
+    }
+
+    private Boolean isSysTable(String tableName) {
+        return Arrays.asList(DBConfig.Define.SYSTEM_TABLE_NAME_LIST).contains(tableName);
     }
 
     private void createTable(SQLiteDatabase db) {
@@ -110,7 +116,7 @@ public class SQLiteDB extends SQLiteOpenHelper {
             for(DBConfig.Field fieldInfo : tableInfo.fieldList) {
                 if(fieldInfo.isIndex) {
                     StringBuilder createTableQuery = new StringBuilder();
-                    createTableQuery.append(String.format("CREATE INDEX %s ON %s (%s)", this.getIndexName(tableInfo.name, fieldInfo.name), tableInfo.name, fieldInfo.name));
+                    createTableQuery.append(String.format("CREATE INDEX %s ON %s (%s)", getIndexName(tableInfo.name, fieldInfo.name), tableInfo.name, fieldInfo.name));
                     db.execSQL(createTableQuery.toString());
                 }
             }
@@ -122,42 +128,65 @@ public class SQLiteDB extends SQLiteOpenHelper {
 
         for (String oldTableName : oldTableNameList) {
             boolean isNewTable = false;
+
+            if(isSysTable(oldTableName)) {
+                continue;
+            }
+
             if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                 isNewTable = mStruct.stream()
                         .anyMatch(tableInfo -> tableInfo.name.equals(oldTableName));
             }
 
             if (!isNewTable) {
-                db.execSQL("DROP TABLE IF EXISTS " + oldTableName);
+                db.execSQL(String.format("DROP TABLE IF EXISTS %s", oldTableName));
             }
         }
 
         for (DBConfig.Table tableInfo : mStruct) {
             if (!oldTableNameList.contains(tableInfo.name)) {
-                db.execSQL("CREATE TABLE " + tableInfo.name + " (_id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT)");
+                StringBuilder createTableQuery = new StringBuilder();
+                createTableQuery.append(String.format("CREATE TABLE %s (%s INTEGER PRIMARY KEY", tableInfo.name, tableInfo.options.keyPath));
+                if(tableInfo.options.autoIncrement) {
+                    createTableQuery.append(" AUTOINCREMENT");
+                }
+                createTableQuery.append(")");
+                db.execSQL(createTableQuery.toString());
             }
         }
     }
 
-    private void upgradeIndex() {
+    private void upgradeFiled(SQLiteDatabase db) {
         for (DBConfig.Table tableInfo : mStruct) {
-            List<String> oldIndexNameList = getIndexNames(tableInfo.name);
+            List<String> oldFieldNameList = getFieldNames(db, tableInfo.name);
+
+            for (DBConfig.Field fieldInfo : tableInfo.fieldList) {
+                if (!oldFieldNameList.contains(fieldInfo.name)) {
+                    db.execSQL(String.format("ALTER TABLE %s ADD COLUMN %s %s", tableInfo.name, fieldInfo.name, fieldInfo.type));
+                }
+            }
+        }
+    }
+
+    private void upgradeIndex(SQLiteDatabase db) {
+        for (DBConfig.Table tableInfo : mStruct) {
+            List<String> oldIndexNameList = getIndexNames(db, tableInfo.name);
 
             for (String oldIndexName : oldIndexNameList) {
                 boolean isNewIndex = false;
                 if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
                     isNewIndex = tableInfo.fieldList.stream()
-                            .anyMatch(fieldInfo -> fieldInfo.name.equals(oldIndexName));
+                            .anyMatch(fieldInfo -> getIndexName(tableInfo.name, fieldInfo.name).equals(oldIndexName));
                 }
 
                 if (!isNewIndex) {
-                    mDB.execSQL("DROP INDEX IF EXISTS " + oldIndexName);
+                    db.execSQL(String.format("DROP INDEX IF EXISTS %s", oldIndexName));
                 }
             }
 
             for (DBConfig.Field fieldInfo : tableInfo.fieldList) {
-                if (!oldIndexNameList.contains(fieldInfo.name)) {
-                    mDB.execSQL("CREATE INDEX " + fieldInfo.name + " ON " + tableInfo.name + " (" + fieldInfo.keyPath + ")");
+                if (!oldIndexNameList.contains(getIndexName(tableInfo.name, fieldInfo.name))) {
+                    db.execSQL(String.format("CREATE INDEX %s ON %s (%s)", getIndexName(tableInfo.name, fieldInfo.name), tableInfo.name, fieldInfo.keyPath));
                 }
             }
         }
@@ -176,16 +205,35 @@ public class SQLiteDB extends SQLiteOpenHelper {
         return tableNames;
     }
 
-    private List<String> getIndexNames(String tableName) {
+    private List<String> getIndexNames(SQLiteDatabase db, String tableName) {
         List<String> indexNames = new ArrayList<>();
-        Cursor cursor = mDB.rawQuery("PRAGMA index_list(" + tableName + ")", null);
+        Cursor cursor = db.rawQuery(String.format("PRAGMA index_list(%s)", tableName), null);
 
         while (cursor.moveToNext()) {
-            @SuppressLint("Range") String indexName = cursor.getString(cursor.getColumnIndex("name"));
-            indexNames.add(indexName);
+            int columnIndex = cursor.getColumnIndex("name");
+            if(columnIndex >= 0) {
+                String indexName = cursor.getString(columnIndex);
+                indexNames.add(indexName);
+            }
         }
 
         cursor.close();
         return indexNames;
+    }
+
+    private List<String> getFieldNames(SQLiteDatabase db, String tableName) {
+        List<String> fieldNames = new ArrayList<>();
+        Cursor cursor = db.rawQuery(String.format("PRAGMA table_info(%s)", tableName), null);
+
+        while (cursor.moveToNext()) {
+            int columnIndex = cursor.getColumnIndex("name");
+            if(columnIndex >= 0) {
+                String columnName = cursor.getString(columnIndex);
+                fieldNames.add(columnName);
+            }
+        }
+
+        cursor.close();
+        return fieldNames;
     }
 }
