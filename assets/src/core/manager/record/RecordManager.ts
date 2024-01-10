@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2024-01-03 16:22:00
  * LastEditors  : ougato
- * LastEditTime : 2024-01-04 11:31:29
+ * LastEditTime : 2024-01-10 11:01:38
  * FilePath     : /client/assets/src/core/manager/record/RecordManager.ts
  * Description  : 录像管理器
  */
@@ -10,7 +10,7 @@
 import BaseManager from "../../base/BaseManager";
 import { RecordDefine } from "../../define/RecordDefine";
 import RecordBase from "./RecordBase";
-import RecordWeb from "./RecordWebCanvas";
+import RecordWeb from "./RecordWeb";
 
 export default class RecordManager extends BaseManager {
 

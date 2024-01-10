@@ -26,6 +26,7 @@ package org.cocos2dx.javascript;
 
 import org.cocos2dx.javascript.utils.DBUtils;
 import org.cocos2dx.javascript.utils.NativeUtils;
+import org.cocos2dx.javascript.utils.RecordUtils;
 import org.cocos2dx.lib.Cocos2dxActivity;
 import org.cocos2dx.lib.Cocos2dxGLSurfaceView;
 
@@ -42,6 +43,7 @@ public class AppActivity extends Cocos2dxActivity {
         SDKWrapper.getInstance().init(this);
         NativeUtils.setContext(this);
         DBUtils.setContext(this);
+        RecordUtils.setContext(this);
     }
 
     @Override

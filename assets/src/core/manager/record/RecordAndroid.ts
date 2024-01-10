@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2024-01-10 00:39:09
  * LastEditors  : ougato
- * LastEditTime : 2024-01-10 00:43:48
+ * LastEditTime : 2024-01-10 11:20:52
  * FilePath     : /client/assets/src/core/manager/record/RecordAndroid.ts
  * Description  : Android 环境录制
  */
@@ -20,7 +20,7 @@ export default class RecordAndroid extends RecordBase {
     }
 
     protected init(): void {
-        jsb.reflection.callStaticMethod(RECORD_FILE_PATH, "init", "(Ljava/lang/String;ILjava/lang/String;)Z", dbName, dbVersion, JSON.stringify(DBConfig.Struct));
+        jsb.reflection.callStaticMethod(RECORD_FILE_PATH, "init", "()V");
     }
 
     public start(): void {

@@ -3,6 +3,9 @@ package org.cocos2dx.javascript.utils;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.util.DisplayMetrics;
+import android.view.Display;
+import android.view.WindowManager;
 
 public class NativeUtils {
 
@@ -49,4 +52,31 @@ public class NativeUtils {
         return content;
     }
 
+    /**
+     * 获取屏幕宽度
+     * @return {int} 宽度
+     */
+    public static int getScreenWidth() {
+        WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        display.getMetrics(displayMetrics);
+
+        return displayMetrics.widthPixels;
+    }
+
+    /**
+     * 获取屏幕高度
+     * @return {int} 高度
+     */
+    public static int getScreenHeight() {
+        WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        Display display = windowManager.getDefaultDisplay();
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        display.getMetrics(displayMetrics);
+
+        return displayMetrics.heightPixels;
+    }
 }
