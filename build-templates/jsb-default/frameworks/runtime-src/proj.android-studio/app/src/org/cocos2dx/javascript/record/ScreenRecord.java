@@ -3,7 +3,6 @@ package org.cocos2dx.javascript.record;
 import android.graphics.Bitmap;
 
 import org.bytedeco.javacv.FFmpegFrameRecorder;
-import org.bytedeco.javacv.Frame;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

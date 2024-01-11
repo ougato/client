@@ -2,13 +2,14 @@
  * Author       : ougato
  * Date         : 2021-12-13 10:31:14
  * LastEditors  : ougato
- * LastEditTime : 2024-01-05 12:17:39
+ * LastEditTime : 2024-01-11 07:51:55
  * FilePath     : /client/assets/src/ui/scene/ExampleScene.ts
  * Description  : 演示例子场景
  */
 
 import BaseScene from "../../core/base/BaseScene";
 import ListView from "../../core/component/ListView";
+import { RecordDefine } from "../../core/define/RecordDefine";
 import NativeUtils from "../../core/utils/NativeUtils";
 import TypeUtils from "../../core/utils/TypeUtils";
 
@@ -65,6 +66,7 @@ export default class ExampleScene extends BaseScene {
         // }
         // this.edbIndex.string = content;
 
+        G.RecordMgr.start(RecordDefine.RecordType.VIDEO);
         G.LogMgr.log(`电池电量：${await NativeUtils.getBattery()}`);
     }
 
@@ -82,6 +84,7 @@ export default class ExampleScene extends BaseScene {
         // this.lsvExample.remove(index, count);
 
         // NativeUtils.setClipboard(this.edbCount.string);
+        G.RecordMgr.stop(RecordDefine.RecordType.VIDEO);
     }
 
     private onClickItem(node: cc.Node, data: string): void {

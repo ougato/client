@@ -37,6 +37,10 @@ android {
                 abiFilters PROP_APP_ABI.split(':')
             }
         }
+
+        packagingOptions {
+            exclude 'META-INF/native-image/ios-x86_64/jnijavacpp/reflect-config.json'
+        }
     }
 
     sourceSets.main {
@@ -128,5 +132,5 @@ dependencies {
     implementation fileTree(dir: "../../../cocos2d-x/cocos/platform/android/java/libs", include: ['*.jar'])
     implementation project(':libcocos2dx')
     implementation 'com.google.code.gson:gson:2.8.9'
-    implementation 'org.bytedeco:javacv:1.5.3'
+    implementation 'org.bytedeco:javacv-platform:1.5.9'
 }
