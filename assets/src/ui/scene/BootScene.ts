@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2024-01-05 16:24:13
+ * LastEditTime : 2024-01-11 18:46:32
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
@@ -68,6 +68,10 @@ export default class BootScene extends BaseScene {
                 resolve();
             });
         });
+    }
+
+    private initRecord(): void {
+        G.RecordMgr.init()
     }
 
     /**
@@ -337,6 +341,7 @@ export default class BootScene extends BaseScene {
      */
     private async launch(): Promise<void> {
         await this.initDB();
+        this.initRecord();
         await this.initPersist();
         // await this.initHost();
         // await this.initUpdate();

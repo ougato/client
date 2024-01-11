@@ -2,15 +2,16 @@ package org.cocos2dx.javascript.utils;
 
 import android.content.Context;
 
+import org.cocos2dx.javascript.AppActivity;
 import org.cocos2dx.javascript.db.SQLiteDB;
 
 public class DBUtils {
 
-    private static Context sContext = null;
+    private static AppActivity sContext = null;
     // 数据库实例
     private static SQLiteDB sSQLiteDB = null;
 
-    public static void setContext(final Context context) {
+    public static void setContext(final AppActivity context) {
         sContext = context;
     }
 

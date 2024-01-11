@@ -24,12 +24,14 @@ THE SOFTWARE.
 ****************************************************************************/
 package org.cocos2dx.javascript;
 
+import org.cocos2dx.javascript.config.RecordConfig;
 import org.cocos2dx.javascript.utils.DBUtils;
 import org.cocos2dx.javascript.utils.NativeUtils;
 import org.cocos2dx.javascript.utils.RecordUtils;
 import org.cocos2dx.lib.Cocos2dxActivity;
 import org.cocos2dx.lib.Cocos2dxGLSurfaceView;
 
+import android.media.projection.MediaProjection;
 import android.os.Bundle;
 
 import android.content.Intent;
@@ -87,6 +89,7 @@ public class AppActivity extends Cocos2dxActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         SDKWrapper.getInstance().onActivityResult(requestCode, resultCode, data);
+        RecordUtils.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -135,5 +138,14 @@ public class AppActivity extends Cocos2dxActivity {
     protected void onStart() {
         SDKWrapper.getInstance().onStart();
         super.onStart();
+    }
+
+    /**
+     * 请求获取录制的权限
+     * @param mediaProjectionIntent {Intent} 录制码
+     * @param requestCode {int} 请求码
+     */
+    public void requestMediaProjection(Intent mediaProjectionIntent, int requestCode) {
+        startActivityForResult(mediaProjectionIntent, requestCode);
     }
 }

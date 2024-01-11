@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2024-01-03 16:22:00
  * LastEditors  : ougato
- * LastEditTime : 2024-01-11 07:57:03
+ * LastEditTime : 2024-01-11 18:46:02
  * FilePath     : /client/assets/src/core/manager/record/RecordManager.ts
  * Description  : 录像管理器
  */
@@ -39,10 +39,9 @@ export default class RecordManager extends BaseManager {
     constructor() {
         super();
 
-        this.init();
     }
 
-    protected init(): void {
+    public init(): void {
         if (cc.sys.isBrowser) {
             this._videoRecord = new RecordWeb();
         } else if (cc.sys.isNative) {

@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2024-01-04 10:51:29
  * LastEditors  : ougato
- * LastEditTime : 2024-01-04 10:57:02
+ * LastEditTime : 2024-01-11 16:30:07
  * FilePath     : /client/assets/src/core/manager/record/RecordBase.ts
  * Description  : 录制基类
  */
@@ -13,7 +13,7 @@ import RecordAbstract from "./RecordAbstract";
 export default class RecordBase extends RecordAbstract {
 
     // 状态
-    public state: RecordDefine.State = RecordDefine.State.IDLE;
+    public state: RecordDefine.State = RecordDefine.State.STOPED;
 
     constructor() {
         super();
