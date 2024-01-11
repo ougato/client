@@ -15,11 +15,15 @@
   },
   "devDependencies": {
     "@types/js-md5": "^0.4.2",
+    "@types/pako": "^2.0.3",
     "@types/recordrtc": "^5.6.2",
     "fetch-ponyfill": "^6.1.1",
     "js-md5": "^0.7.3",
+    "pako": "^2.1.0",
     "pip": "0.0.1",
     "protobufjs": "^6.10.1",
-    "recordrtc": "^5.4.5"
+    "recordrtc": "^5.4.5",
+    "ts-whammy": "^1.1.4",
+    "whammy": "^0.0.1"
   }
 }
