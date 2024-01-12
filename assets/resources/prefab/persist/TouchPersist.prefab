@@ -24,10 +24,13 @@
       },
       {
         "__id__": 3
+      },
+      {
+        "__id__": 4
       }
     ],
     "_prefab": {
-      "__id__": 4
+      "__id__": 5
     },
     "_opacity": 255,
     "_color": {
@@ -105,6 +108,19 @@
   },
   {
     "__type__": "9faa2jYhcBKELiVizS/+UzB",
+    "_name": "",
+    "_objFlags": 0,
+    "node": {
+      "__id__": 1
+    },
+    "_enabled": true,
+    "pfbTouchParticle": {
+      "__uuid__": "43904a7d-9cda-423f-8360-d68520d6a747"
+    },
+    "_id": ""
+  },
+  {
+    "__type__": "4a40clngH1JDpkNDRKPugI9",
     "_name": "",
     "_objFlags": 0,
     "node": {

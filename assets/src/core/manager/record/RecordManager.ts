@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2024-01-03 16:22:00
  * LastEditors  : ougato
- * LastEditTime : 2024-01-12 16:30:21
+ * LastEditTime : 2024-01-12 17:23:04
  * FilePath     : /client/assets/src/core/manager/record/RecordManager.ts
  * Description  : 录像管理器
  */
@@ -40,10 +40,24 @@ export default class RecordManager extends BaseManager {
 
     }
 
+    private isSupport(type: RecordDefine.RecordType): boolean {
+        let is: boolean = false;
+        switch (type) {
+            case RecordDefine.RecordType.VIDEO:
+                is = !!this._videoRecord;
+                break;
+            case RecordDefine.RecordType.AUDIO:
+                is = !!this._audioRecord;
+                break;
+        }
+        return is;
+    }
+
     public init(): void {
         if (cc.sys.isBrowser) {
             this._videoRecord = new RecordWeb();
         } else if (cc.sys.isNative) {
+            // 原生暂时不支持，没有想到更好的解决方案
             if (cc.sys.os === cc.sys.OS_ANDROID) {
 
             } else if (cc.sys.os === cc.sys.OS_IOS) {
@@ -51,13 +65,19 @@ export default class RecordManager extends BaseManager {
             } else {
 
             }
+            G.LogMgr.warn(`暂不支持录像功能`);
         }
     }
 
     public start(type: RecordDefine.RecordType): void {
+        if (!this.isSupport(type)) {
+            return;
+        }
+
         switch (type) {
-            case RecordDefine.RecordType.VIDEO:
+            case RecordDefine.RecordType.VIDEO: {
                 this._videoRecord.start();
+            }
                 break;
             case RecordDefine.RecordType.AUDIO:
                 this._audioRecord.start();
@@ -66,6 +86,10 @@ export default class RecordManager extends BaseManager {
     }
 
     public stop(type: RecordDefine.RecordType): void {
+        if (!this.isSupport(type)) {
+            return;
+        }
+
         switch (type) {
             case RecordDefine.RecordType.VIDEO:
                 this._videoRecord.stop();
@@ -82,6 +106,15 @@ export default class RecordManager extends BaseManager {
     protected destroy(): void {
         super.destroy();
 
+        if (this._videoRecord) {
+            this._videoRecord.destroy();
+            this._videoRecord = null;
+        }
+
+        if (this._audioRecord) {
+            this._audioRecord.destroy();
+            this._audioRecord = null;
+        }
     }
 
 }

@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:36:55
  * LastEditors  : ougato
- * LastEditTime : 2024-01-11 15:44:11
+ * LastEditTime : 2024-01-12 17:44:14
  * FilePath     : /client/assets/src/core/manager/ui/UIManager.ts
  * Description  : 界面管理器、所有的视图和场景、都由 UIManager 统一管理、包括打开视图|关闭视图|切换场景等等
  */
@@ -28,7 +28,6 @@ import { UIDefine } from "../../define/UIDefine";
 import { ColorDefine } from "../../define/ColorDefine";
 import { ConverUtils } from "../../utils/ConverUtils";
 import TouchPersist from "../../../ui/persist/TouchPersist";
-import SimulatePersist from "../../../ui/persist/SimulatePersist";
 
 // 打开视图等待常驻几秒后显示时间（单位：毫秒）
 const OPEN_VIEW_WAITING_TIME: number = 500;
@@ -386,13 +385,6 @@ export default class UIManager extends BaseManager {
      */
     public openTouch(): void {
         this.openPersist(TouchPersist, UIDefine.PersistLayer.TOUCH);
-    }
-
-    /**
-     * 打开模拟点击
-     */
-    public openSimulate(): void {
-        this.openPersist(SimulatePersist, UIDefine.PersistLayer.SIMULATE);
     }
 
     /**

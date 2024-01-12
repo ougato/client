@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-28 11:29:24
  * LastEditors  : ougato
- * LastEditTime : 2024-01-02 19:00:13
+ * LastEditTime : 2024-01-12 20:32:47
  * FilePath     : /client/assets/src/core/manager/action/ActionManager.ts
  * Description  : 用户行为管理器
  */
@@ -21,9 +21,6 @@ import DBManager from "../database/DBManager";
 export default class ActionManager extends BaseManager {
 
     private static s_instance: ActionManager = null;
-
-    // 上一次移动时间
-    protected _prevTime: number = 0;
 
     public static getInstance(): ActionManager {
         if (this.s_instance === null) {
@@ -74,12 +71,6 @@ export default class ActionManager extends BaseManager {
     }
 
     public touchMove(data: ActionInterface.TouchMoveData): void {
-        let currTime: number = Date.now();
-        if (currTime < this._prevTime + ActionDefine.MOVE_INTERVAL_TIME) {
-            return;
-        }
-        this._prevTime = currTime;
-
         this.save({
             action_type: ActionDefine.Type.TOUCH_MOVE,
             action_data: data,
