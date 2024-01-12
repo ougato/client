@@ -2,16 +2,15 @@
  * Author       : ougato
  * Date         : 2023-12-29 11:20:07
  * LastEditors  : ougato
- * LastEditTime : 2024-01-12 20:36:07
+ * LastEditTime : 2024-01-12 20:47:38
  * FilePath     : /client/assets/src/ui/persist/TouchPersist.ts
  * Description  : 触摸监听
  */
 
 import BasePersist from "../../core/base/BasePersist";
-import { NodeInterface } from "../../interface/NodeInterface";
 
 // 移动频率间隔（单位：毫秒）
-const MOVE_INTERVAL_TIME: number = 100;
+const MOVE_INTERVAL_TIME: number = 10;
 
 const { ccclass, property } = cc._decorator;
 
