@@ -2,14 +2,13 @@
  * Author       : ougato
  * Date         : 2024-01-03 16:22:00
  * LastEditors  : ougato
- * LastEditTime : 2024-01-12 00:18:21
+ * LastEditTime : 2024-01-12 16:30:21
  * FilePath     : /client/assets/src/core/manager/record/RecordManager.ts
  * Description  : 录像管理器
  */
 
 import BaseManager from "../../base/BaseManager";
 import { RecordDefine } from "../../define/RecordDefine";
-import RecordAndroid from "./RecordAndroid";
 import RecordBase from "./RecordBase";
 import RecordWeb from "./RecordWeb";
 
@@ -43,10 +42,10 @@ export default class RecordManager extends BaseManager {
 
     public init(): void {
         if (cc.sys.isBrowser) {
-            this._videoRecord = new RecordAndroid();
+            this._videoRecord = new RecordWeb();
         } else if (cc.sys.isNative) {
             if (cc.sys.os === cc.sys.OS_ANDROID) {
-                this._videoRecord = new RecordAndroid();
+
             } else if (cc.sys.os === cc.sys.OS_IOS) {
 
             } else {
