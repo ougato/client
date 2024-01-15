@@ -7,12 +7,14 @@ import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.WindowManager;
 
+import org.cocos2dx.javascript.AppActivity;
+
 public class NativeUtils {
 
-    private static Context mContext = null;
+    private static AppActivity sAppActivity = null;
 
-    public static void setContext(final Context context) {
-        mContext = context;
+    public static void setContext(final AppActivity appActivity) {
+        sAppActivity = appActivity;
     }
 
     /**
@@ -23,7 +25,7 @@ public class NativeUtils {
     public static boolean setClipboard(final String content) {
         boolean isOK = false;
         try {
-            ClipboardManager clipboard = (ClipboardManager) mContext.getSystemService(mContext.CLIPBOARD_SERVICE);
+            ClipboardManager clipboard = (ClipboardManager) sAppActivity.getSystemService(sAppActivity.CLIPBOARD_SERVICE);
             ClipData clip = ClipData.newPlainText("Content",content);
             clipboard.setPrimaryClip(clip);
             isOK = true;
@@ -40,7 +42,7 @@ public class NativeUtils {
     public static String getClipboard() {
         String content = "";
         try {
-            ClipboardManager clipboard = (ClipboardManager) mContext.getSystemService(mContext.CLIPBOARD_SERVICE);
+            ClipboardManager clipboard = (ClipboardManager) sAppActivity.getSystemService(sAppActivity.CLIPBOARD_SERVICE);
             if(clipboard.hasPrimaryClip()) {
                 ClipData clipData = clipboard.getPrimaryClip();
                 CharSequence charSequence = clipData.getItemAt(0).getText();
@@ -57,7 +59,7 @@ public class NativeUtils {
      * @return {int} 宽度
      */
     public static int getScreenWidth() {
-        WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        WindowManager windowManager = (WindowManager) sAppActivity.getSystemService(Context.WINDOW_SERVICE);
         Display display = windowManager.getDefaultDisplay();
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -71,7 +73,7 @@ public class NativeUtils {
      * @return {int} 高度
      */
     public static int getScreenHeight() {
-        WindowManager windowManager = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        WindowManager windowManager = (WindowManager) sAppActivity.getSystemService(Context.WINDOW_SERVICE);
         Display display = windowManager.getDefaultDisplay();
 
         DisplayMetrics displayMetrics = new DisplayMetrics();

@@ -1,22 +1,20 @@
 package org.cocos2dx.javascript.utils;
 
-import android.content.Context;
-
 import org.cocos2dx.javascript.AppActivity;
 import org.cocos2dx.javascript.db.SQLiteDB;
 
 public class DBUtils {
 
-    private static AppActivity sContext = null;
+    private static AppActivity sAppActivity = null;
     // 数据库实例
     private static SQLiteDB sSQLiteDB = null;
 
-    public static void setContext(final AppActivity context) {
-        sContext = context;
+    public static void setContext(final AppActivity appActivity) {
+        sAppActivity = appActivity;
     }
 
     public static boolean init(String dbName, int dbVersion, String struct) {
-        sSQLiteDB = new SQLiteDB(sContext, dbName, null, dbVersion, struct);
+        sSQLiteDB = new SQLiteDB(sAppActivity, dbName, null, dbVersion, struct);
         return sSQLiteDB != null;
     }
 

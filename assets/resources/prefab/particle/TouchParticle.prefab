@@ -88,7 +88,9 @@
     ],
     "_srcBlendFactor": 770,
     "_dstBlendFactor": 771,
-    "_custom": false,
+    "_custom": {
+      "custom": false
+    },
     "_file": {
       "__uuid__": "2ded38ba-4d55-461c-9bc8-46c27597d42e"
     },
@@ -96,14 +98,14 @@
       "__uuid__": "cd32773a-dbb3-474b-b229-afdfe033e96f"
     },
     "_texture": null,
-    "_stopped": true,
+    "_stopped": false,
     "playOnLoad": true,
     "autoRemoveOnFinish": true,
     "totalParticles": 10,
-    "duration": 1,
-    "emissionRate": 5,
-    "life": 2,
-    "lifeVar": 1,
+    "duration": 0.3,
+    "emissionRate": 10,
+    "life": 0.7,
+    "lifeVar": 0,
     "_startColor": {
       "__type__": "cc.Color",
       "r": 191,

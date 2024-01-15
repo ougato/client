@@ -39,6 +39,7 @@ public class AppActivity extends Cocos2dxActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppInitializer.getInstance().init(this);
         SDKWrapper.getInstance().init(this);
         NativeUtils.setContext(this);
         DBUtils.setContext(this);
