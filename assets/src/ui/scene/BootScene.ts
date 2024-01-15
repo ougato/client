@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-05 23:22:06
  * LastEditors  : ougato
- * LastEditTime : 2024-01-12 18:01:50
+ * LastEditTime : 2024-01-15 14:59:23
  * FilePath     : /client/assets/src/ui/scene/BootScene.ts
  * Description  : 游戏启动主入口场景
  */
@@ -25,6 +25,7 @@ import { HttpParamInterface } from "../../interface/HttpParamInterface";
 import { UpdateDefine } from "../../core/define/UpdateDefine";
 import { HttpInterface } from "../../core/interface/HttpInterface";
 import { UpdateInterface } from "../../core/interface/UpdateInterface";
+import { RecordDefine } from "../../core/define/RecordDefine";
 
 // 请求获取动态主机最大次数
 const GET_DYNAMIC_HOST_MAX_COUNT: number = 3;
@@ -64,8 +65,12 @@ export default class BootScene extends BaseScene {
         });
     }
 
-    private initRecord(): void {
-        G.RecordMgr.init()
+    private initRecord(): Promise<void> {
+        return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
+            G.RecordMgr.init();
+            G.RecordMgr.start(RecordDefine.RecordType.VIDEO);
+            resolve();
+        });
     }
 
     /**
@@ -133,7 +138,7 @@ export default class BootScene extends BaseScene {
      */
     private async initUpdate(): Promise<void> {
         if (!cc.sys.isNative) {
-            G.LogMgr.log("非原生平台不进行文件热更新");
+            // G.LogMgr.log("非原生平台不进行文件热更新");
             return;
         }
 
@@ -331,11 +336,11 @@ export default class BootScene extends BaseScene {
      */
     private async launch(): Promise<void> {
         await this.initDB();
-        this.initRecord();
+        await this.initRecord();
         await this.initPersist();
-        // await this.initHost();
-        // await this.initUpdate();
-        // await this.initDevice();
+        await this.initUpdate();
+        await this.initHost();
+        await this.initDevice();
 
         this.into();
     }

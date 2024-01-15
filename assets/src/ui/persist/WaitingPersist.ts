@@ -2,15 +2,15 @@
  * @Author       : ougato
  * @Date         : 2020-09-04 23:07:17
  * LastEditors  : ougato
- * LastEditTime : 2021-11-15 10:33:25
+ * LastEditTime : 2024-01-15 15:16:13
  * FilePath     : /client/assets/src/ui/persist/WaitingPersist.ts
  * @Description  : 等待常驻（菊花转）
  */
 
 import BasePersist from "../../core/base/BasePersist";
 
-// 播放转动一圈需要时间（单位：秒）
-const PLAY_ROUND_TIME: number = 2;
+// 播放转动一圈需要时间（单位：毫秒）
+const PLAY_ROUND_TIME: number = 2000;
 
 const { ccclass, property } = cc._decorator;
 
@@ -31,21 +31,21 @@ export default class WaitingPersist extends BasePersist {
     }
 
     protected onEnable(): void {
-        this.playWaitingTurn();
+        this.playRotateAnim();
     }
 
     protected onDisable(): void {
-        this.stopWaitingTurn();
+        this.stopRotateAnim();
     }
 
-    private playWaitingTurn(): void {
+    private playRotateAnim(): void {
         this.waitingTween = cc.tween(this.imgWaiting.node)
-            .by(PLAY_ROUND_TIME, { angle: -360 })
+            .by(PLAY_ROUND_TIME / 1000, { angle: -360 })
             .repeatForever()
             .start();
     }
 
-    private stopWaitingTurn(): void {
+    private stopRotateAnim(): void {
         if (this.waitingTween !== null) {
             this.waitingTween.stop();
             this.waitingTween = null;

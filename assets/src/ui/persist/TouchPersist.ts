@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-29 11:20:07
  * LastEditors  : ougato
- * LastEditTime : 2024-01-12 22:34:30
+ * LastEditTime : 2024-01-15 11:57:24
  * FilePath     : /client/assets/src/ui/persist/TouchPersist.ts
  * Description  : 触摸监听
  */
@@ -41,6 +41,15 @@ export default class TouchPersist extends BasePersist {
         this.node.on(cc.Node.EventType.TOUCH_END, this.onTouchEnd, this);
         this.node.on(cc.Node.EventType.TOUCH_CANCEL, this.onTouchCancel, this);
 
+    }
+
+    protected unregister(): void {
+        super.unregister();
+
+        this.node.off(cc.Node.EventType.TOUCH_START, this.onTouchStart, this);
+        this.node.off(cc.Node.EventType.TOUCH_MOVE, this.onTouchMove, this);
+        this.node.off(cc.Node.EventType.TOUCH_END, this.onTouchEnd, this);
+        this.node.off(cc.Node.EventType.TOUCH_CANCEL, this.onTouchCancel, this);
     }
 
     protected onTouchStart(ev: cc.Event.EventTouch): void {

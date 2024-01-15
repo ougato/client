@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-11 17:01:18
  * LastEditors  : ougato
- * LastEditTime : 2022-09-18 18:40:16
+ * LastEditTime : 2024-01-15 17:51:22
  * FilePath     : /client/assets/src/core/manager/lang/LangManager.ts
  * Description  : 语言管理器、本地话多语言的加载和切换
  */
@@ -41,9 +41,10 @@ export default class LangManager extends BaseManager {
         super();
 
         this._dataMap = new Map();
+        this.init();
     }
 
-    public async asyncInit(): Promise<void> {
+    public init(): void {
         this._lang = this.getCurrLang();
     }
 

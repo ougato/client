@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:21:20
  * LastEditors  : ougato
- * LastEditTime : 2024-01-02 18:26:57
+ * LastEditTime : 2024-01-15 11:57:01
  * FilePath     : /client/assets/src/core/base/BaseComponent.ts
  * Description  : 组件 基类、是 BaseView 和 BaseScene 的父类
  */
@@ -71,6 +71,7 @@ export default class BaseComponent extends cc.Component {
     protected onDestroy(): void {
         this.autoRelease();
         this.autoOff();
+        this.unregister();
     }
 
     /**
@@ -114,6 +115,13 @@ export default class BaseComponent extends cc.Component {
      */
 
     protected register(): void {
+
+    }
+
+    /**
+     * 销毁事件
+     */
+    protected unregister(): void {
 
     }
 
