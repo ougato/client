@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2024-01-04 10:32:43
  * LastEditors  : ougato
- * LastEditTime : 2024-01-12 17:57:58
+ * LastEditTime : 2024-01-16 15:41:03
  * FilePath     : /client/assets/src/core/manager/record/RecordWeb.ts
  * Description  : Web 环境录制 Canvas
  */
@@ -33,10 +33,20 @@ export default class RecordWeb extends RecordBase {
     }
 
     public start(): void {
+        if (this.state === RecordDefine.State.RECORDING) {
+            return;
+        }
+        this.state = RecordDefine.State.RECORDING;
+
         this._recorder.startRecording();
     }
 
     public stop(): void {
+        if (this.state === RecordDefine.State.STOPED) {
+            return;
+        }
+        this.state = RecordDefine.State.STOPED;
+
         this._recorder.stopRecording(() => {
             let blob = this._recorder.getBlob();
             let a = pako.deflate(this._recorder.buffer, { level: 9 });

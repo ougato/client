@@ -110,7 +110,7 @@
         "__id__": 10
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 23
@@ -824,7 +824,7 @@
         "__id__": 27
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 34
@@ -1254,7 +1254,7 @@
         "__id__": 46
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 50
@@ -1778,7 +1778,7 @@
         "__id__": 61
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 65
@@ -2296,7 +2296,7 @@
         "__id__": 68
       }
     ],
-    "_active": false,
+    "_active": true,
     "_components": [
       {
         "__id__": 75

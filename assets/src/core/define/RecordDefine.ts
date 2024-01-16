@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:56:31
  * LastEditors  : ougato
- * LastEditTime : 2024-01-11 16:26:16
+ * LastEditTime : 2024-01-16 15:40:26
  * FilePath     : /client/assets/src/core/define/RecordDefine.ts
  * Description  : 录制定义
  */
@@ -18,10 +18,8 @@ export namespace RecordDefine {
     export enum State {
         // 录制中
         RECORDING = 0,
-        // 暂停中
-        PAUSING = 1,
         // 停止后
-        STOPED = 2,
+        STOPED = 1,
     }
 
     // 录制类型

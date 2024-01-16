@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2023-12-29 11:20:07
  * LastEditors  : ougato
- * LastEditTime : 2024-01-15 11:57:24
+ * LastEditTime : 2024-01-16 12:05:36
  * FilePath     : /client/assets/src/ui/persist/TouchPersist.ts
  * Description  : 触摸监听
  */
@@ -96,7 +96,6 @@ export default class TouchPersist extends BasePersist {
     }
 
     protected playOnceParticle(pos: cc.Vec2): void {
-        G.LogMgr.log(pos);
         let nodTouchParticle = cc.instantiate(this.pfbTouchParticle);
         nodTouchParticle.setPosition(pos);
         nodTouchParticle.parent = this.node;

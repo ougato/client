@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:36:55
  * LastEditors  : ougato
- * LastEditTime : 2024-01-12 17:44:14
+ * LastEditTime : 2024-01-16 16:25:02
  * FilePath     : /client/assets/src/core/manager/ui/UIManager.ts
  * Description  : 界面管理器、所有的视图和场景、都由 UIManager 统一管理、包括打开视图|关闭视图|切换场景等等
  */
@@ -29,8 +29,10 @@ import { ColorDefine } from "../../define/ColorDefine";
 import { ConverUtils } from "../../utils/ConverUtils";
 import TouchPersist from "../../../ui/persist/TouchPersist";
 
-// 打开视图等待常驻几秒后显示时间（单位：毫秒）
+// 打开视图等待常驻多少毫秒后显示时间（单位：毫秒）
 const OPEN_VIEW_WAITING_TIME: number = 500;
+// 打开场景未加载完成多少毫秒后显示加载页（单位：毫秒）
+const OPEN_SCENE_LOADING_TIME: number = 1000;
 
 export default class UIManager extends BaseManager {
 
@@ -190,21 +192,28 @@ export default class UIManager extends BaseManager {
         }
 
         if (TypeUtils.isNull(param.delay) || typeof (param.delay) !== "number" || param.delay < 0) {
-            param.delay = 0;
+            param.delay = OPEN_SCENE_LOADING_TIME;
         }
 
         if (TypeUtils.isNull(param.isReleaseAllScene) || typeof (param.isReleaseAllScene) !== "boolean") {
             param.isReleaseAllScene = true;
         }
 
+        if (TypeUtils.isNull(param.isForce)) {
+            param.isForce = false;
+        }
+
         let className: string = cc.js.getClassName(param.sceneClass);
 
-        if (this._currScene && this._currScene.className === className) {
-            if (!this._currScene.resCache || this._currScene.resCache.getBundleName() === param.bundleName) {
-                G.LogMgr.warn(`不能重复加载相同场景 ${param.sceneClass.name}`);
-                return;
+        if (!param.isForce) {
+            if (this._currScene && this._currScene.className === className) {
+                if (!this._currScene.resCache || this._currScene.resCache.getBundleName() === param.bundleName) {
+                    G.LogMgr.warn(`不能重复加载相同场景 ${param.sceneClass.name}`);
+                    return;
+                }
             }
         }
+
 
         if (TypeUtils.isNull(param.sceneClass.prefabPath) || typeof (param.sceneClass.prefabPath) !== "string" || param.sceneClass.prefabPath.length <= 0) {
             G.LogMgr.warn(`找不到 ${param.sceneClass.name} 预制的路径、请重写 BaseComponent 中的静态成员 prefabPath 的路径`);
@@ -215,7 +224,7 @@ export default class UIManager extends BaseManager {
 
         this.startSceneTimer(param.delay);
 
-        if (this.isSceneExist(param.bundleName, className)) {
+        if (!param.isForce && this.isSceneExist(param.bundleName, className)) {
             this.topScene(param.bundleName);
             if (param.isReleaseAllScene) {
                 this.closeAllScene();
@@ -470,6 +479,12 @@ export default class UIManager extends BaseManager {
      */
     public async addPersist(persistClass: UIInterface.UIClass<BasePersist>): Promise<UIPersist> {
         return new Promise((resolve: (value: UIPersist | PromiseLike<UIPersist>) => void, reject: (reason?: any) => void) => {
+            let persist: UIPersist = this._persistMap.get(cc.js.getClassName(persistClass));
+            if (persist) {
+                resolve(persist);
+                return;
+            }
+
             G.ResMgr.load({
                 base: persistClass.prefabPath,
                 bundleName: BundleDefine.Name.RESOURCES,
@@ -479,7 +494,7 @@ export default class UIManager extends BaseManager {
                         let persist: UIPersist = new UIPersist();
                         let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
                         let script: BasePersist = persist.setScript(node, persistClass) as BasePersist;
-                        persist.className = cc.js.getClassName(persistClass);;
+                        persist.className = cc.js.getClassName(persistClass);
                         persist.script = script;
                         persist.resCache = resCache;
                         persist.node = node;
@@ -494,7 +509,9 @@ export default class UIManager extends BaseManager {
     }
 
     private async openPersist(persistClass: UIInterface.UIClass<BasePersist>, layer: UIDefine.PersistLayer, ...data: any[]): Promise<void> {
-        let persist: UIPersist = this._persistMap.get(cc.js.getClassName(persistClass));
+        let className: string = cc.js.getClassName(persistClass)
+        G.LogMgr.color("打开常驻", className, ColorDefine.LogColor.SKY);
+        let persist: UIPersist = this._persistMap.get(className);
         if (!persist) {
             persist = await this.addPersist(persistClass);
         }

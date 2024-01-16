@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2020-10-21 18:00:36
  * LastEditors  : ougato
- * LastEditTime : 2021-11-17 17:26:10
+ * LastEditTime : 2024-01-16 14:40:31
  * FilePath     : /client/assets/src/core/http/HttpXmlRequest.ts
  * Description  : 原生上不支持 fetch 的写法，只有默认使用 XMLHttpRequest
  */
@@ -249,9 +249,9 @@ export default class HttpXmlRequest implements HttpInterface.Http {
                     state: HttpDefine.StateType.OK,
                     body: this._xhr.response,
                 };
-                if (responseInfo.body.code !== 0) {
-                    G.EventMgr.emit(EventDefine.NetEvent.NET_HTTP_CODE_ERROR, responseInfo.body.msg);
-                }
+                // if (responseInfo.body.code !== 0) {
+                //     G.EventMgr.emit(EventDefine.NetEvent.NET_HTTP_CODE_ERROR, responseInfo.body.msg);
+                // }
             } else {
                 responseInfo = {
                     state: HttpDefine.StateType.ERROR,

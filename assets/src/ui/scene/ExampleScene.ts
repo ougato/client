@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-12-13 10:31:14
  * LastEditors  : ougato
- * LastEditTime : 2024-01-11 07:51:55
+ * LastEditTime : 2024-01-16 14:44:18
  * FilePath     : /client/assets/src/ui/scene/ExampleScene.ts
  * Description  : 演示例子场景
  */
@@ -12,6 +12,7 @@ import ListView from "../../core/component/ListView";
 import { RecordDefine } from "../../core/define/RecordDefine";
 import NativeUtils from "../../core/utils/NativeUtils";
 import TypeUtils from "../../core/utils/TypeUtils";
+import InitializeScene from "./InitializeScene";
 
 const { ccclass, property } = cc._decorator;
 
@@ -39,6 +40,9 @@ export default class ExampleScene extends BaseScene {
     }
 
     private async clickJoin(): Promise<void> {
+        G.UIMgr.openScene({
+            sceneClass: InitializeScene,
+        })
         // let index: number = Number(this.edbIndex.string);
         // if (isNaN(index)) {
         //     G.LogMgr.warn("下标不是一个数");

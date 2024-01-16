@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2024-01-03 16:22:00
  * LastEditors  : ougato
- * LastEditTime : 2024-01-12 17:23:04
+ * LastEditTime : 2024-01-16 15:24:33
  * FilePath     : /client/assets/src/core/manager/record/RecordManager.ts
  * Description  : 录像管理器
  */
@@ -38,6 +38,7 @@ export default class RecordManager extends BaseManager {
     constructor() {
         super();
 
+        this.init();
     }
 
     private isSupport(type: RecordDefine.RecordType): boolean {

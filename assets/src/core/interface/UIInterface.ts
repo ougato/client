@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:43:43
  * LastEditors  : ougato
- * LastEditTime : 2021-12-09 11:09:12
+ * LastEditTime : 2024-01-16 12:02:26
  * FilePath     : /client/assets/src/core/interface/UIInterface.ts
  * Description  : 界面接口
  */
@@ -61,6 +61,8 @@ export namespace UIInterface {
         delay?: number;
         // 是否释放所有场景
         isReleaseAllScene?: boolean;
+        // 是否强制切换场景
+        isForce?: boolean;
         // 加载完成回调
         onComplete?: () => void;
         // 加载进度回调

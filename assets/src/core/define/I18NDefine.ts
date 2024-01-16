@@ -2,12 +2,12 @@
  * Author       : ougato
  * Date         : 2021-07-13 00:11:27
  * LastEditors  : ougato
- * LastEditTime : 2021-07-15 00:38:59
- * FilePath     : /client/assets/src/core/define/LangDefine.ts
- * Description  : 语言定义
+ * LastEditTime : 2024-01-16 18:11:44
+ * FilePath     : /client/assets/src/core/define/I18NDefine.ts
+ * Description  : 本地化定义
  */
 
-export namespace LangDefine {
+export namespace I18NDefine {
 
     // 国家语言
     export enum Lang {
@@ -206,8 +206,6 @@ export namespace LangDefine {
     export enum RelPath {
         // JSON 路径、语言文字内容
         JSON = "i18n/json/",
-        // MD5 路径、JSON 文件的 MD5 码、用于判断多语言的版本更新
-        MD5 = "i18n/md5/",
         // 图集路径、需要使用图片替换多语言的图集路径
         ATLAS = "i18n/atlas/",
     }
