@@ -29,7 +29,8 @@ PBTS_LINUX_EXECUTE_PATH = os.path.join(PB_EXECUTE_PATH, "pbts")
 PROTO_INPUT_PATH = os.path.relpath(
     os.path.join(CURRENT_PATH, "..", "..", "proto", "*.proto")
 )
-PROTO_OUTPUT_PATH = os.path.join(CURRENT_PATH, "..", "..", "assets", "src", "protobuf")
+PROTO_OUTPUT_PATH = os.path.join(
+    CURRENT_PATH, "..", "..", "assets", "src", "protobuf")
 JS_PATH = os.path.relpath(os.path.join(PROTO_OUTPUT_PATH, "Proto.js"))
 TS_PATH = os.path.relpath(os.path.join(PROTO_OUTPUT_PATH, "Proto.d.ts"))
 
@@ -44,20 +45,23 @@ def make_js(pbjs):
 def make_ts(pbts):
     os.system(MAKE_TS_COMMAND % (pbts, TS_PATH, JS_PATH))
 
+
 def change_js():
     path = JS_PATH
     if not os.path.exists(path) or not os.path.isfile(path):
         print("%s 文件异常" % path)
         exit(-1)
-    
+
     file = open(path, "r", encoding="utf-8")
     content = file.read()
     file.close()
 
     file = open(path, "w", encoding="utf-8")
-    sub_content = re.sub(r"(export const (\w+) = \$root.\w+ = \(\(\) => {\n\n)", r"\1    \2.prototype.classname = '\2';\n\n", content)
+    sub_content = re.sub(
+        r"(export const (\w+) = \$root.\w+ = \(\(\) => {\n\n)", r"\1    \2.prototype.classname = '\2';\n\n", content)
     file.write(sub_content)
     file.close()
+
 
 def change_ts():
     path = TS_PATH
@@ -69,9 +73,11 @@ def change_ts():
     file.close()
 
     file = open(path, "w", encoding="utf-8")
-    sub_content = re.sub(r"(class \w+ implements \w+ {\n)", r"\1        public classname: string;\n", content)
+    sub_content = re.sub(
+        r"(class \w+ implements \w+ {\n)", r"\1        public classname: string;\n", content)
     file.write(sub_content)
     file.close()
+
 
 def main():
     pbjs_execute_path = ""

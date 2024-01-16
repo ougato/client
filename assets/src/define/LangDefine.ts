@@ -1,16 +1,25 @@
-/*
- * Author       : ougato
- * Date         : 2024-01-16 18:10:30
- * LastEditors  : ougato
- * LastEditTime : 2024-01-16 18:57:28
- * FilePath     : /client/assets/src/define/LangDefine.ts
- * Description  : 语言定义
- */
-
 export namespace LangDefine {
 
     export enum Key {
-
+        INITIALIZATION_FAILED = "INITIALIZATION_FAILED",
+        LOAD_ASSETS = "LOAD_ASSETS",
+        CHECK_VERSION_INFO = "CHECK_VERSION_INFO",
+        UPDATING_ASSETS = "UPDATING_ASSETS",
+        DOWNING_APP = "DOWNING_APP",
+        NEED_ASSETS_UPDATE = "NEED_ASSETS_UPDATE",
+        NEED_STORE_UPDATE = "NEED_STORE_UPDATE",
+        UPDATE_FINISH = "UPDATE_FINISH",
+        ERROR = "ERROR",
+        UPDATE_FAILED_RETRY = "UPDATE_FAILED_RETRY",
+        NETWORK_ERROR_RETRY = "NETWORK_ERROR_RETRY",
+        TRANFFIC_DOWNLOAD = "TRANFFIC_DOWNLOAD",
+        UPDATE = "UPDATE",
+        SOTRE_DOWNLOAD = "SOTRE_DOWNLOAD",
+        CANCEL = "CANCEL",
+        CONFIRM = "CONFIRM",
+        HTTP_TIMEOUT = "HTTP_TIMEOUT",
+        HTTP_ERROR = "HTTP_ERROR",
+        REGISTER_OK = "REGISTER_OK",
     }
 
 }
