@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-10 01:38:34
  * LastEditors  : ougato
- * LastEditTime : 2021-07-10 04:13:59
+ * LastEditTime : 2024-01-16 23:27:58
  * FilePath     : /client/assets/src/core/define/ResDefine.ts
  * Description  : 资源定义
  */
@@ -31,7 +31,7 @@ export namespace ResDefine {
         ASSET = 0,
         // 目录
         DIR = 1,
-        // 场景 （ 不包含在资源类型内 ）
+        // 场景（不包含在资源类型内）
         SCENE = 2,
     }
 

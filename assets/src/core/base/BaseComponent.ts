@@ -2,18 +2,22 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:21:20
  * LastEditors  : ougato
- * LastEditTime : 2024-01-15 11:57:01
+ * LastEditTime : 2024-01-17 01:27:46
  * FilePath     : /client/assets/src/core/base/BaseComponent.ts
  * Description  : 组件 基类、是 BaseView 和 BaseScene 的父类
  */
 
+import { BundleDefine } from "../../define/BundleDefine";
 import { ResInterface } from "../interface/ResInterface";
 import ResCache from "../manager/res/ResCache";
+import TypeUtils from "../utils/TypeUtils";
 
 export default class BaseComponent extends cc.Component {
 
     // 预制路径
     public static prefabPath: string = null;
+    // 包名
+    public bundleName: BundleDefine.Name = BundleDefine.Name.RESOURCES;
     // 加载资源列表
     private _loadList: ResCache[] = null;
     // 监听事件列表
@@ -138,6 +142,19 @@ export default class BaseComponent extends cc.Component {
      */
     protected initUI(): void {
 
+    }
+
+    /**
+     * 获取本地化内容
+     * @parma key {string} key
+     * @param bundleName {BundleDefine.Name} 包名
+     * @returns {string} 翻译后的语言
+     */
+    protected i18n(key: string, bundleName?: BundleDefine.Name): string {
+        if (TypeUtils.isNull(bundleName)) {
+            bundleName = this.bundleName;
+        }
+        return G.LangMgr.get(key, bundleName);
     }
 
     /**

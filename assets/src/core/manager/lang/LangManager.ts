@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-11 17:01:18
  * LastEditors  : ougato
- * LastEditTime : 2024-01-16 17:54:53
+ * LastEditTime : 2024-01-17 00:58:50
  * FilePath     : /client/assets/src/core/manager/lang/LangManager.ts
  * Description  : 语言管理器、本地话多语言的加载和切换
  */
@@ -12,16 +12,17 @@ import LangUtils from "../../utils/LangUtils";
 import { LocalStorageDefine } from "../../define/LocalStorageDefine";
 import { BundleDefine } from "../../../define/BundleDefine";
 import { I18NDefine } from "../../define/I18NDefine";
-import { LangInterface } from "../../interface/LangInterface";
+import { I18NInterface } from "../../interface/I18NInterface";
 import TypeUtils from "../../utils/TypeUtils";
 import ResCache from "../res/ResCache";
+import { ResDefine } from "../../define/ResDefine";
 
 export default class LangManager extends BaseManager {
 
     private static s_instance: LangManager = null;
 
-    // 数据内容 Map<包名, 多语言缓存数据>>
-    private _dataMap: Map<BundleDefine.Name, LangInterface.LangCacheData> = null;
+    // 数据内容 Map<包名, 多语言数据>>
+    private _dataMap: Map<BundleDefine.Name, I18NInterface.Data> = null;
     // 当前语言
     private _lang: I18NDefine.Lang = null;
 
@@ -63,14 +64,6 @@ export default class LangManager extends BaseManager {
     }
 
     /**
-     * 获取多语言 MD5 文件路径
-     * @returns {string} 文件路径
-     */
-    private getMD5Path(): string {
-        return I18NDefine.RelPath.MD5 + this._lang;
-    }
-
-    /**
      * 获取多语言 JSON 文件路径
      * @returns {string} 文件路径
      */
@@ -87,74 +80,24 @@ export default class LangManager extends BaseManager {
     }
 
     /**
-     * 获取本地存储 MD5 Key
-     * @param bundleName {BundleDefine.Name} 包名
-     * @returns {string} Key
-     */
-    private getLocalStorageMD5Key(bundleName: BundleDefine.Name): string {
-        return bundleName + "." + LocalStorageDefine.Lang.LANG_FILE_MD5;
-    }
-
-    /**
-     * 获取本地存储 Json Key
-     * @param bundleName {BundleDefine.Name} 包名
-     * @returns {string} Key
-     */
-    private getLocalStorageJsonKey(bundleName: BundleDefine.Name): string {
-        return bundleName + "." + LocalStorageDefine.Lang.LANG_CONTENT;
-    }
-
-    /**
-     * 加载文本的 MD5 内容
-     * @param bundleName {BundleDefine.Name} 包名
-     * @returns {Promise<string>} MD5 内容
-     */
-    private async loadMD5(bundleName: BundleDefine.Name): Promise<string> {
-        return new Promise((resolve: (value: string) => void, reject: (reason?: any) => void) => {
-            G.ResMgr.loadLocalRes({
-                path: this.getMD5Path(),
-                bundleName: bundleName,
-                type: cc.TextAsset,
-                onComplete: (resCache: ResCache | null) => {
-                    if (resCache.asset) {
-                        let md5: string = (resCache.asset as cc.TextAsset).text;
-                        if (!TypeUtils.isNull(md5)) {
-                            resolve(md5);
-                        } else {
-                            resolve(null);
-                        }
-                    } else {
-                        resolve(null);
-                    }
-                }
-            })
-        });
-    }
-
-    /**
      * 加载多语言 JSON 内容
      * @param bundleName {BundleDefine.Name} 包名
-     * @returns {Promise<object>}
+     * @returns {Promise<void>}
      */
-    private async loadJson(bundleName: BundleDefine.Name): Promise<object> {
-        return new Promise((resolve: (value: object) => void, reject: (reason?: any) => void) => {
-            G.ResMgr.loadLocalRes({
-                path: this.getJsonPath(),
+    private async loadJson(bundleName: BundleDefine.Name): Promise<void> {
+        return new Promise((resolve: (value: void) => void, reject: (reason?: any) => void) => {
+            G.ResMgr.load({
+                base: this.getJsonPath(),
                 bundleName: bundleName,
-                type: cc.JsonAsset,
-                onComplete: (resCache: ResCache | null) => {
+                assetType: cc.JsonAsset,
+                completeCallback: (resCache: ResCache | null) => {
                     if (resCache.asset) {
-                        let json: object = (resCache.asset as cc.JsonAsset).json;
+                        let json: { [key: string]: string } = (resCache.asset as cc.JsonAsset).json;
                         if (!TypeUtils.isNull(json)) {
-                            this.setCacheJson(bundleName, json);
-                            this.setLocalStorageJson(bundleName, json);
-                            resolve(json);
-                        } else {
-                            reject();
+                            this.setJson(bundleName, json);
                         }
-                    } else {
-                        reject();
                     }
+                    resolve();
                 }
             })
         });
@@ -167,20 +110,18 @@ export default class LangManager extends BaseManager {
      */
     private async loadAtlas(bundleName: BundleDefine.Name): Promise<void> {
         return new Promise((resolve: (value: void) => void, reject: (reason?: any) => void) => {
-            G.ResMgr.getInstance().loadLocalDirRes({
-                path: this.getAtlasPath(),
+            G.ResMgr.load({
+                base: this.getAtlasPath(),
                 bundleName: bundleName,
-                type: cc.SpriteAtlas,
-                onComplete: (resCache: ResCache | null) => {
+                assetType: cc.SpriteAtlas,
+                loadType: ResDefine.LoadType.DIR,
+                completeCallback: (resCache: ResCache | null) => {
                     if (resCache.asset) {
-                        let atlas: cc.SpriteAtlas = (resCache.asset as cc.SpriteAtlas);
-                        if (!TypeUtils.isNull(atlas)) {
+                        let atlasList: cc.SpriteAtlas[] = (resCache.asset as cc.SpriteAtlas[]);
+                        if (!TypeUtils.isNull(atlasList)) {
+                            this.setAtlas(bundleName, atlasList);
                             resolve();
-                        } else {
-                            reject();
                         }
-                    } else {
-                        reject();
                     }
                 }
             })
@@ -188,55 +129,46 @@ export default class LangManager extends BaseManager {
     }
 
     /**
-     * 设置本地存储多语言校验码
+     * 设置多语言文字
      * @param bundleName {BundleDefine.Name} 包名
-     * @param md5 {string} 多语言校验码
+     * @param json { [key: string]: string } 内容
      */
-    private setLocalStorageMD5(bundleName: BundleDefine.Name, md5: string): void {
-        G.LocalStorageMgr.setItem(this.getLocalStorageMD5Key(bundleName), md5);
-    }
-
-    /**
-     * 设置缓存多语言文字
-     * @param bundleName {BundleDefine.Name} 包名
-     * @param json {object} 内容
-     */
-    private setCacheJson(bundleName: BundleDefine.Name, json: object): void {
-        let langCacheData: LangInterface.LangCacheData = this._dataMap.get(bundleName);
-        if (!langCacheData) {
-            langCacheData = {
+    private setJson(bundleName: BundleDefine.Name, json: { [key: string]: string }): void {
+        let data: I18NInterface.Data = this._dataMap.get(bundleName);
+        if (!data) {
+            data = {
                 json: null,
-                atlas: null,
+                atlasMap: null,
             }
-            this._dataMap.set(bundleName, langCacheData);
+            this._dataMap.set(bundleName, data);
         }
-        langCacheData.json = json;
-    }
-
-    /**
-     * 设置本地存储多语言文字
-     * @param bundleName {BundleDefine.Name} 包名
-     * @param json {object} 内容
-     */
-    private setLocalStorageJson(bundleName: BundleDefine.Name, json: object): void {
-        G.LocalStorageMgr.setItem(this.getLocalStorageJsonKey(bundleName), json);
+        data.json = json;
     }
 
     /**
      * 设置多语言图片
      * @param bundleName {BundleDefine.Name} 包名
-     * @param atlas {cc.SpriteAtlas} 图集
+     * @param atlasList {cc.SpriteAtlas[]} 图集列表
      */
-    private setAtlas(bundleName: BundleDefine.Name, atlas: cc.SpriteAtlas): void {
-        let langCacheData: LangInterface.LangCacheData = this._dataMap.get(bundleName);
-        if (!langCacheData) {
-            langCacheData = {
+    private setAtlas(bundleName: BundleDefine.Name, atlasList: cc.SpriteAtlas[]): void {
+        let data: I18NInterface.Data = this._dataMap.get(bundleName);
+        if (!data) {
+            data = {
                 json: null,
-                atlas: null,
+                atlasMap: null,
             }
-            this._dataMap.set(bundleName, langCacheData);
+            this._dataMap.set(bundleName, data);
         }
-        langCacheData.atlas = atlas;
+
+        if (!data.atlasMap) {
+            data.atlasMap = new Map();
+        } else {
+            data.atlasMap.clear();
+        }
+
+        for (let v of atlasList) {
+            data.atlasMap.set(v.name, v);
+        }
     }
 
     public async switch(lang: I18NDefine.Lang): Promise<boolean> {
@@ -251,29 +183,12 @@ export default class LangManager extends BaseManager {
      * @param lang {I18NDefine.Lang} 语言
      * @returns {Promise<boolean>} 是否加载成功
      */
-    public async load(bundleName: BundleDefine.Name): Promise<boolean> {
+    public async load(bundleName: BundleDefine.Name = BundleDefine.Name.RESOURCES): Promise<boolean> {
         return new Promise(async (resolve: (value: boolean) => void, reject: (reason?: any) => void) => {
-
-            let localStorageMD5: string = G.LocalStorageMgr.getItem(this.getLocalStorageMD5Key(bundleName)) as string;
-            if (localStorageMD5 === md5) {
-                let localStorageJson: object = G.LocalStorageMgr.getItem(this.getLocalStorageJsonKey(bundleName)) as object;
-                if (localStorageJson === null) {
-                    this.loadJson(bundleName);
-                } else {
-                    this.setCacheJson(bundleName, localStorageJson);
-                }
-                this.loadAtlas(bundleName);
-            } else {
-                Promise.all([this.loadJson(bundleName), this.loadAtlas(bundleName)])
-                    .then((value: any[]) => {
-                        console.log("22222222");
-                    }, (reason: any) => {
-                        console.log("33333333");
-                    });
-                this.setLocalStorageMD5(bundleName, md5);
-            }
-            resolve(true);
-
+            Promise.all([this.loadJson(bundleName), this.loadAtlas(bundleName)])
+                .then((value: any[]) => {
+                    resolve(true);
+                });
         });
     }
 
@@ -286,27 +201,31 @@ export default class LangManager extends BaseManager {
      */
     public get(key: string, bundleName: BundleDefine.Name, ...format: string[] | number[]): string {
         let value: string = "";
-        // if (this._data && this._data[key] !== undefined) {
-        //     value = this._data[key];
-        // }
 
-        // if (format.length > 0) {
-        //     value = value.replace(/{(\d+)}/g, (_: string, matchIndex: string) => {
-        //         let index: number = Number(matchIndex);
-        //         let content: string | number | undefined = format[index];
-        //         let result: string = "";
-        //         if (content === undefined) {
-        //             result = "?"
-        //         } else {
-        //             if (typeof (content) === "number") {
-        //                 result = content.toString();
-        //             } else {
-        //                 result = content;
-        //             }
-        //         }
-        //         return result;
-        //     });
-        // }
+        let data: I18NInterface.Data = this._dataMap.get(bundleName);
+        if (!data) {
+            return value;
+        }
+
+        value = data.json[key];
+
+        if (format.length > 0) {
+            value = value.replace(/{(\d+)}/g, (_: string, matchIndex: string) => {
+                let index: number = Number(matchIndex);
+                let content: string | number | undefined = format[index];
+                let result: string = "";
+                if (content === undefined) {
+                    result = "?"
+                } else {
+                    if (typeof (content) === "number") {
+                        result = content.toString();
+                    } else {
+                        result = content;
+                    }
+                }
+                return result;
+            });
+        }
 
         return value;
     }

@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-08-26 01:00:54
  * LastEditors  : ougato
- * LastEditTime : 2021-12-03 16:14:02
+ * LastEditTime : 2024-01-17 01:22:36
  * FilePath     : /client/assets/src/core/manager/ui/UIScene.ts
  * Description  : 场景缓存
  */
@@ -86,6 +86,7 @@ export default class UIScene extends UIBase {
                     G.LogMgr.color("打开视图", className);
                     let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
                     let script: BaseComponent = view.setScript(node, param.viewClass);
+                    script.bundleName = param.bundleName;
                     view.resCache = resCache;
                     view.node = node;
                     this.addToScene(view, param.layer);

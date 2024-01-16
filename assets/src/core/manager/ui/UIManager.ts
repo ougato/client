@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:36:55
  * LastEditors  : ougato
- * LastEditTime : 2024-01-16 16:25:02
+ * LastEditTime : 2024-01-17 01:20:54
  * FilePath     : /client/assets/src/core/manager/ui/UIManager.ts
  * Description  : 界面管理器、所有的视图和场景、都由 UIManager 统一管理、包括打开视图|关闭视图|切换场景等等
  */
@@ -263,6 +263,7 @@ export default class UIManager extends BaseManager {
                         this._sceneMap.set(param.bundleName, newScene);
                         let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
                         let script: BaseComponent = newScene.setScript(node, param.sceneClass);
+                        script.bundleName = param.bundleName;
                         this.addToCanvas(node);
                         this._currScene.resCache = resCache;
                         this._currScene.node = node;
@@ -485,15 +486,18 @@ export default class UIManager extends BaseManager {
                 return;
             }
 
+            let bundleName: BundleDefine.Name = BundleDefine.Name.RESOURCES;
+
             G.ResMgr.load({
                 base: persistClass.prefabPath,
-                bundleName: BundleDefine.Name.RESOURCES,
+                bundleName: bundleName,
                 assetType: cc.Prefab,
                 completeCallback: (resCache: ResCache | null) => {
                     if (resCache !== null && resCache.asset !== null) {
                         let persist: UIPersist = new UIPersist();
                         let node: cc.Node = cc.instantiate(resCache.asset as cc.Prefab);
                         let script: BasePersist = persist.setScript(node, persistClass) as BasePersist;
+                        script.bundleName = bundleName;
                         persist.className = cc.js.getClassName(persistClass);
                         persist.script = script;
                         persist.resCache = resCache;

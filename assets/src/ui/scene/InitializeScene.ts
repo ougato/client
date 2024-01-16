@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-09-04 23:39:20
  * LastEditors  : ougato
- * LastEditTime : 2024-01-16 15:24:20
+ * LastEditTime : 2024-01-17 01:30:44
  * FilePath     : /client/assets/src/ui/scene/InitializeScene.ts
  * Description  : 登陆场景
  */
@@ -26,6 +26,8 @@ import { UpdateInterface } from "../../core/interface/UpdateInterface";
 import TypeUtils from "../../core/utils/TypeUtils";
 import NativeUtils from "../../core/utils/NativeUtils";
 import ExampleScene from "./ExampleScene";
+import { LangDefine } from "../../define/LangDefine";
+import { BundleDefine } from "../../define/BundleDefine";
 
 // 请求获取动态主机最大次数
 const GET_DYNAMIC_HOST_MAX_COUNT: number = 3;
@@ -63,6 +65,7 @@ export default class InitializeScene extends BaseScene {
     }
 
     protected async init(): Promise<void> {
+        await this.initI18N();
         await this.initDB();
         await this.initRecord();
         await this.initPersist();
@@ -71,12 +74,20 @@ export default class InitializeScene extends BaseScene {
         await this.initDevice();
     }
 
+    private async initI18N(): Promise<void> {
+        return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
+            G.LangMgr.load().then((isOk) => {
+                resolve();
+            });
+        });
+    }
+
     private async initDB(): Promise<void> {
-        this.labDesc.string = "初始化数据库";
+        this.labDesc.string = this.i18n(LangDefine.Key.INIT_DB);
         return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
             G.DBMgr.init().then((isOK: boolean) => {
                 if (!isOK) {
-                    this.labDesc.string = "初始化数据库失败";
+                    this.labDesc.string = this.i18n(LangDefine.Key.INIT_DB_FAILED);
                 }
                 resolve();
             });
@@ -84,7 +95,7 @@ export default class InitializeScene extends BaseScene {
     }
 
     private initRecord(): Promise<void> {
-        this.labDesc.string = "初始化录像";
+        this.labDesc.string = this.i18n(LangDefine.Key.INIT_RECORD);
         return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
             G.RecordMgr.start(RecordDefine.RecordType.VIDEO);
             resolve();
@@ -96,14 +107,13 @@ export default class InitializeScene extends BaseScene {
      * @returns {Promise<void>}
      */
     private async initPersist(): Promise<void> {
-        this.labDesc.string = "初始化常驻节点";
+        this.labDesc.string = this.i18n(LangDefine.Key.INIT_PERSIST);
         G.UIMgr.openTouch();
         return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
             Promise.all([G.UIMgr.addPersist(BlockPersist), G.UIMgr.addPersist(DialogPersist), G.UIMgr.addPersist(LoadingPersist), G.UIMgr.addPersist(WaitingPersist)]).then(() => {
                 resolve();
             }).catch((reason: any) => {
-                // TODO: 弹窗重试
-                this.labDesc.string = "初始化常驻节点失败";
+                this.labDesc.string = this.i18n(LangDefine.Key.INIT_PERSIST_FAILED);
             });
         });
     }
@@ -113,7 +123,7 @@ export default class InitializeScene extends BaseScene {
      * @returns {Promise<void>}
      */
     private async initHost(): Promise<void> {
-        this.labDesc.string = "初始化服务配置";
+        this.labDesc.string = this.i18n(LangDefine.Key.INIT_SERVICE_CONFIG);
         return new Promise(async (resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
             // 获取动态主机次数
             let count: number = 0;
