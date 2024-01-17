@@ -10,10 +10,6 @@
 export namespace LocalStorageDefine {
 
     export enum Lang {
-        // 语言内容
-        LANG_CONTENT = "LANG_CONTENT",
-        // 语言文件校验码
-        LANG_FILE_MD5 = "LANG_FILE_MD5",
         // 语言
         LANG = "LANG",
     }

@@ -2,12 +2,15 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:21:20
  * LastEditors  : ougato
- * LastEditTime : 2024-01-17 01:27:46
+ * LastEditTime : 2024-01-17 18:09:48
  * FilePath     : /client/assets/src/core/base/BaseComponent.ts
  * Description  : 组件 基类、是 BaseView 和 BaseScene 的父类
  */
 
 import { BundleDefine } from "../../define/BundleDefine";
+import { EventDefine } from "../define/EventDefine";
+import { I18NDefine } from "../define/I18NDefine";
+import { I18NInterface } from "../interface/I18NInterface";
 import { ResInterface } from "../interface/ResInterface";
 import ResCache from "../manager/res/ResCache";
 import TypeUtils from "../utils/TypeUtils";
@@ -22,6 +25,10 @@ export default class BaseComponent extends cc.Component {
     private _loadList: ResCache[] = null;
     // 监听事件列表
     private _eventList: string[] = null;
+    // 本地化标签映射
+    private _labelLangMap: Map<cc.Label, I18NInterface.LabelParam> = new Map();
+    // 本地化精灵映射
+    private _spriteLangMap: Map<cc.Sprite, I18NInterface.SpriteParame> = new Map();
 
     /**
      * 如果该组件启用，则每帧调用 update。
@@ -75,6 +82,7 @@ export default class BaseComponent extends cc.Component {
     protected onDestroy(): void {
         this.autoRelease();
         this.autoOff();
+        this.autoClearI18N();
         this.unregister();
     }
 
@@ -109,9 +117,11 @@ export default class BaseComponent extends cc.Component {
 
     /**
      * 多语言切换时回调
+     * @param language {I18NDefine.Lang} 语言
      */
-    protected onLanguage(): void {
-
+    protected onLanguage(language: I18NDefine.Lang): void {
+        this.updateLabelLang();
+        this.updateSpriteLang();
     }
 
     /**
@@ -119,14 +129,14 @@ export default class BaseComponent extends cc.Component {
      */
 
     protected register(): void {
-
+        G.EventMgr.on(EventDefine.UIEvent.UI_I18N, this, this.onLanguage);
     }
 
     /**
      * 销毁事件
      */
     protected unregister(): void {
-
+        G.EventMgr.off(EventDefine.UIEvent.UI_I18N, this);
     }
 
     /**
@@ -145,16 +155,64 @@ export default class BaseComponent extends cc.Component {
     }
 
     /**
-     * 获取本地化内容
-     * @parma key {string} key
-     * @param bundleName {BundleDefine.Name} 包名
-     * @returns {string} 翻译后的语言
+     * 加载资源
+     * @param {ResInterface.LoadResParam} 加载资源参数
      */
-    protected i18n(key: string, bundleName?: BundleDefine.Name): string {
-        if (TypeUtils.isNull(bundleName)) {
-            bundleName = this.bundleName;
+    protected load(param: ResInterface.LoadResParam): void {
+        let completeCallback: (resCache: ResCache | null) => void = param.completeCallback;
+        param.completeCallback = (resCache: ResCache | null) => {
+            if (resCache && this._loadList) {
+                this._loadList.push(resCache);
+            }
+            completeCallback(resCache);
         }
-        return G.LangMgr.get(key, bundleName);
+        G.ResMgr.load(param);
+    }
+
+    /**
+     * 设置本地化文字
+     * @parma key {string} key
+     * @param data {I18NInterface.LabelParam} 文字数据参数
+     */
+    protected setLabelLang(label: cc.Label, data: I18NInterface.LabelParam): void {
+        if (TypeUtils.isNull(data.bundleName)) {
+            data.bundleName = this.bundleName;
+        }
+
+        label.string = G.LangMgr.getString(data.key, data.bundleName);
+        this._labelLangMap.set(label, data);
+    }
+
+    /**
+     * 更新本地化文字
+     */
+    private updateLabelLang(): void {
+        this._labelLangMap.forEach((data: I18NInterface.LabelParam, label: cc.Label, _: Map<cc.Label, I18NInterface.LabelParam>) => {
+            label.string = G.LangMgr.getString(data.key, data.bundleName);
+        });
+    }
+
+    /**
+     * 设置本地化图片
+     * @param sprite {cc.Sprite} 精灵
+     * @param data {I18NInterface.SpriteParame} 图片数据参数
+     */
+    protected setSpriteLang(sprite: cc.Sprite, data: I18NInterface.SpriteParame): void {
+        if (TypeUtils.isNull(data.bundleName)) {
+            data.bundleName = this.bundleName;
+        }
+
+        sprite.spriteFrame = G.LangMgr.getSpriteFrame(data.atlasName, data.spriteFrameName, data.bundleName);
+        this._spriteLangMap.set(sprite, data);
+    }
+
+    /**
+     * 更新本地化图片
+     */
+    private updateSpriteLang(): void {
+        this._spriteLangMap.forEach((data: I18NInterface.SpriteParame, sprite: cc.Sprite, _: Map<cc.Sprite, I18NInterface.SpriteParame>) => {
+            sprite.spriteFrame = G.LangMgr.getSpriteFrame(data.atlasName, data.spriteFrameName, data.bundleName);
+        });
     }
 
     /**
@@ -188,21 +246,6 @@ export default class BaseComponent extends cc.Component {
     }
 
     /**
-     * 加载资源
-     * @param {ResInterface.LoadResParam} 加载资源参数
-     */
-    protected load(param: ResInterface.LoadResParam): void {
-        let completeCallback: (resCache: ResCache | null) => void = param.completeCallback;
-        param.completeCallback = (resCache: ResCache | null) => {
-            if (resCache && this._loadList) {
-                this._loadList.push(resCache);
-            }
-            completeCallback(resCache);
-        }
-        G.ResMgr.load(param);
-    }
-
-    /**
      * 释放资源
      * 自动释放由手动加载的资源，UI 销毁后自动删除资源的引用计数
      */
@@ -214,6 +257,11 @@ export default class BaseComponent extends cc.Component {
             }
             this._loadList = [];
         }
+    }
+
+    private autoClearI18N(): void {
+        this._labelLangMap.clear();
+        this._spriteLangMap.clear();
     }
 
     /**

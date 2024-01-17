@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-11 17:01:18
  * LastEditors  : ougato
- * LastEditTime : 2024-01-17 00:58:50
+ * LastEditTime : 2024-01-17 18:19:02
  * FilePath     : /client/assets/src/core/manager/lang/LangManager.ts
  * Description  : 语言管理器、本地话多语言的加载和切换
  */
@@ -16,6 +16,7 @@ import { I18NInterface } from "../../interface/I18NInterface";
 import TypeUtils from "../../utils/TypeUtils";
 import ResCache from "../res/ResCache";
 import { ResDefine } from "../../define/ResDefine";
+import { EventDefine } from "../../define/EventDefine";
 
 export default class LangManager extends BaseManager {
 
@@ -171,10 +172,25 @@ export default class LangManager extends BaseManager {
         }
     }
 
-    public async switch(lang: I18NDefine.Lang): Promise<boolean> {
-        return new Promise((resolve: (value: boolean) => void, reject: (reason?: any) => void) => {
+    public async switch(lang: I18NDefine.Lang): Promise<void> {
+        if (lang === this._lang) {
+            G.LogMgr.warn(`当前语言相同`);
+            return;
+        }
 
+        G.LogMgr.log(`正在加载语言 ${lang}`);
+
+        this._lang = lang;
+        let loadList: Promise<boolean>[] = [];
+        this._dataMap.forEach((value: I18NInterface.Data, bundleName: BundleDefine.Name, map: Map<BundleDefine.Name, I18NInterface.Data>) => {
+            loadList.push(this.load(bundleName));
         });
+
+        await Promise.all(loadList);
+
+        G.LogMgr.log(`已切换语言 ${this._lang}`);
+        G.EventMgr.emit(EventDefine.UIEvent.UI_I18N, this._lang);
+        G.LocalStorageMgr.setItem(LocalStorageDefine.Lang.LANG, lang);
     }
 
     /**
@@ -184,26 +200,27 @@ export default class LangManager extends BaseManager {
      * @returns {Promise<boolean>} 是否加载成功
      */
     public async load(bundleName: BundleDefine.Name = BundleDefine.Name.RESOURCES): Promise<boolean> {
-        return new Promise(async (resolve: (value: boolean) => void, reject: (reason?: any) => void) => {
-            Promise.all([this.loadJson(bundleName), this.loadAtlas(bundleName)])
-                .then((value: any[]) => {
-                    resolve(true);
-                });
-        });
+        try {
+            await Promise.all([this.loadJson(bundleName), this.loadAtlas(bundleName)]);
+            return true;
+        } catch (error) {
+            console.error(error);
+            return false;
+        }
     }
 
     /**
-     * 获取本地话内容
-     * @param key {string} Key
+     * 获取本地话文字
+     * @param key {string} 枚举 Key
      * @param bundleName {BundleDefine.Name}
-     * @param format {string[]} 格式化参数
-     * @return {string} 本地话 value
+     * @param format {string[] | number[]} 格式化参数
+     * @return {string} 翻译文字
      */
-    public get(key: string, bundleName: BundleDefine.Name, ...format: string[] | number[]): string {
+    public getString(key: string, bundleName: BundleDefine.Name, format: string[] | number[] = []): string {
         let value: string = "";
 
         let data: I18NInterface.Data = this._dataMap.get(bundleName);
-        if (!data) {
+        if (!data || !data.json) {
             return value;
         }
 
@@ -229,4 +246,30 @@ export default class LangManager extends BaseManager {
 
         return value;
     }
+
+    /**
+     * 获取本地化图片
+     * @param atlasName {string} 图集名
+     * @param spriteFrameName {string} 精灵帧名
+     * @param bundleName {BundleDefine.Name} 包名
+     * @returns {cc.SpriteFrame} 翻译精灵帧
+     */
+    public getSpriteFrame(atlasName: string, spriteFrameName: string, bundleName: BundleDefine.Name): cc.SpriteFrame {
+        let value: cc.SpriteFrame = null;
+
+        let data: I18NInterface.Data = this._dataMap.get(bundleName);
+        if (!data || !data.atlasMap) {
+            return value;
+        }
+
+        let atlas: cc.SpriteAtlas = data.atlasMap.get(atlasName);
+        let spriteFrame: cc.SpriteFrame = atlas.getSpriteFrame(spriteFrameName);
+
+        if (!TypeUtils.isNull(spriteFrame)) {
+            value = spriteFrame;
+        }
+
+        return value;
+    }
+
 }

@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:43:43
  * LastEditors  : ougato
- * LastEditTime : 2024-01-16 12:02:26
+ * LastEditTime : 2024-01-17 14:51:46
  * FilePath     : /client/assets/src/core/interface/UIInterface.ts
  * Description  : 界面接口
  */
@@ -13,6 +13,7 @@ import BaseComponent from "../base/BaseComponent";
 import BaseItem from "../base/BaseItem";
 import { BundleDefine } from "../../define/BundleDefine";
 import { UIDefine } from "../define/UIDefine";
+import { LangDefine } from "../../define/LangDefine";
 
 export namespace UIInterface {
 
@@ -86,9 +87,9 @@ export namespace UIInterface {
 
     export interface DialogParam {
         // 标题
-        title?: string,
+        title?: LangDefine.Key,
         // 内容
-        content: string,
+        content: LangDefine.Key,
         // 取消回调
         cancelCallback?: Function,
         // 确定回调

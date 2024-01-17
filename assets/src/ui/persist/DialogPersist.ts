@@ -2,7 +2,7 @@
  * @Author       : ougato
  * @Date         : 2020-09-04 23:07:17
  * LastEditors  : ougato
- * LastEditTime : 2024-01-04 20:39:04
+ * LastEditTime : 2024-01-17 14:53:47
  * FilePath     : /client/assets/src/ui/persist/DialogPersist.ts
  * @Description  : 对话框（按钮自定义文字）
  */
@@ -10,6 +10,7 @@
 import BasePersist from "../../core/base/BasePersist";
 import { UIInterface } from "../../core/interface/UIInterface";
 import TypeUtils from "../../core/utils/TypeUtils";
+import { LangDefine } from "../../define/LangDefine";
 
 const { ccclass, property } = cc._decorator;
 
@@ -62,8 +63,7 @@ export default class DialogPersist extends BasePersist {
         this._data = data;
 
         if (TypeUtils.isNull(data.title)) {
-            // TODO: 多语言替换
-            data.title = "提示";
+            data.title = LangDefine.Key.HINT;
         }
 
         if (TypeUtils.isNull(data.isShowCancel)) {
@@ -74,8 +74,8 @@ export default class DialogPersist extends BasePersist {
             data.isShowClose = true;
         }
 
-        this.labTitle.string = data.title;
-        this.labContent.string = data.content;
+        this.setLabelLang(this.labTitle, { key: data.title });
+        this.setLabelLang(this.labContent, { key: data.content });
 
         this.btnCancel.node.active = data.isShowCancel;
         this.btnClose.node.active = data.isShowClose;

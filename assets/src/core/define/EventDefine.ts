@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-08-04 01:27:48
  * LastEditors  : ougato
- * LastEditTime : 2021-11-19 16:34:39
+ * LastEditTime : 2024-01-17 11:27:18
  * FilePath     : /client/assets/src/core/define/EventDefine.ts
  * Description  : 事件定义
  */
@@ -51,6 +51,12 @@ export namespace EventDefine {
     export enum UpdateEvent {
         // 更新进度
         UPDATE_PROGRESS = "UPDATE_PROGRESS",
+    }
+
+    // 界面事件
+    export enum UIEvent {
+        // 本地化
+        UI_I18N = "UI_I18N",
     }
 
 }

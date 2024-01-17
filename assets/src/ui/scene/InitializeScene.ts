@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-09-04 23:39:20
  * LastEditors  : ougato
- * LastEditTime : 2024-01-17 01:30:44
+ * LastEditTime : 2024-01-17 18:16:02
  * FilePath     : /client/assets/src/ui/scene/InitializeScene.ts
  * Description  : 登陆场景
  */
@@ -28,6 +28,7 @@ import NativeUtils from "../../core/utils/NativeUtils";
 import ExampleScene from "./ExampleScene";
 import { LangDefine } from "../../define/LangDefine";
 import { BundleDefine } from "../../define/BundleDefine";
+import { I18NDefine } from "../../core/define/I18NDefine";
 
 // 请求获取动态主机最大次数
 const GET_DYNAMIC_HOST_MAX_COUNT: number = 3;
@@ -61,6 +62,7 @@ export default class InitializeScene extends BaseScene {
     }
 
     protected register(): void {
+        super.register();
 
     }
 
@@ -83,11 +85,11 @@ export default class InitializeScene extends BaseScene {
     }
 
     private async initDB(): Promise<void> {
-        this.labDesc.string = this.i18n(LangDefine.Key.INIT_DB);
+        this.setLabelLang(this.labDesc, { key: LangDefine.Key.INIT_DB });
         return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
             G.DBMgr.init().then((isOK: boolean) => {
                 if (!isOK) {
-                    this.labDesc.string = this.i18n(LangDefine.Key.INIT_DB_FAILED);
+                    this.setLabelLang(this.labDesc, { key: LangDefine.Key.INIT_DB_FAILED });
                 }
                 resolve();
             });
@@ -95,7 +97,7 @@ export default class InitializeScene extends BaseScene {
     }
 
     private initRecord(): Promise<void> {
-        this.labDesc.string = this.i18n(LangDefine.Key.INIT_RECORD);
+        this.setLabelLang(this.labDesc, { key: LangDefine.Key.INIT_RECORD });
         return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
             G.RecordMgr.start(RecordDefine.RecordType.VIDEO);
             resolve();
@@ -107,13 +109,13 @@ export default class InitializeScene extends BaseScene {
      * @returns {Promise<void>}
      */
     private async initPersist(): Promise<void> {
-        this.labDesc.string = this.i18n(LangDefine.Key.INIT_PERSIST);
+        this.setLabelLang(this.labDesc, { key: LangDefine.Key.INIT_PERSIST });
         G.UIMgr.openTouch();
         return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
             Promise.all([G.UIMgr.addPersist(BlockPersist), G.UIMgr.addPersist(DialogPersist), G.UIMgr.addPersist(LoadingPersist), G.UIMgr.addPersist(WaitingPersist)]).then(() => {
                 resolve();
             }).catch((reason: any) => {
-                this.labDesc.string = this.i18n(LangDefine.Key.INIT_PERSIST_FAILED);
+                this.setLabelLang(this.labDesc, { key: LangDefine.Key.INIT_PERSIST_FAILED });
             });
         });
     }
@@ -123,7 +125,7 @@ export default class InitializeScene extends BaseScene {
      * @returns {Promise<void>}
      */
     private async initHost(): Promise<void> {
-        this.labDesc.string = this.i18n(LangDefine.Key.INIT_SERVICE_CONFIG);
+        this.setLabelLang(this.labDesc, { key: LangDefine.Key.INIT_SERVICE_CONFIG });
         return new Promise(async (resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
             // 获取动态主机次数
             let count: number = 0;
@@ -152,14 +154,16 @@ export default class InitializeScene extends BaseScene {
                         } else if (count < GET_DYNAMIC_HOST_MAX_COUNT + GET_DYNAMIC_HOST_BACKUP_MAX_COUNT) {
                             return getDynamicHost(URLConfig.GET_DYNAMIC_HOST_URL_BACKUP);
                         } else {
-                            // TODO: 弹窗重试
-                            this.labDesc.string = "初始化服务配置失败";
+                            this.setLabelLang(this.labDesc, { key: LangDefine.Key.INIT_SERVICE_CONFIG_FAILED });
                             G.UIMgr.openDialog({
-                                content: "是否重新加载？",
+                                content: LangDefine.Key.IS_RELOAD,
                                 confirmCallback: () => {
-                                    G.UIMgr.openScene({
-                                        sceneClass: InitializeScene,
-                                        isForce: true,
+                                    G.LangMgr.switch(I18NDefine.Lang.en_US).then(() => {
+                                        G.LogMgr.log("语言切换完成");
+                                        //     G.UIMgr.openScene({
+                                        //         sceneClass: InitializeScene,
+                                        //         isForce: true,
+                                        //     })
                                     })
                                 }
                             })
@@ -181,14 +185,14 @@ export default class InitializeScene extends BaseScene {
             return;
         }
 
-        this.labDesc.string = "初始化更新";
+        this.setLabelLang(this.labDesc, { key: LangDefine.Key.INIT_UPDATE });
         return new Promise((resolve: (value: void | PromiseLike<void>) => void, reject: (reason?: any) => void) => {
             /**
              * 闭包错误
              * @param state 
              */
             let error: (state: UpdateDefine.ErrorState) => void = (state: UpdateDefine.ErrorState) => {
-                let strError: string = "";
+                let strError: LangDefine.Key;
                 switch (state) {
                     case UpdateDefine.ErrorState.LOAD_LOCAL_MANIFEST:
                     case UpdateDefine.ErrorState.DOWNLOAD_MANIFEST:
@@ -197,7 +201,7 @@ export default class InitializeScene extends BaseScene {
                     case UpdateDefine.ErrorState.DOWNLOAD_FILE:
                     case UpdateDefine.ErrorState.VERIFY_FILE:
                     case UpdateDefine.ErrorState.RETRY:
-                        strError = "下载失败，是否重试？"
+                        strError = LangDefine.Key.DOWNLOAD_FAILED_IS_RETRY;
                         break;
                     default:
                         return;
@@ -331,7 +335,7 @@ export default class InitializeScene extends BaseScene {
      * 初始化设备数据
      */
     private async initDevice(): Promise<void> {
-        this.labDesc.string = "初始化设备";
+        this.setLabelLang(this.labDesc, { key: LangDefine.Key.INIT_DEVICE });
 
         /**
          * 初始化设备唯一码

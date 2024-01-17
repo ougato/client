@@ -8,6 +8,8 @@
     "INIT_PERSIST_FAILED": "初始化常驻失败",
     "INIT_SERVICE_CONFIG": "初始化服务配置",
     "INIT_SERVICE_CONFIG_FAILED": "初始化服务配置失败",
+    "INIT_UPDATE": "初始化更新",
+    "IS_RELOAD": "是否重新加载？",
     "LOAD_ASSETS": "正在加载资源",
     "CHECK_VERSION_INFO": "正在检测版本信息",
     "UPDATING_ASSETS": "正在更新资源",
@@ -25,5 +27,8 @@
     "CONFIRM": "确定",
     "HTTP_TIMEOUT": "请求超时",
     "HTTP_ERROR": "请求错误",
-    "REGISTER_OK": "注册成功"
+    "REGISTER_OK": "注册成功",
+    "HINT": "提示",
+    "DOWNLOAD_FAILED_IS_RETRY": "下载失败 是否重试？",
+    "INIT_DEVICE": "初始化设备"
 }
