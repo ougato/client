@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-13 01:25:09
  * LastEditors  : ougato
- * LastEditTime : 2024-01-17 12:08:22
+ * LastEditTime : 2024-01-17 23:47:01
  * FilePath     : /client/assets/src/core/interface/I18NInterface.ts
  * Description  : 本地化接口
  */
@@ -16,7 +16,7 @@ export namespace I18NInterface {
         // 文字
         json: { [key: string]: string },
         // 图集
-        atlasMap: Map<string, cc.SpriteAtlas>,
+        atlas: Map<string, cc.SpriteFrame>,
     }
 
     // 标签参数
@@ -31,10 +31,8 @@ export namespace I18NInterface {
 
     // 精灵参数
     export interface SpriteParame {
-        // 图集名
-        atlasName: string,
         // 图片名
-        spriteFrameName: string,
+        name: string,
         // 包名
         bundleName?: BundleDefine.Name,
     }

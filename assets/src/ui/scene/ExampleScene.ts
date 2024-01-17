@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-12-13 10:31:14
  * LastEditors  : ougato
- * LastEditTime : 2024-01-17 18:59:19
+ * LastEditTime : 2024-01-17 23:49:43
  * FilePath     : /client/assets/src/ui/scene/ExampleScene.ts
  * Description  : 演示例子场景
  */
@@ -11,6 +11,7 @@ import BaseScene from "../../core/base/BaseScene";
 import ListView from "../../core/component/ListView";
 import { I18NDefine } from "../../core/define/I18NDefine";
 import { RecordDefine } from "../../core/define/RecordDefine";
+import MathUtils from "../../core/utils/MathUtils";
 import NativeUtils from "../../core/utils/NativeUtils";
 import TypeUtils from "../../core/utils/TypeUtils";
 import InitializeScene from "./InitializeScene";
@@ -32,8 +33,8 @@ export default class ExampleScene extends BaseScene {
     @property(cc.EditBox)
     private edbCount: cc.EditBox = null;
 
-    @property(cc.Sprite)
-    private imgLang: cc.Sprite = null;
+    @property(cc.Layout)
+    private latout: cc.Layout = null;
 
     private index: number = 0;
 
@@ -44,16 +45,17 @@ export default class ExampleScene extends BaseScene {
     }
 
     protected initUI(): void {
-        this.setSpriteLang(this.imgLang, {
-            atlasName: "zh_CN",
-            spriteFrameName: "btn_clear",
-        })
+        let randomName: string[] = ["btn_clear", "img_title", "img_transfer Out", "img_transferIn"];
+        for (let v of this.latout.node.children) {
+            let sprite = v.getComponent(cc.Sprite);
+            this.setSpriteLang(sprite, { name: randomName[MathUtils.random(0, randomName.length)] });
+        }
     }
 
     private async clickJoin(): Promise<void> {
-        G.UIMgr.openScene({
-            sceneClass: InitializeScene,
-        })
+        // G.UIMgr.openScene({
+        //     sceneClass: InitializeScene,
+        // })
         // let index: number = Number(this.edbIndex.string);
         // if (isNaN(index)) {
         //     G.LogMgr.warn("下标不是一个数");

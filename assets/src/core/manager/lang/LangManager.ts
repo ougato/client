@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-11 17:01:18
  * LastEditors  : ougato
- * LastEditTime : 2024-01-17 18:19:02
+ * LastEditTime : 2024-01-17 23:38:35
  * FilePath     : /client/assets/src/core/manager/lang/LangManager.ts
  * Description  : 语言管理器、本地话多语言的加载和切换
  */
@@ -114,13 +114,13 @@ export default class LangManager extends BaseManager {
             G.ResMgr.load({
                 base: this.getAtlasPath(),
                 bundleName: bundleName,
-                assetType: cc.SpriteAtlas,
+                assetType: cc.SpriteFrame,
                 loadType: ResDefine.LoadType.DIR,
                 completeCallback: (resCache: ResCache | null) => {
                     if (resCache.asset) {
-                        let atlasList: cc.SpriteAtlas[] = (resCache.asset as cc.SpriteAtlas[]);
-                        if (!TypeUtils.isNull(atlasList)) {
-                            this.setAtlas(bundleName, atlasList);
+                        let atlas: cc.SpriteFrame[] = (resCache.asset as cc.SpriteFrame[]);
+                        if (!TypeUtils.isNull(atlas)) {
+                            this.setAtlas(bundleName, atlas);
                             resolve();
                         }
                     }
@@ -139,7 +139,7 @@ export default class LangManager extends BaseManager {
         if (!data) {
             data = {
                 json: null,
-                atlasMap: null,
+                atlas: null,
             }
             this._dataMap.set(bundleName, data);
         }
@@ -149,26 +149,26 @@ export default class LangManager extends BaseManager {
     /**
      * 设置多语言图片
      * @param bundleName {BundleDefine.Name} 包名
-     * @param atlasList {cc.SpriteAtlas[]} 图集列表
+     * @param atlas {cc.SpriteFrame[]} 图集
      */
-    private setAtlas(bundleName: BundleDefine.Name, atlasList: cc.SpriteAtlas[]): void {
+    private setAtlas(bundleName: BundleDefine.Name, atlas: cc.SpriteFrame[]): void {
         let data: I18NInterface.Data = this._dataMap.get(bundleName);
         if (!data) {
             data = {
                 json: null,
-                atlasMap: null,
+                atlas: null,
             }
             this._dataMap.set(bundleName, data);
         }
 
-        if (!data.atlasMap) {
-            data.atlasMap = new Map();
+        if (!data.atlas) {
+            data.atlas = new Map();
         } else {
-            data.atlasMap.clear();
+            data.atlas.clear();
         }
 
-        for (let v of atlasList) {
-            data.atlasMap.set(v.name, v);
+        for (let v of atlas) {
+            data.atlas.set(v.name, v);
         }
     }
 
@@ -248,22 +248,21 @@ export default class LangManager extends BaseManager {
     }
 
     /**
-     * 获取本地化图片
+     * 获取本地化图片（多目录结构 图片不能重名）
      * @param atlasName {string} 图集名
      * @param spriteFrameName {string} 精灵帧名
      * @param bundleName {BundleDefine.Name} 包名
      * @returns {cc.SpriteFrame} 翻译精灵帧
      */
-    public getSpriteFrame(atlasName: string, spriteFrameName: string, bundleName: BundleDefine.Name): cc.SpriteFrame {
+    public getSpriteFrame(spriteFrameName: string, bundleName: BundleDefine.Name): cc.SpriteFrame {
         let value: cc.SpriteFrame = null;
 
         let data: I18NInterface.Data = this._dataMap.get(bundleName);
-        if (!data || !data.atlasMap) {
+        if (!data || !data.atlas) {
             return value;
         }
 
-        let atlas: cc.SpriteAtlas = data.atlasMap.get(atlasName);
-        let spriteFrame: cc.SpriteFrame = atlas.getSpriteFrame(spriteFrameName);
+        let spriteFrame: cc.SpriteFrame = data.atlas.get(spriteFrameName);
 
         if (!TypeUtils.isNull(spriteFrame)) {
             value = spriteFrame;

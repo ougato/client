@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:21:20
  * LastEditors  : ougato
- * LastEditTime : 2024-01-17 18:09:48
+ * LastEditTime : 2024-01-17 23:39:41
  * FilePath     : /client/assets/src/core/base/BaseComponent.ts
  * Description  : 组件 基类、是 BaseView 和 BaseScene 的父类
  */
@@ -202,7 +202,7 @@ export default class BaseComponent extends cc.Component {
             data.bundleName = this.bundleName;
         }
 
-        sprite.spriteFrame = G.LangMgr.getSpriteFrame(data.atlasName, data.spriteFrameName, data.bundleName);
+        sprite.spriteFrame = G.LangMgr.getSpriteFrame(data.name, data.bundleName);
         this._spriteLangMap.set(sprite, data);
     }
 
@@ -211,7 +211,7 @@ export default class BaseComponent extends cc.Component {
      */
     private updateSpriteLang(): void {
         this._spriteLangMap.forEach((data: I18NInterface.SpriteParame, sprite: cc.Sprite, _: Map<cc.Sprite, I18NInterface.SpriteParame>) => {
-            sprite.spriteFrame = G.LangMgr.getSpriteFrame(data.atlasName, data.spriteFrameName, data.bundleName);
+            sprite.spriteFrame = G.LangMgr.getSpriteFrame(data.name, data.bundleName);
         });
     }
 
