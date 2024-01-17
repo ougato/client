@@ -2,13 +2,14 @@
  * Author       : ougato
  * Date         : 2021-12-13 10:31:14
  * LastEditors  : ougato
- * LastEditTime : 2024-01-16 14:44:18
+ * LastEditTime : 2024-01-17 18:59:19
  * FilePath     : /client/assets/src/ui/scene/ExampleScene.ts
  * Description  : 演示例子场景
  */
 
 import BaseScene from "../../core/base/BaseScene";
 import ListView from "../../core/component/ListView";
+import { I18NDefine } from "../../core/define/I18NDefine";
 import { RecordDefine } from "../../core/define/RecordDefine";
 import NativeUtils from "../../core/utils/NativeUtils";
 import TypeUtils from "../../core/utils/TypeUtils";
@@ -31,12 +32,22 @@ export default class ExampleScene extends BaseScene {
     @property(cc.EditBox)
     private edbCount: cc.EditBox = null;
 
+    @property(cc.Sprite)
+    private imgLang: cc.Sprite = null;
+
     private index: number = 0;
 
 
     protected onLoad(): void {
         super.onLoad();
 
+    }
+
+    protected initUI(): void {
+        this.setSpriteLang(this.imgLang, {
+            atlasName: "zh_CN",
+            spriteFrameName: "btn_clear",
+        })
     }
 
     private async clickJoin(): Promise<void> {
@@ -69,12 +80,11 @@ export default class ExampleScene extends BaseScene {
         //     return;
         // }
         // this.edbIndex.string = content;
-
-        G.RecordMgr.start(RecordDefine.RecordType.VIDEO);
-        G.LogMgr.log(`电池电量：${await NativeUtils.getBattery()}`);
+        G.LangMgr.switch(I18NDefine.Lang.en_US);
     }
 
     private cickDelete(): void {
+        G.LangMgr.switch(I18NDefine.Lang.zh_CN);
         // let index: number = Number(this.edbIndex.string);
         // if (isNaN(index)) {
         //     G.LogMgr.warn("下标不是一个数");
@@ -88,7 +98,7 @@ export default class ExampleScene extends BaseScene {
         // this.lsvExample.remove(index, count);
 
         // NativeUtils.setClipboard(this.edbCount.string);
-        G.RecordMgr.stop(RecordDefine.RecordType.VIDEO);
+        // G.RecordMgr.stop(RecordDefine.RecordType.VIDEO);
     }
 
     private onClickItem(node: cc.Node, data: string): void {

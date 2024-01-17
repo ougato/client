@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-09-04 23:39:20
  * LastEditors  : ougato
- * LastEditTime : 2024-01-17 18:16:02
+ * LastEditTime : 2024-01-17 18:52:59
  * FilePath     : /client/assets/src/ui/scene/InitializeScene.ts
  * Description  : 登陆场景
  */
@@ -158,12 +158,8 @@ export default class InitializeScene extends BaseScene {
                             G.UIMgr.openDialog({
                                 content: LangDefine.Key.IS_RELOAD,
                                 confirmCallback: () => {
-                                    G.LangMgr.switch(I18NDefine.Lang.en_US).then(() => {
-                                        G.LogMgr.log("语言切换完成");
-                                        //     G.UIMgr.openScene({
-                                        //         sceneClass: InitializeScene,
-                                        //         isForce: true,
-                                        //     })
+                                    G.UIMgr.openScene({
+                                        sceneClass: ExampleScene,
                                     })
                                 }
                             })
