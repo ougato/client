@@ -1,6 +1,6 @@
 (function () {
     if (typeof window.jsb === "object") {
-        var hotUpdateSearchPaths = localStorage.getItem("LOCAL_UPDATE_SEARCH_PATH");
+        var hotUpdateSearchPaths = localStorage.getItem("UPDATE_SEARCH_PATH");
         if (hotUpdateSearchPaths) {
             var paths = JSON.parse(hotUpdateSearchPaths);
             jsb.fileUtils.setSearchPaths(paths);
@@ -30,3 +30,4 @@
         }
     }
 })();
+

@@ -47,11 +47,11 @@ def init_config():
     global config
 
     if not os.path.exists(CONFIG_PATH):
-        print("./config.json 配置文件不存在，请检查再执行")
+        print("%s 配置文件不存在，请检查再执行" % CONFIG_PATH)
         exit(-1)
 
     if not os.path.isfile(CONFIG_PATH):
-        print("./config.json 不是文件类型，请确认再执行")
+        print("%s 不是文件类型，请确认再执行" % CONFIG_PATH)
         exit(-1)
 
     with open(CONFIG_PATH, "r") as fd:
@@ -59,7 +59,7 @@ def init_config():
         try:
             config = json.loads(content)
         except Exception:
-            print("./config.json 文件解析失败")
+            print("%s 文件解析失败" % CONFIG_PATH)
             exit(-1)
 
 

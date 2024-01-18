@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-09-04 23:39:20
  * LastEditors  : ougato
- * LastEditTime : 2024-01-18 10:33:04
+ * LastEditTime : 2024-01-18 17:14:40
  * FilePath     : /client/assets/src/ui/scene/InitializeScene.ts
  * Description  : 登陆场景
  */
@@ -156,7 +156,7 @@ export default class InitializeScene extends BaseScene {
                         } else {
                             this.setLabelLang(this.labDesc, { key: LangDefine.Key.INIT_SERVICE_CONFIG_FAILED });
                             G.UIMgr.openDialog({
-                                content: LangDefine.Key.IS_RELOAD,
+                                content: LangDefine.Key.DOWNLOAD_FAILED_IS_RETRY,
                                 confirmCallback: () => {
                                     G.UIMgr.openScene({
                                         sceneClass: ExampleScene,

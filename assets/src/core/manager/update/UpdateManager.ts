@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-11-19 15:32:18
  * LastEditors  : ougato
- * LastEditTime : 2023-07-22 20:54:48
+ * LastEditTime : 2024-01-18 16:59:49
  * FilePath     : /client/assets/src/core/manager/update/UpdateManager.ts
  * Description  : 更新管理器，用于最开始进入游戏时热更新
  */
@@ -81,10 +81,6 @@ export default class UpdateManager {
                 return resolve({
                     state: UpdateDefine.CheckState.NOT,
                 });
-            }
-
-            if (cc.sys.getNetworkType() === cc.sys.NetworkType.NONE) {
-                reject("网络错误");
             }
 
             if (this._jsbAssetsManager === null) {
@@ -470,7 +466,7 @@ export default class UpdateManager {
      * @return {string}
      */
     private getUpdateTempPath(): string {
-        let searchTempPath: string = jsb.fileUtils.getWritablePath() + NATIVE_UPDATE_ASSETS_FOLDER + "_temp";
+        let searchTempPath: string = jsb.fileUtils.getWritablePath() + `${NATIVE_UPDATE_ASSETS_FOLDER}_temp`;
         return searchTempPath;
     }
 
@@ -521,7 +517,7 @@ export default class UpdateManager {
                 break;
             case cc.sys.OS_ANDROID:
             case cc.sys.OS_IOS:
-                manifestPath = "res/" + PROJECT_MANIFEST_FILENAME;
+                manifestPath = "assets/" + PROJECT_MANIFEST_FILENAME;
                 break;
             default:
                 console.warn("系统不支持获取本地 manifest 文件路径");
