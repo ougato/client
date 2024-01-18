@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-09-04 23:39:20
  * LastEditors  : ougato
- * LastEditTime : 2024-01-18 00:11:24
+ * LastEditTime : 2024-01-18 10:33:04
  * FilePath     : /client/assets/src/ui/scene/InitializeScene.ts
  * Description  : 登陆场景
  */
@@ -71,7 +71,7 @@ export default class InitializeScene extends BaseScene {
         await this.initDB();
         await this.initRecord();
         await this.initPersist();
-        // await this.initUpdate();
+        await this.initUpdate();
         await this.initHost();
         await this.initDevice();
     }

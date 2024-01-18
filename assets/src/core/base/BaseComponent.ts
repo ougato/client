@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:21:20
  * LastEditors  : ougato
- * LastEditTime : 2024-01-17 23:39:41
+ * LastEditTime : 2024-01-18 10:21:26
  * FilePath     : /client/assets/src/core/base/BaseComponent.ts
  * Description  : 组件 基类、是 BaseView 和 BaseScene 的父类
  */

@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-10 02:52:20
  * LastEditors  : ougato
- * LastEditTime : 2023-07-19 14:22:22
+ * LastEditTime : 2024-01-18 10:30:46
  * FilePath     : /client/assets/src/core/manager/log/LogManager.ts
  * Description  : 日志管理器、拓展日志时间、日志上报等功能
  */
@@ -100,7 +100,7 @@ export default class LogManager extends BaseManager {
             data = [
                 `${this.getDate()} %c ${title} %c ${content}`,
                 `background: ${colorBg};padding: 2px 0px 0px 1px;margin: 0px auto;font-weight: bold;border-radius: 3px;color: ${colorText};`,
-                'padding: 1px;border-radius: 0 2px 2px 0;color: #000;',
+                'padding: 1px;border-radius: 0 2px 2px 0;color: #FFF;',
             ];
         }
 

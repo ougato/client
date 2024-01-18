@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-07 00:22:32
  * LastEditors  : ougato
- * LastEditTime : 2021-11-09 14:41:20
+ * LastEditTime : 2024-01-18 10:24:54
  * FilePath     : /client/assets/src/core/base/BaseView.ts
  * Description  : 视图基类
  */

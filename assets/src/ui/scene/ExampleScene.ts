@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-12-13 10:31:14
  * LastEditors  : ougato
- * LastEditTime : 2024-01-17 23:49:43
+ * LastEditTime : 2024-01-18 10:18:00
  * FilePath     : /client/assets/src/ui/scene/ExampleScene.ts
  * Description  : 演示例子场景
  */
@@ -82,7 +82,7 @@ export default class ExampleScene extends BaseScene {
         //     return;
         // }
         // this.edbIndex.string = content;
-        G.LangMgr.switch(I18NDefine.Lang.en_US);
+        G.LangMgr.switch(I18NDefine.Lang.af_ZA);
     }
 
     private cickDelete(): void {
