@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-07-11 17:01:18
  * LastEditors  : ougato
- * LastEditTime : 2024-01-17 23:38:35
+ * LastEditTime : 2024-01-19 17:53:58
  * FilePath     : /client/assets/src/core/manager/lang/LangManager.ts
  * Description  : 语言管理器、本地话多语言的加载和切换
  */
@@ -204,7 +204,7 @@ export default class LangManager extends BaseManager {
             await Promise.all([this.loadJson(bundleName), this.loadAtlas(bundleName)]);
             return true;
         } catch (error) {
-            console.error(error);
+            G.LogMgr.error(error);
             return false;
         }
     }

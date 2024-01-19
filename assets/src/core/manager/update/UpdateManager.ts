@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-11-19 15:32:18
  * LastEditors  : ougato
- * LastEditTime : 2024-01-18 16:59:49
+ * LastEditTime : 2024-01-19 17:55:29
  * FilePath     : /client/assets/src/core/manager/update/UpdateManager.ts
  * Description  : 更新管理器，用于最开始进入游戏时热更新
  */
@@ -91,46 +91,46 @@ export default class UpdateManager {
 
             let jsbState: jsb.AssetsManager.State = this._jsbAssetsManager.getState();
             if (jsbState >= jsb.AssetsManager.State.PREDOWNLOAD_VERSION && jsbState !== jsb.AssetsManager.State.FAIL_TO_UPDATE) {
-                console.warn(`已检测过版本，请不要重复检测更新数据`);
+                G.LogMgr.warn(`已检测过版本，请不要重复检测更新数据`);
                 reject("重复执行热更检测方法");
             }
 
             if (!this._jsbAssetsManager.getLocalManifest() || !this._jsbAssetsManager.getLocalManifest().isLoaded()) {
-                console.warn("加载本地 manifest 失败");
+                G.LogMgr.warn("加载本地 manifest 失败");
                 return resolve({
                     error: UpdateDefine.ErrorState.LOAD_LOCAL_MANIFEST,
                 });
             }
 
-            console.log(`正在检测资源更新`);
+            G.LogMgr.log(`正在检测资源更新`);
 
             let checkState: UpdateDefine.CheckState = null;
             let failedState: UpdateDefine.ErrorState = null;
             this._jsbAssetsManager.setEventCallback((event: jsb.EventAssetsManager) => {
                 switch (event.getEventCode()) {
                     case jsb.EventAssetsManager.ERROR_NO_LOCAL_MANIFEST: {
-                        console.warn("加载本地文件 Manifest 失败");
+                        G.LogMgr.warn("加载本地文件 Manifest 失败");
                         failedState = UpdateDefine.ErrorState.LOAD_LOCAL_MANIFEST;
                     }
                         break;
                     case jsb.EventAssetsManager.ERROR_DOWNLOAD_MANIFEST: {
-                        console.warn("下载远程 Manifest 失败");
-                        console.warn(event.getAssetsManagerEx().getLocalManifest().getManifestFileUrl());
+                        G.LogMgr.warn("下载远程 Manifest 失败");
+                        G.LogMgr.warn(event.getAssetsManagerEx().getLocalManifest().getManifestFileUrl());
                         failedState = UpdateDefine.ErrorState.DOWNLOAD_MANIFEST;
                     }
                         break;
                     case jsb.EventAssetsManager.ERROR_PARSE_MANIFEST: {
-                        console.warn("解析远程 Manifest 失败");
+                        G.LogMgr.warn("解析远程 Manifest 失败");
                         failedState = UpdateDefine.ErrorState.PARSE_MANIFEST;
                     }
                         break;
                     case jsb.EventAssetsManager.ALREADY_UP_TO_DATE: {
-                        console.log("已是最新版本");
+                        G.LogMgr.log("已是最新版本");
                         checkState = UpdateDefine.CheckState.NOT;
                     }
                         break;
                     case jsb.EventAssetsManager.NEW_VERSION_FOUND: {
-                        console.log("发现新版本更新");
+                        G.LogMgr.log("发现新版本更新");
                         switch (this._diffVersionNum) {
                             case UpdateDefine.VersionNumber.X:
                                 checkState = UpdateDefine.CheckState.URL;
@@ -144,7 +144,7 @@ export default class UpdateManager {
                                 // }
                                 break;
                             default:
-                                console.warn("版本号错误");
+                                G.LogMgr.warn("版本号错误");
                                 break;
                         }
                     }
@@ -186,11 +186,11 @@ export default class UpdateManager {
 
             let jsbState: jsb.AssetsManager.State = this._jsbAssetsManager.getState();
             if (jsbState > jsb.AssetsManager.State.READY_TO_UPDATE && jsbState !== jsb.AssetsManager.State.FAIL_TO_UPDATE) {
-                console.warn(`正在更新最新资源，请不要重复执行更新`);
+                G.LogMgr.warn(`正在更新最新资源，请不要重复执行更新`);
                 reject("重复执行热更更新方法");
             }
 
-            console.log("正在更新最新资源");
+            G.LogMgr.log("正在更新最新资源");
 
             let failedCount: number = 0;
             let finishState: UpdateDefine.UpdateState = null;
@@ -201,25 +201,25 @@ export default class UpdateManager {
                 switch (eventCode) {
                     // 加载本地 manifest 失败
                     case jsb.EventAssetsManager.ERROR_NO_LOCAL_MANIFEST: {
-                        console.warn("加载本地文件 Manifest 失败");
+                        G.LogMgr.warn("加载本地文件 Manifest 失败");
                         failedState = UpdateDefine.ErrorState.LOAD_LOCAL_MANIFEST;
                     }
                         break;
                     // 下载远程 manifest 失败
                     case jsb.EventAssetsManager.ERROR_DOWNLOAD_MANIFEST: {
-                        console.warn("下载远程 Manifest 失败");
+                        G.LogMgr.warn("下载远程 Manifest 失败");
                         failedState = UpdateDefine.ErrorState.DOWNLOAD_MANIFEST;
                     }
                         break;
                     // 解析远程 manifest 失败
                     case jsb.EventAssetsManager.ERROR_PARSE_MANIFEST: {
-                        console.warn("解析远程 Manifest 失败");
+                        G.LogMgr.warn("解析远程 Manifest 失败");
                         failedState = UpdateDefine.ErrorState.PARSE_MANIFEST;
                     }
                         break;
                     // 解压远程资源文件失败
                     case jsb.EventAssetsManager.ERROR_DECOMPRESS: {
-                        console.log(`解压文件失败：${event.getAssetId()}`);
+                        G.LogMgr.log(`解压文件失败：${event.getAssetId()}`);
                         this._failedFiles.push(event.getAssetId());
                         if (failedCount++ >= MAX_FAILED_FILE_COUNT) {
                             failedState = UpdateDefine.ErrorState.DECOMPRESS_FILE;
@@ -232,12 +232,12 @@ export default class UpdateManager {
                     // 单个文件更新完成
                     case jsb.EventAssetsManager.ASSET_UPDATED: {
                         percent = ConverUtils.toFixed(event.getPercentByFile() * 100);
-                        console.log(`文件完成：${event.getAssetId()} （${percent}%）`);
+                        G.LogMgr.log(`文件完成：${event.getAssetId()} （${percent}%）`);
                     }
                         break;
                     // 下载远程资源文件失败
                     case jsb.EventAssetsManager.ERROR_UPDATING: {
-                        console.warn(`下载文件失败：${event.getAssetId()}`);
+                        G.LogMgr.warn(`下载文件失败：${event.getAssetId()}`);
                         this._failedFiles.push(event.getAssetId());
                         if (++failedCount >= MAX_FAILED_FILE_COUNT) {
                             failedState = UpdateDefine.ErrorState.DOWNLOAD_FILE;
@@ -246,7 +246,7 @@ export default class UpdateManager {
                         break;
                     // 校验远程资源文件失败
                     case jsb.EventAssetsManager.UPDATE_FAILED:
-                        console.log(`文件校验失败：${event.getAssetId()}`);
+                        G.LogMgr.log(`文件校验失败：${event.getAssetId()}`);
                         this._failedFiles.push(event.getAssetId());
                         if (++failedCount >= MAX_FAILED_FILE_COUNT) {
                             failedState = UpdateDefine.ErrorState.VERIFY_FILE;
@@ -254,20 +254,20 @@ export default class UpdateManager {
                         break;
                     // 已是最新
                     case jsb.EventAssetsManager.ALREADY_UP_TO_DATE: {
-                        console.log("已是最新版本");
+                        G.LogMgr.log("已是最新版本");
                         finishState = UpdateDefine.UpdateState.ALREADY_NEW;
                     }
                         break;
                     // 更新完成
                     case jsb.EventAssetsManager.UPDATE_FINISHED: {
-                        console.log("更新完成，自动重启客户端");
+                        G.LogMgr.log("更新完成，自动重启客户端");
                         this.resetSearchPath();
                         percent = 100;
                         finishState = UpdateDefine.UpdateState.UPDATE_FINISH;
                     }
                         break;
                     default:
-                        console.warn(`热更新中未捕获的事件 ${eventCode}`);
+                        G.LogMgr.warn(`热更新中未捕获的事件 ${eventCode}`);
                         break;
                 }
 
@@ -309,11 +309,11 @@ export default class UpdateManager {
             }
 
             if (this._jsbAssetsManager.getState() !== jsb.AssetsManager.State.FAIL_TO_UPDATE) {
-                console.warn(`无法执行热更重试，要求在失败状态下才能执行`);
+                G.LogMgr.warn(`无法执行热更重试，要求在失败状态下才能执行`);
                 reject("无法执行热更重试，要求在失败状态下才能执行");
             }
 
-            console.log("正在重试更新资源");
+            G.LogMgr.log("正在重试更新资源");
 
             switch (this._errorState) {
                 case UpdateDefine.ErrorState.LOAD_LOCAL_MANIFEST:
@@ -352,37 +352,37 @@ export default class UpdateManager {
                             // 单个文件更新完成
                             case jsb.EventAssetsManager.ASSET_UPDATED: {
                                 percent = ConverUtils.toFixed(event.getPercentByFile() * 100);
-                                console.log(`文件完成：${event.getAssetId()} （${percent}%）`);
+                                G.LogMgr.log(`文件完成：${event.getAssetId()} （${percent}%）`);
                             }
                                 break;
                             // 下载远程资源文件失败
                             case jsb.EventAssetsManager.ERROR_UPDATING: {
-                                console.warn(`下载文件失败：${event.getAssetId()}`);
+                                G.LogMgr.warn(`下载文件失败：${event.getAssetId()}`);
                                 this._failedFiles.push(event.getAssetId());
                                 failedState = UpdateDefine.ErrorState.DOWNLOAD_FILE;
                             }
                                 break;
                             // 解压远程资源文件失败
                             case jsb.EventAssetsManager.ERROR_DECOMPRESS: {
-                                console.log(`解压文件失败：${event.getAssetId()}`);
+                                G.LogMgr.log(`解压文件失败：${event.getAssetId()}`);
                                 this._failedFiles.push(event.getAssetId());
                                 failedState = UpdateDefine.ErrorState.DECOMPRESS_FILE;
                             }
                             // 校验远程资源文件失败
                             case jsb.EventAssetsManager.UPDATE_FAILED:
-                                console.log(`文件校验失败：${event.getAssetId()}`);
+                                G.LogMgr.log(`文件校验失败：${event.getAssetId()}`);
                                 this._failedFiles.push(event.getAssetId());
                                 failedState = UpdateDefine.ErrorState.VERIFY_FILE;
                                 break;
                             // 已是最新
                             case jsb.EventAssetsManager.ALREADY_UP_TO_DATE: {
-                                console.log("已是最新版本");
+                                G.LogMgr.log("已是最新版本");
                                 finishState = UpdateDefine.UpdateState.ALREADY_NEW;
                             }
                                 break;
                             // 更新完成
                             case jsb.EventAssetsManager.UPDATE_FINISHED: {
-                                console.log("更新完成，自动重启客户端");
+                                G.LogMgr.log("更新完成，自动重启客户端");
                                 let searchPaths: string[] = jsb.fileUtils.getOriginalSearchPaths();
                                 let newSearchPaths: string[] = this._jsbAssetsManager.getLocalManifest().getSearchPaths();
                                 Array.prototype.unshift.apply(searchPaths, newSearchPaths);
@@ -496,7 +496,7 @@ export default class UpdateManager {
                 manifestPath = jsb.fileUtils.getWritablePath() + PROJECT_MANIFEST_FILENAME;
                 break;
             default:
-                console.warn("系统不支持获取本地 manifest 文件路径");
+                G.LogMgr.warn("系统不支持获取本地 manifest 文件路径");
                 break;
         }
         return manifestPath;
@@ -520,7 +520,7 @@ export default class UpdateManager {
                 manifestPath = "assets/" + PROJECT_MANIFEST_FILENAME;
                 break;
             default:
-                console.warn("系统不支持获取本地 manifest 文件路径");
+                G.LogMgr.warn("系统不支持获取本地 manifest 文件路径");
                 break;
         }
         return manifestPath;
@@ -547,7 +547,7 @@ export default class UpdateManager {
         if (!jsb.fileUtils.isFileExist(manifestPath)) {
             manifestPath = this.getManifestPathInApp();
             if (!jsb.fileUtils.isFileExist(manifestPath)) {
-                console.warn("无法找到 APP 内和 搜索路径内的 manifest 文件")
+                G.LogMgr.warn("无法找到 APP 内和 搜索路径内的 manifest 文件")
                 manifestPath = "";
             }
         }
@@ -620,8 +620,8 @@ export default class UpdateManager {
         this.localVersion = a;
         this.remoteVersion = b;
 
-        console.log(`本地版本号：${a}`);
-        console.log(`远程版本号：${b}`);
+        G.LogMgr.log(`本地版本号：${a}`);
+        G.LogMgr.log(`远程版本号：${b}`);
 
         let aSplit: string[] = a.split(".");
         let bSplit: string[] = b.split(".");

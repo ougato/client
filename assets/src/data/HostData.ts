@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-10-29 17:39:28
  * LastEditors  : ougato
- * LastEditTime : 2021-11-19 16:06:43
+ * LastEditTime : 2024-01-19 17:55:30
  * FilePath     : /client/assets/src/data/HostData.ts
  * Description  : 主机数据
  */
@@ -54,7 +54,7 @@ export default class HostData extends BaseData {
                 appURL = "这里需要填写对应下载链接";
                 break;
             default:
-                console.warn(`当前平台 ${cc.sys.os} 未定义整包下载链接`);
+                G.LogMgr.warn(`当前平台 ${cc.sys.os} 未定义整包下载链接`);
                 break;
         }
         return appURL;
@@ -64,7 +64,7 @@ export default class HostData extends BaseData {
      * 获取不同平台的商店链接
      * @return {string} 商城链接
      */
-     public getAppStoreURL(): string {
+    public getAppStoreURL(): string {
         let appStoreURL: string = ""
         switch (cc.sys.os) {
             case cc.sys.OS_ANDROID:
@@ -74,7 +74,7 @@ export default class HostData extends BaseData {
                 appStoreURL = "这里需要填写对应商城链接";
                 break;
             default:
-                console.warn(`当前平台 ${cc.sys.os} 未定义整包下载链接`);
+                G.LogMgr.warn(`当前平台 ${cc.sys.os} 未定义整包下载链接`);
                 break;
         }
         return appStoreURL;
