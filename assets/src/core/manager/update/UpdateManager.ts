@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-11-19 15:32:18
  * LastEditors  : ougato
- * LastEditTime : 2024-01-19 17:55:29
+ * LastEditTime : 2024-01-19 18:51:28
  * FilePath     : /client/assets/src/core/manager/update/UpdateManager.ts
  * Description  : 更新管理器，用于最开始进入游戏时热更新
  */

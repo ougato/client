@@ -2,7 +2,7 @@
  * Author       : ougato
  * Date         : 2021-09-04 23:39:20
  * LastEditors  : ougato
- * LastEditTime : 2024-01-18 17:14:40
+ * LastEditTime : 2024-01-19 18:39:25
  * FilePath     : /client/assets/src/ui/scene/InitializeScene.ts
  * Description  : 登陆场景
  */
@@ -225,7 +225,7 @@ export default class InitializeScene extends BaseScene {
                 //             check();
                 //             break;
                 //         default:
-                //             console.warn("重试返回状态异常");
+                //             G.LogMgr.warn("重试返回状态异常");
                 //             break;
                 //     }
                 // });
@@ -258,7 +258,7 @@ export default class InitializeScene extends BaseScene {
                         check();
                         break;
                     default:
-                        console.warn("更新返回状态异常");
+                        G.LogMgr.warn("更新返回状态异常");
                         break;
                 }
             }
@@ -270,11 +270,15 @@ export default class InitializeScene extends BaseScene {
                 G.LogMgr.log("正在检测版本信息");
 
                 if (cc.sys.getNetworkType() === cc.sys.NetworkType.NONE) {
-                    G.LogMgr.warn("网络错误");
-                    // TODO: 弹窗
-                    // return G.ViewMgr.openPopups("错误", `网络异常，请检查网络后重试`, this.node, () => {
-                    //     check();
-                    // });
+                    G.LogMgr.warn("网络异常 热更新检查版本失败");
+                    return G.UIMgr.openDialog({
+                        title: LangDefine.Key.ERROR,
+                        content: LangDefine.Key.NETWORK_ERROR_RETRY,
+                        isShowClose: false,
+                        confirmCallback: () => {
+                            check();
+                        }
+                    });
                 }
 
                 let checkResult: UpdateInterface.CheckResult = await G.UpdateMgr.check();
@@ -316,7 +320,7 @@ export default class InitializeScene extends BaseScene {
                     }
                         break;
                     default: {
-                        console.warn(`无法找到热更检测结果 ${checkResult.state}`);
+                        G.LogMgr.warn(`无法找到热更检测结果 ${checkResult.state}`);
                     }
                         break;
                 }
